@@ -119,22 +119,23 @@
       border-radius: 12px;
       font-size: 0.86rem;
       font-weight: 600;
-      transition: background 0.15s ease, border-color 0.15s ease, transform 0.08s ease;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.08s ease, opacity 0.15s ease;
       display: inline-flex;
       align-items: center;
       gap: 6px;
     }
-    button:hover {
+    button:hover:not(:disabled) {
       background: var(--accent-soft);
       border-color: var(--accent);
     }
-    button:active { transform: scale(0.98); }
+    button:active:not(:disabled) { transform: scale(0.97); }
+    button:disabled { opacity: 0.35; cursor: not-allowed; }
     button.primary {
       background: var(--accent);
       color: var(--accent-text);
       border-color: var(--accent);
     }
-    button.primary:hover { opacity: 0.92; }
+    button.primary:hover:not(:disabled) { opacity: 0.92; }
     button.small { padding: 6px 11px; font-size: 0.8rem; border-radius: 9px; }
 
     .stats-grid {
@@ -240,12 +241,12 @@
 
     .days-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
       gap: 16px;
     }
     .days-grid.single-focus {
       grid-template-columns: 1fr;
-      max-width: 780px;
+      max-width: 820px;
       margin: 0 auto;
     }
     .day-card {
@@ -288,6 +289,12 @@
       display: flex;
       align-items: flex-start;
       gap: 10px;
+      transition: transform 0.2s ease, background-color 0.35s ease, border-color 0.35s ease;
+    }
+    .task-item.task-moved-flash {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      transform: scale(1.01);
     }
     .task-item.done { opacity: 0.62; }
     .task-item.done .task-title { text-decoration: line-through; }
@@ -305,7 +312,7 @@
       flex-wrap: wrap;
       align-items: center;
       gap: 6px;
-      margin-bottom: 3px;
+      margin-bottom: 4px;
     }
     .mod-tag {
       font-size: 0.72rem;
@@ -330,19 +337,33 @@
       border-radius: 6px;
       font-weight: 600;
     }
-    .logged-time-tag {
+    .act-badge {
       font-size: 0.72rem;
-      background: var(--ibs-bg);
-      color: var(--ibs-fg);
-      border: 1px solid var(--ibs-bd);
-      padding: 2px 7px;
-      border-radius: 6px;
       font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
     }
+    .act-video { background: var(--ibf-bg); color: var(--ibf-fg); border-color: var(--ibf-bd); }
+    .act-study { background: var(--ibs-bg); color: var(--ibs-fg); border-color: var(--ibs-bd); }
+    .act-mcq { background: var(--imb-bg); color: var(--imb-fg); border-color: var(--imb-bd); }
+
     .task-title { font-size: 0.92rem; font-weight: 700; word-break: break-word; }
     .task-note { font-size: 0.8rem; color: var(--text-muted); margin-top: 3px; }
-    .task-actions { display: flex; flex-wrap: wrap; gap: 4px; flex-shrink: 0; }
-    .icon-btn { padding: 5px 8px; font-size: 0.82rem; border-radius: 8px; background: var(--card); }
+    .task-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex-shrink: 0;
+      align-items: flex-end;
+    }
+    .action-row {
+      display: flex;
+      gap: 4px;
+    }
+    .icon-btn { padding: 4px 7px; font-size: 0.8rem; border-radius: 8px; background: var(--card); }
     .icon-btn.play-btn { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 800; }
 
     .card {
@@ -363,11 +384,294 @@
     }
     .two-col {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: 16px;
     }
 
-    /* Smart Session Builder & Timer Styles */
+    /* =======================================================
+       AIRPLANE BOARDING PASS TICKET & ANIMATIONS
+       ======================================================= */
+    .boarding-pass {
+      position: relative;
+      background: var(--card);
+      border: 2px solid var(--accent);
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 12px 30px rgba(62, 47, 35, 0.12);
+      margin-bottom: 16px;
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .boarding-pass.ticket-booked-anim {
+      animation: ticketPulse 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @keyframes ticketPulse {
+      0% { transform: scale(1); }
+      35% { transform: scale(0.985) translateY(3px); }
+      70% { transform: scale(1.015) translateY(-2px); }
+      100% { transform: scale(1) translateY(0); }
+    }
+
+    .bp-header {
+      background: var(--accent);
+      color: var(--accent-text);
+      padding: 12px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 800;
+      font-size: 0.85rem;
+      letter-spacing: 0.6px;
+    }
+    .bp-flight-no {
+      background: rgba(255, 255, 255, 0.18);
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .bp-route-band {
+      padding: 18px 20px 14px;
+      background: linear-gradient(180deg, var(--accent-soft) 0%, var(--card) 100%);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+    }
+    .bp-port {
+      text-align: center;
+    }
+    .bp-code {
+      font-size: 1.45rem;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      color: var(--accent);
+      line-height: 1.1;
+    }
+    .bp-city {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .bp-sky-track {
+      position: relative;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .bp-dashed-arc {
+      width: 100%;
+      border-top: 2px dashed var(--accent);
+      opacity: 0.55;
+    }
+    .bp-cruising-plane {
+      position: absolute;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: planeCruise 3.2s ease-in-out infinite;
+    }
+    [dir="rtl"] .bp-cruising-plane svg {
+      transform: scaleX(-1);
+    }
+    @keyframes planeCruise {
+      0%, 100% { transform: translateY(0px) rotate(-2deg); }
+      50% { transform: translateY(-4px) rotate(2deg); }
+    }
+
+    /* Fly-across burst animation when booking a ticket */
+    .bp-flyover-plane {
+      position: absolute;
+      top: 50%;
+      left: -40px;
+      transform: translateY(-50%);
+      color: var(--accent);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 5;
+    }
+    [dir="rtl"] .bp-flyover-plane {
+      left: auto;
+      right: -40px;
+    }
+    [dir="rtl"] .bp-flyover-plane svg {
+      transform: scaleX(-1);
+    }
+    .boarding-pass.ticket-booked-anim .bp-flyover-plane {
+      animation: planeFlyAcrossLTR 0.9s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    }
+    [dir="rtl"] .boarding-pass.ticket-booked-anim .bp-flyover-plane {
+      animation: planeFlyAcrossRTL 0.9s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    }
+    @keyframes planeFlyAcrossLTR {
+      0% { left: -30px; opacity: 0; transform: translateY(-40%) scale(0.8); }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { left: calc(100% + 30px); opacity: 0; transform: translateY(-65%) scale(1.25); }
+    }
+    @keyframes planeFlyAcrossRTL {
+      0% { right: -30px; opacity: 0; transform: translateY(-40%) scale(0.8); }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { right: calc(100% + 30px); opacity: 0; transform: translateY(-65%) scale(1.25); }
+    }
+
+    /* Boarding stamp */
+    .bp-stamp {
+      position: absolute;
+      top: 10px;
+      inset-inline-end: 16px;
+      border: 2px solid var(--ibs-fg);
+      color: var(--ibs-fg);
+      background: var(--ibs-bg);
+      font-size: 0.7rem;
+      font-weight: 900;
+      padding: 2px 8px;
+      border-radius: 6px;
+      transform: rotate(-8deg) scale(1);
+      opacity: 0.92;
+      pointer-events: none;
+      letter-spacing: 0.5px;
+    }
+    .boarding-pass.ticket-booked-anim .bp-stamp {
+      animation: stampLand 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes stampLand {
+      0% { transform: rotate(-18deg) scale(2.1); opacity: 0; }
+      100% { transform: rotate(-8deg) scale(1); opacity: 0.95; }
+    }
+
+    .bp-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      padding: 10px 18px 14px;
+      border-bottom: 2px dashed var(--border);
+      position: relative;
+    }
+    /* Ticket side notches */
+    .bp-meta-grid::before, .bp-meta-grid::after {
+      content: "";
+      position: absolute;
+      bottom: -11px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 2px solid var(--accent);
+    }
+    .bp-meta-grid::before { left: -12px; }
+    .bp-meta-grid::after { right: -12px; }
+
+    .bp-meta-cell {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 6px 8px;
+      text-align: center;
+    }
+    .bp-meta-lbl {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .bp-meta-val {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .bp-stub {
+      padding: 14px 18px 18px;
+      background: var(--card);
+    }
+
+    /* Live flight runway progress bar */
+    .flight-runway {
+      position: relative;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      margin: 8px 0 4px;
+    }
+    .runway-track {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-soft);
+      border-radius: 99px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .runway-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 99px;
+      transition: width 0.4s linear;
+    }
+    .runway-plane-marker {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--accent);
+      color: var(--accent-text);
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      transition: left 0.4s linear, right 0.4s linear;
+    }
+    [dir="rtl"] .runway-plane-marker {
+      transform: translate(50%, -50%);
+    }
+    [dir="rtl"] .runway-plane-marker svg {
+      transform: scaleX(-1);
+    }
+
+    /* Ticket Duration Slots */
+    .ticket-slots-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .ticket-slot {
+      background: var(--card);
+      border: 1.5px dashed var(--border);
+      border-radius: 12px;
+      padding: 8px 10px;
+      text-align: start;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.15s ease;
+    }
+    .ticket-slot.selected {
+      background: var(--accent-soft);
+      border: 1.5px solid var(--accent);
+      box-shadow: 0 3px 10px rgba(139, 94, 52, 0.14);
+    }
+    .slot-title { font-weight: 800; font-size: 0.84rem; }
+    .slot-sub { font-size: 0.72rem; color: var(--text-muted); }
+    .slot-badge {
+      background: var(--accent);
+      color: var(--accent-text);
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+
     .session-builder {
       display: flex;
       flex-direction: column;
@@ -385,10 +689,10 @@
     }
     .mode-btn {
       justify-content: center;
-      padding: 10px 8px;
+      padding: 9px 8px;
       border-radius: 12px;
       font-weight: 700;
-      font-size: 0.84rem;
+      font-size: 0.82rem;
       background: var(--card);
       border: 1.5px solid var(--border);
       text-align: center;
@@ -413,11 +717,11 @@
       background: var(--card);
       border: 1px dashed var(--accent);
       border-radius: 12px;
-      padding: 12px;
+      padding: 11px 12px;
       display: flex;
       flex-direction: column;
       gap: 8px;
-      font-size: 0.85rem;
+      font-size: 0.84rem;
     }
     .calc-row {
       display: flex;
@@ -428,32 +732,20 @@
     .calc-result {
       background: var(--accent-soft);
       color: var(--text);
-      padding: 8px 12px;
+      padding: 8px 11px;
       border-radius: 10px;
       font-weight: 700;
-      font-size: 0.85rem;
+      font-size: 0.83rem;
     }
 
-    .active-session-banner {
-      background: var(--bg-soft);
-      border: 1.5px solid var(--accent);
-      border-radius: 14px;
-      padding: 12px 14px;
-      text-align: center;
-      margin-bottom: 8px;
-    }
-    .active-lesson-name {
-      font-size: 1.02rem;
-      font-weight: 800;
-      margin-top: 4px;
-    }
     .timer-display {
-      font-size: 3.3rem;
-      font-weight: 800;
+      font-size: 3.1rem;
+      font-weight: 900;
       text-align: center;
       letter-spacing: 2px;
-      margin: 8px 0;
+      margin: 4px 0 8px;
       font-variant-numeric: tabular-nums;
+      color: var(--accent);
     }
 
     .timeline-row {
@@ -470,12 +762,13 @@
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(20, 15, 12, 0.55);
+      background: rgba(20, 15, 12, 0.6);
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 14px;
       z-index: 999;
+      overflow-y: auto;
     }
     .modal-backdrop.open { display: flex; }
     .modal {
@@ -484,11 +777,13 @@
       border-radius: 20px;
       padding: 20px;
       width: 100%;
-      max-width: 460px;
+      max-width: 500px;
+      max-height: 92vh;
+      overflow-y: auto;
       box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 11px;
     }
     .form-group { display: flex; flex-direction: column; gap: 4px; }
     .form-group label { font-size: 0.82rem; font-weight: 700; color: var(--text-muted); }
@@ -518,10 +813,19 @@
       text-decoration: line-through;
     }
 
+    .rot-chip.sel { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+    .rot-chip.planned { border-style: dashed; }
+    .cont-list { max-height: 190px; overflow-y: auto; padding: 2px; }
+    .save-ind { font-size: 0.74rem; color: var(--text-muted); margin-top: 2px; }
+    .toast { position: fixed; bottom: 18px; left: 0; right: 0; margin: auto; width: max-content; max-width: 90vw; background: var(--accent); color: var(--accent-text); padding: 10px 16px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; z-index: 2000; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+    .toast.show { opacity: 1; }
+
     @media (max-width: 600px) {
       .days-grid { grid-template-columns: 1fr; }
-      .timer-display { font-size: 2.6rem; }
+      .timer-display { font-size: 2.5rem; }
       .mode-switch { grid-template-columns: 1fr; }
+      .bp-meta-grid { grid-template-columns: repeat(2, 1fr); }
+      .ticket-slots-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -529,12 +833,14 @@
   <div id="jsGuardBanner" class="js-warning">
     ⚠️ تنبيه: البرنامج اللي فتحت بيه الملف ده (زي معاينة الملفات أو Drive) موقف تشغيل الـ JavaScript! افتح الملف في Safari أو Chrome أو تطبيق Documents عشان كل الزراير تشتغل.
   </div>
+  <div id="updBanner" class="js-warning" style="display:none;background:var(--ibs-fg);cursor:pointer" onclick="applyUpdate(window.__newVer)"></div>
 
   <div class="container">
     <header class="topbar">
       <div class="brand">
         <h1 id="appTitle">☕ Cozy Med Study Hub</h1>
         <p id="appSubtitle">أولى طب بشري — جامعة 6 أكتوبر | خطة الفاينل (16 Nov → 17 Dec 2026)</p>
+        <div class="save-ind" id="saveInd"></div>
       </div>
       <div class="controls">
         <button type="button" id="langToggle" onclick="toggleLang()">🌐 English</button>
@@ -543,6 +849,7 @@
         <button type="button" onclick="document.getElementById('importInput').click()" id="importBtn">📂 استرجاع</button>
         <input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)" />
         <button type="button" onclick="resetAll()" id="resetBtn" title="Reset">↺</button>
+        <button type="button" onclick="checkForUpdate(true)" id="updBtn">🔄 تحديث</button>
       </div>
     </header>
 
@@ -550,7 +857,7 @@
 
     <nav class="nav-tabs">
       <button type="button" class="nav-tab active" data-tab="schedule" onclick="switchTab('schedule')" id="tabSchedule">📅 الجدول والمتابعة</button>
-      <button type="button" class="nav-tab" data-tab="rhythm" onclick="switchTab('rhythm')" id="tabRhythm">⏱️ تايمر الدرس ونظام اليوم</button>
+      <button type="button" class="nav-tab" data-tab="rhythm" onclick="switchTab('rhythm')" id="tabRhythm">✈️ حجز تذكرة المذاكرة ونظام اليوم</button>
       <button type="button" class="nav-tab" data-tab="marks" onclick="switchTab('marks')" id="tabMarks">🎯 توزيع الـ 170 درجة</button>
       <button type="button" class="nav-tab" data-tab="rules" onclick="switchTab('rules')" id="tabRules">🧠 طريقة المذاكرة والقواعد</button>
       <button type="button" class="nav-tab" data-tab="errors" onclick="switchTab('errors')" id="tabErrors">📓 كشكول الأخطاء (Error Log)</button>
@@ -584,93 +891,187 @@
       <div id="scheduleContainer" class="days-grid"></div>
     </section>
 
-    <!-- TAB 2: SMART LESSON TIMER & RHYTHM -->
+    <!-- TAB 2: FLIGHT TICKET SESSION BUILDER & TIMER -->
     <section id="sec-rhythm" class="section">
       <div class="two-col">
-        <div class="card">
-          <h2 id="timerTitle">⏱️ مخطط الجلسة وتايمر الدرس الذكي</h2>
-          <p style="font-size:0.84rem;color:var(--text-muted);margin-bottom:12px;" id="timerHint">
-            اختار اسم الدرس، وحدد هتسـمع فيديو 🎬 ولا هتـذاكر 📖، والتايمر هيحسبلك الوقت ويقسمهولك!
-          </p>
-
-          <div class="session-builder">
-            <!-- 1. Select Lesson -->
-            <div class="form-group">
-              <label id="lblPickLesson">1️⃣ اختار اسم الدرس (من الجدول أو اكتب اسم مخصص)</label>
-              <select id="lessonSelect" onchange="handleLessonSelectChange()"></select>
-              <input type="text" id="customLessonInput" placeholder="اكتب اسم الدرس هنا..." style="margin-top:6px;" oninput="updateActiveSessionFromInputs()" />
+        <div>
+          <!-- AIRPLANE BOARDING PASS WIDGET -->
+          <div class="boarding-pass" id="boardingPassCard">
+            <div class="bp-header">
+              <span id="bpAirlineTitle">✈️ COZY MED AIRLINES • تذكرة صعود للتركيز</span>
+              <span class="bp-flight-no" id="bpFlightNo">FLT-IHI</span>
             </div>
 
-            <!-- 2. Video vs Study Mode -->
-            <div class="form-group">
-              <label id="lblPickMode">2️⃣ هتعمل إيه في الجلسة دي؟</label>
-              <div class="mode-switch">
-                <button type="button" id="modeVideoBtn" class="mode-btn active-video" onclick="setSessionMode('video')">🎬 سماع فيديو</button>
-                <button type="button" id="modeStudyBtn" class="mode-btn" onclick="setSessionMode('study')">📖 مذاكرة وتسميع</button>
-                <button type="button" id="modeMcqBtn" class="mode-btn" onclick="setSessionMode('mcq')">✍️ حل أسئلة MCQ</button>
+            <div class="bp-route-band">
+              <div class="bp-stamp" id="bpStampText">BOARDING ✈️</div>
+              <div class="bp-port">
+                <div class="bp-code">DESK</div>
+                <div class="bp-city" id="bpOriginCity">مكتب المذاكرة</div>
+              </div>
+
+              <div class="bp-sky-track">
+                <div class="bp-dashed-arc"></div>
+                <div class="bp-cruising-plane" aria-hidden="true">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" transform="rotate(90 12 12)"/>
+                  </svg>
+                </div>
+                <div class="bp-flyover-plane" aria-hidden="true">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" transform="rotate(90 12 12)"/>
+                  </svg>
+                </div>
+              </div>
+
+              <div class="bp-port">
+                <div class="bp-code">FOCUS</div>
+                <div class="bp-city" id="bpDestCity">هدف الإنجاز</div>
               </div>
             </div>
 
-            <!-- 3A. Video Smart Calculator -->
-            <div id="videoCalcBox" class="calc-box">
-              <div style="font-weight:800;color:var(--ibf-fg);" id="vidCalcHeading">🎬 حاسبة وقت الفيديو الذكية:</div>
-              <div class="calc-row">
-                <span id="lblRawVid">مدة الفيديو الأصلي (دقيقة):</span>
-                <input type="number" id="rawVideoMins" value="40" min="5" max="240" style="width:85px;" oninput="calculateVideoTime()" />
-                <span id="lblSpeed">السرعة:</span>
-                <button type="button" class="small pill" data-spd="1" onclick="setVideoSpeed(1)">1x</button>
-                <button type="button" class="small pill active" data-spd="1.25" onclick="setVideoSpeed(1.25)">1.25x</button>
-                <button type="button" class="small pill" data-spd="1.5" onclick="setVideoSpeed(1.5)">1.5x</button>
+            <div class="bp-meta-grid">
+              <div class="bp-meta-cell">
+                <div class="bp-meta-lbl" id="bpLblDep">الإقلاع</div>
+                <div class="bp-meta-val" id="bpDepTime">08:30</div>
               </div>
-              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.83rem;">
-                <input type="checkbox" id="includePauseBuffer" checked onchange="calculateVideoTime()" style="width:17px;height:17px;accent-color:var(--accent);" />
-                <span id="lblPauseBuf">أضف +3 دقايق توقيف وتسميع كل 12 دقيقة (عشان متسرحش)</span>
-              </label>
-              <div class="calc-result" id="videoCalcResult"></div>
+              <div class="bp-meta-cell">
+                <div class="bp-meta-lbl" id="bpLblDur">مدة الرحلة</div>
+                <div class="bp-meta-val" id="bpDurVal">41m</div>
+              </div>
+              <div class="bp-meta-cell">
+                <div class="bp-meta-lbl" id="bpLblArr">الوصول</div>
+                <div class="bp-meta-val" id="bpArrTime">09:11</div>
+              </div>
+              <div class="bp-meta-cell">
+                <div class="bp-meta-lbl" id="bpLblGate">البوابة</div>
+                <div class="bp-meta-val" id="bpGateVal">VID 1.25x</div>
+              </div>
             </div>
 
-            <!-- 3B. Study / MCQ Duration Picker -->
-            <div id="studyCalcBox" class="calc-box" style="display:none;">
-              <div style="font-weight:800;color:var(--ibs-fg);" id="studyCalcHeading">📖 حدد وقت المذاكرة المطلوب:</div>
-              <div class="calc-row">
-                <button type="button" class="small" onclick="setCustomDuration(20)">20 د (لوب سريع)</button>
-                <button type="button" class="small" onclick="setCustomDuration(30)">30 د</button>
-                <button type="button" class="small" onclick="setCustomDuration(45)">45 د (بلوك كامل)</button>
-                <button type="button" class="small" onclick="setCustomDuration(60)">60 د</button>
+            <div class="bp-stub">
+              <div style="text-align:center;">
+                <div id="activeSessionBadge"></div>
+                <div style="font-size:1.05rem;font-weight:800;margin-top:4px;" id="activeLessonDisplay">Leucocytes 4–12 (1/2)</div>
               </div>
-              <div class="calc-row">
-                <span id="lblCustomMins">أو اكتب عدد الدقايق:</span>
-                <input type="number" id="manualDurationInput" value="45" min="5" max="180" style="width:85px;" oninput="setCustomDuration(parseInt(this.value || 45, 10))" />
-                <span id="lblMinUnit">دقيقة</span>
+
+              <!-- Live Runway Plane Progress -->
+              <div class="flight-runway">
+                <div class="runway-track">
+                  <div class="runway-fill" id="timerProgressBar" style="width:0%"></div>
+                </div>
+                <div class="runway-plane-marker" id="runwayPlaneMarker" style="inset-inline-start: 0%;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" transform="rotate(90 12 12)"/>
+                  </svg>
+                </div>
               </div>
-              <div class="calc-result" id="studyPlanBreakdown"></div>
+
+              <div class="timer-display" id="timerDisplay">41:00</div>
+
+              <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;">
+                <button type="button" class="primary" onclick="bookAndStartFlight()" id="startTimerBtn">🛫 ابدأ الرحلة (Takeoff)</button>
+                <button type="button" onclick="pauseTimer()" id="pauseTimerBtn">⏸ إيقاف مؤقت</button>
+                <button type="button" onclick="completeCurrentSession()" id="doneSessionBtn" style="background:var(--ibs-bg);color:var(--ibs-fg);border-color:var(--ibs-bd);">🛬 وصلت بالسلامة (تم)</button>
+                <button type="button" onclick="resetTimer()" id="resetTimerBtn">↺ إعادة</button>
+              </div>
             </div>
           </div>
 
-          <!-- Active Session Display & Countdown -->
-          <div class="active-session-banner">
-            <div id="activeSessionBadge"></div>
-            <div class="active-lesson-name" id="activeLessonDisplay">Leucocytes 4–12 (1/2)</div>
-            <div style="font-size:0.8rem;color:var(--text-muted);margin-top:2px;" id="activeTargetText"></div>
-            <div class="progress-bar" style="margin-top:8px;">
-              <div class="progress-fill" id="timerProgressBar" style="width:0%"></div>
+          <!-- TICKET BOOKING / TIME SELECTION CARD -->
+          <div class="card">
+            <h2 id="timerTitle">🎫 شباك حجز تذكرة الدرس والوقت</h2>
+            <p style="font-size:0.84rem;color:var(--text-muted);margin-bottom:12px;" id="timerHint">
+              اختار اسم الدرس، وحدد هتسـمع فيديو 🎬 ولا هتـذاكر 📖، واحجز تذكرة الوقت المناسب ليك!
+            </p>
+
+            <div class="session-builder">
+              <!-- 1. Select Lesson -->
+              <div class="form-group">
+                <label id="lblPickLesson">1️⃣ اختار اسم الدرس (من الجدول أو اكتب اسم مخصص)</label>
+                <select id="lessonSelect" onchange="handleLessonSelectChange()"></select>
+                <input type="text" id="customLessonInput" placeholder="اكتب اسم الدرس هنا..." style="margin-top:6px;" oninput="updateActiveSessionFromInputs()" />
+              </div>
+
+              <!-- 2. Video vs Study Mode -->
+              <div class="form-group">
+                <label id="lblPickMode">2️⃣ نوع الرحلة (سماع فيديو ولا مذاكرة؟)</label>
+                <div class="mode-switch">
+                  <button type="button" id="modeVideoBtn" class="mode-btn active-video" onclick="setSessionMode('video')">🎬 سماع فيديو</button>
+                  <button type="button" id="modeStudyBtn" class="mode-btn" onclick="setSessionMode('study')">📖 مذاكرة وتسميع</button>
+                  <button type="button" id="modeMcqBtn" class="mode-btn" onclick="setSessionMode('mcq')">✍️ حل أسئلة MCQ</button>
+                </div>
+              </div>
+
+              <!-- 3A. Video Smart Calculator -->
+              <div id="videoCalcBox" class="calc-box">
+                <div style="font-weight:800;color:var(--ibf-fg);" id="vidCalcHeading">🎬 حاسبة تذكرة الفيديو الذكية:</div>
+                <div class="calc-row">
+                  <span id="lblRawVid">مدة الفيديو الأصلي (دقيقة):</span>
+                  <input type="number" id="rawVideoMins" value="40" min="5" max="240" style="width:85px;" oninput="calculateVideoTime()" />
+                  <span id="lblSpeed">السرعة:</span>
+                  <button type="button" class="small pill" data-spd="1" onclick="setVideoSpeed(1)">1x</button>
+                  <button type="button" class="small pill active" data-spd="1.25" onclick="setVideoSpeed(1.25)">1.25x</button>
+                  <button type="button" class="small pill" data-spd="1.5" onclick="setVideoSpeed(1.5)">1.5x</button>
+                </div>
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.83rem;">
+                  <input type="checkbox" id="includePauseBuffer" checked onchange="calculateVideoTime()" style="width:17px;height:17px;accent-color:var(--accent);" />
+                  <span id="lblPauseBuf">أضف +3 دقايق توقيف وتسميع كل 12 دقيقة (عشان متسرحش)</span>
+                </label>
+                <div class="calc-result" id="videoCalcResult"></div>
+              </div>
+
+              <!-- 3B. Study / MCQ Ticket Slots Picker -->
+              <div id="studyCalcBox" class="calc-box" style="display:none;">
+                <div style="font-weight:800;color:var(--ibs-fg);" id="studyCalcHeading">🎫 اختار تذكرة الوقت المطلوب:</div>
+                <div class="ticket-slots-grid" id="ticketSlotsGrid">
+                  <button type="button" class="ticket-slot" data-mins="20" onclick="selectTicketSlot(20)">
+                    <div>
+                      <div class="slot-title" id="slot20Title">⚡ رحلة سريعة</div>
+                      <div class="slot-sub" id="slot20Sub">لوب نشط سريع</div>
+                    </div>
+                    <span class="slot-badge">20m</span>
+                  </button>
+                  <button type="button" class="ticket-slot" data-mins="30" onclick="selectTicketSlot(30)">
+                    <div>
+                      <div class="slot-title" id="slot30Title">☕ رحلة متوسطة</div>
+                      <div class="slot-sub" id="slot30Sub">قراءة + تسميع</div>
+                    </div>
+                    <span class="slot-badge">30m</span>
+                  </button>
+                  <button type="button" class="ticket-slot selected" data-mins="45" onclick="selectTicketSlot(45)">
+                    <div>
+                      <div class="slot-title" id="slot45Title">✈️ رحلة كاملة</div>
+                      <div class="slot-sub" id="slot45Sub">بلوك مذاكرة كامل</div>
+                    </div>
+                    <span class="slot-badge">45m</span>
+                  </button>
+                  <button type="button" class="ticket-slot" data-mins="60" onclick="selectTicketSlot(60)">
+                    <div>
+                      <div class="slot-title" id="slot60Title">🚀 رحلة طويلة</div>
+                      <div class="slot-sub" id="slot60Sub">درس دسم + حل</div>
+                    </div>
+                    <span class="slot-badge">60m</span>
+                  </button>
+                </div>
+                <div class="calc-row" style="margin-top:4px;">
+                  <span id="lblCustomMins">أو اكتب عدد الدقايق:</span>
+                  <input type="number" id="manualDurationInput" value="45" min="5" max="180" style="width:85px;" oninput="setCustomDuration(parseInt(this.value || 45, 10))" />
+                  <span id="lblMinUnit">دقيقة</span>
+                </div>
+                <div class="calc-result" id="studyPlanBreakdown"></div>
+              </div>
+
+              <button type="button" class="primary" style="justify-content:center;padding:11px;font-size:0.92rem;" onclick="triggerTicketBookingAnimation(true)" id="issueTicketBtn">
+                🎫 احجز التذكرة واطبع البوردينج باس ✈️
+              </button>
             </div>
-          </div>
-
-          <div class="timer-display" id="timerDisplay">41:00</div>
-
-          <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;">
-            <button type="button" class="primary" onclick="startTimer()" id="startTimerBtn">▶ ابدأ الجلسة</button>
-            <button type="button" onclick="pauseTimer()" id="pauseTimerBtn">⏸ إيقاف مؤقت</button>
-            <button type="button" onclick="completeCurrentSession()" id="doneSessionBtn" style="background:var(--ibs-bg);color:var(--ibs-fg);border-color:var(--ibs-bd);">✅ خلصت الجلسة</button>
-            <button type="button" onclick="resetTimer()" id="resetTimerBtn">↺ إعادة</button>
           </div>
         </div>
 
         <!-- Right Column: Session Log + IBS Rotation -->
         <div>
           <div class="card">
-            <h2 id="sessionLogTitle">📊 سجل جلسات الفيديو والمذاكرة</h2>
+            <h2 id="sessionLogTitle">📊 سجل رحلات الفيديو والمذاكرة</h2>
             <div id="sessionSummaryStats" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;"></div>
             <div id="sessionLogList" class="task-list"></div>
           </div>
@@ -763,87 +1164,93 @@
     </section>
   </div>
 
-  <!-- EDIT / ADD TASK MODAL -->
+  <div class="day-sub" id="verFooter" style="text-align:center;margin:22px 12px 0"></div>
+  <div class="toast" id="toast"></div>
+
+  <!-- ENHANCED EDIT / ADD TASK MODAL (WITH LESSON, VIDEO/STUDY MODE & DURATION) -->
   <div class="modal-backdrop" id="taskModal">
     <div class="modal">
       <h3 id="modalHeading">✏️ تعديل البلوك</h3>
       <input type="hidden" id="modalDayId" />
       <input type="hidden" id="modalTaskIdx" />
+
       <div class="form-group">
-        <label id="mLblTitle">عنوان الدرس / التاسك</label>
+        <label id="mLblMod">1️⃣ الموديول</label>
+        <input type="hidden" id="mMod" value="IHI" />
+        <div class="chip-list" id="mModChips" style="margin-top:0"></div>
+      </div>
+
+      <div class="form-group">
+        <label id="mLblSubj">2️⃣ المادة</label>
+        <select id="mSubj" onchange="onSubjChange()"></select>
+      </div>
+
+      <div class="form-group">
+        <label id="mLblCont">3️⃣ المحتوى</label>
+        <input type="text" id="mContSearch" oninput="renderContentChips()" />
+        <div class="chip-list cont-list" id="mContChips"></div>
+        <div class="chip-list" id="mPartChips" style="margin-top:2px"></div>
+      </div>
+
+      <div class="form-group">
+        <label id="mLblTitle">✍️ اسم الدرس</label>
         <input type="text" id="mTitle" />
       </div>
-      <div class="two-col" style="grid-template-columns:1fr 1fr;gap:10px;">
-        <div class="form-group">
-          <label id="mLblMod">الموديول</label>
-          <select id="mMod">
-            <option value="IHI">IHI</option>
-            <option value="IBS">IBS</option>
-            <option value="IBF">IBF</option>
-            <option value="IMB">IMB</option>
-            <option value="Review">Review</option>
-            <option value="Test">Test</option>
-            <option value="Outing">Outing</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label id="mLblBlock">البلوك / التوقيت</label>
-          <input type="text" id="mBlock" placeholder="Block B / 45m" />
+
+      <div class="form-group">
+        <label id="mLblBlock">البلوك / التوقيت</label>
+        <select id="mBlockSel" onchange="onBlockSel()"></select>
+        <input type="text" id="mBlock" placeholder="Block H" style="display:none;margin-top:6px" />
+      </div>
+
+      <!-- Activity Type: Video vs Study vs MCQ -->
+      <div class="form-group">
+        <label id="mLblActType">2️⃣ هتعمل إيه في الدرس ده؟ (سماع فيديو ولا مذاكرة؟)</label>
+        <div class="mode-switch">
+          <button type="button" id="mModeVideo" class="mode-btn" onclick="setModalMode('video')">🎬 سماع فيديو</button>
+          <button type="button" id="mModeStudy" class="mode-btn active-study" onclick="setModalMode('study')">📖 مذاكرة</button>
+          <button type="button" id="mModeMcq" class="mode-btn" onclick="setModalMode('mcq')">✍️ حل MCQ</button>
         </div>
       </div>
+
+      <!-- Modal Video Calculator -->
+      <div id="mVideoCalcBox" class="calc-box" style="display:none;">
+        <div class="calc-row">
+          <span id="mLblRawVid">مدة الفيديو الأصلي (دقيقة):</span>
+          <input type="number" id="mRawVidMins" value="40" min="5" max="240" style="width:78px;" oninput="recalcModalVideo()" />
+          <span id="mLblSpeed">السرعة:</span>
+          <button type="button" class="small pill" data-mspd="1" onclick="setModalSpeed(1)">1x</button>
+          <button type="button" class="small pill active" data-mspd="1.25" onclick="setModalSpeed(1.25)">1.25x</button>
+          <button type="button" class="small pill" data-mspd="1.5" onclick="setModalSpeed(1.5)">1.5x</button>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.8rem;">
+          <input type="checkbox" id="mPauseBuf" checked onchange="recalcModalVideo()" style="width:16px;height:16px;accent-color:var(--accent);" />
+          <span id="mLblPauseBuf">+3 دقايق توقيف وتسميع كل 12 دقيقة</span>
+        </label>
+        <div class="calc-result" id="mVidResultText"></div>
+      </div>
+
+      <!-- Modal Study / Target Duration -->
+      <div class="form-group">
+        <label id="mLblDuration">3️⃣ الوقت المفروض تذاكره / تسمعه (بالدقايق)</label>
+        <div class="calc-row">
+          <button type="button" class="small" onclick="setModalDuration(20)">20 د</button>
+          <button type="button" class="small" onclick="setModalDuration(30)">30 د</button>
+          <button type="button" class="small" onclick="setModalDuration(45)">45 د</button>
+          <button type="button" class="small" onclick="setModalDuration(60)">60 د</button>
+          <input type="number" id="mDurationMins" value="45" min="5" max="240" style="width:82px;" />
+          <span id="mLblMinUnit">دقيقة</span>
+        </div>
+      </div>
+
       <div class="form-group">
         <label id="mLblNote">ملاحظة شخصية (أرقام صفحات / تحشيشة)</label>
-        <input type="text" id="mNote" />
+        <input type="text" id="mNote" placeholder="ص 4–12..." />
       </div>
+
       <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px;">
         <button type="button" onclick="closeModal()" id="mCancel">إلغاء</button>
         <button type="button" class="primary" onclick="saveTaskModal()" id="mSave">حفظ التعديل</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- RETROACTIVE STOPWATCH / TIMER LOG MODAL (FORGOT TIMER) -->
-  <div class="modal-backdrop" id="forgotTimerModal">
-    <div class="modal">
-      <h3 id="ftHeading">⏱️ تسجيل وقت الجلسة</h3>
-      <p style="font-size:0.84rem;color:var(--text-muted);" id="ftDesc">
-        خلصت الدرس ونسيت تفتح التايمر؟ اختار النوع والمدة وهيتسجل كأنك كنت مشغّله بالظبط:
-      </p>
-      <div class="active-session-banner" style="margin-bottom:2px;padding:10px 12px;">
-        <div id="ftLessonBadge"></div>
-        <div class="active-lesson-name" id="ftLessonTitle" style="font-size:0.95rem;"></div>
-      </div>
-      <input type="hidden" id="ftDayId" />
-      <input type="hidden" id="ftTaskIdx" />
-
-      <div class="form-group">
-        <label id="ftLblMode">نوع الجلسة</label>
-        <div class="mode-switch">
-          <button type="button" id="ftModeVideo" class="mode-btn" onclick="setForgotTimerMode('video')">🎬 سماع فيديو</button>
-          <button type="button" id="ftModeStudy" class="mode-btn active-study" onclick="setForgotTimerMode('study')">📖 مذاكرة وتسميع</button>
-          <button type="button" id="ftModeMcq" class="mode-btn" onclick="setForgotTimerMode('mcq')">✍️ حل أسئلة MCQ</button>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label id="ftLblMins">المدة اللي خدتها (بالدقايق)</label>
-        <div class="calc-row">
-          <button type="button" class="small" onclick="document.getElementById('ftMinutesInput').value=20">20 د</button>
-          <button type="button" class="small" onclick="document.getElementById('ftMinutesInput').value=30">30 د</button>
-          <button type="button" class="small" onclick="document.getElementById('ftMinutesInput').value=41">41 د</button>
-          <button type="button" class="small" onclick="document.getElementById('ftMinutesInput').value=45">45 د</button>
-          <button type="button" class="small" onclick="document.getElementById('ftMinutesInput').value=60">60 د</button>
-        </div>
-        <div class="calc-row" style="margin-top:4px;">
-          <input type="number" id="ftMinutesInput" value="45" min="1" max="240" style="width:100px;" />
-          <span id="ftMinUnit" style="font-size:0.85rem;color:var(--text-muted);font-weight:700;">دقيقة</span>
-        </div>
-      </div>
-
-      <div style="display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;margin-top:4px;">
-        <button type="button" onclick="closeForgotTimerModal()" id="ftCancelBtn">إلغاء</button>
-        <button type="button" onclick="markDoneWithoutTime()" id="ftSkipTimeBtn">✔️ بدون وقت</button>
-        <button type="button" class="primary" onclick="confirmForgotTimerLog()" id="ftConfirmBtn">✅ خلصتها وسجّل الوقت</button>
       </div>
     </div>
   </div>
@@ -857,65 +1264,65 @@
         id: "2026-11-16", week: 1, dateEn: "Mon, 16 Nov", dateAr: "الإثنين ١٦ نوفمبر",
         typeEn: "Day 1 — Kickoff", typeAr: "اليوم الأول — البداية",
         tasks: [
-          { mod: "Review", block: "Setup 20'", title: "20' Setup: Folder per module + doctors' Qs + prayer app + thermos", noteAr: "فولدر لكل مادة + أسئلة الدكاترة + الترمس", noteEn: "Folder per module + doctors' Qs + thermos", done: false },
-          { mod: "IHI", block: "Block B", title: "Leucocytes 4–12 (1/2)", noteAr: "أول بلوك مذاكرة 45 دقيقة", noteEn: "First 45' study block", done: false },
-          { mod: "IHI", block: "Block C", title: "Leucocytes 4–12 (2/2) ★", noteAr: "موضوع مهم — ركز على التجميعة", noteEn: "High-weight topic ★", done: false },
-          { mod: "Review", block: "Block G", title: "Recall: blank page + 5 MCQ → sleep 12:30", noteAr: "ورقة بيضا من الذاكرة + 5 أسئلة ونوم 12:30", noteEn: "Blank page recall + 5 MCQs → sleep 12:30", done: false }
+          { mod: "Review", block: "Setup 20'", title: "20' Setup: Folder per module + doctors' Qs + prayer app + thermos", activityType: "study", durationMins: 20, noteAr: "فولدر لكل مادة + أسئلة الدكاترة + الترمس", noteEn: "Folder per module + doctors' Qs + thermos", done: false },
+          { mod: "IHI", block: "Block B", title: "Leucocytes 4–12 (1/2)", activityType: "study", durationMins: 45, noteAr: "أول بلوك مذاكرة 45 دقيقة", noteEn: "First 45' study block", done: false },
+          { mod: "IHI", block: "Block C", title: "Leucocytes 4–12 (2/2) ★", activityType: "study", durationMins: 45, noteAr: "موضوع مهم — ركز على التجميعة", noteEn: "High-weight topic ★", done: false },
+          { mod: "Review", block: "Block G", title: "Recall: blank page + 5 MCQ → sleep 12:30", activityType: "study", durationMins: 45, noteAr: "ورقة بيضا من الذاكرة + 5 أسئلة ونوم 12:30", noteEn: "Blank page recall + 5 MCQs → sleep 12:30", done: false }
         ]
       },
       {
         id: "2026-11-17", week: 1, dateEn: "Tue, 17 Nov", dateAr: "الثلاثاء ١٧ نوفمبر",
         typeEn: "Section Day", typeAr: "يوم سكاشن",
         tasks: [
-          { mod: "IHI", block: "Uni 10:30", title: "Cases: IHI (Anemia) 10:30", noteAr: "كيس الأنيميا في الكلية", noteEn: "Anemia case at uni", done: false },
-          { mod: "IHI", block: "Block B", title: "Blood + Plasma proteins + RBC/Hb 39–43", noteAr: "فسيولوجي ص 39–43", noteEn: "Physiology pp. 39–43", done: false },
-          { mod: "IHI", block: "Block C", title: "Erythropoiesis 44–49 (1/2)", noteAr: "الجزء الأول", noteEn: "Part 1/2", done: false },
-          { mod: "IHI", block: "Block D", title: "Anemia + Polycythemia 50–57 (1/2)", noteAr: "الجزء الأول", noteEn: "Part 1/2", done: false },
-          { mod: "IHI", block: "Block A", title: "Anemia types table from the case (30') + MCQ", noteAr: "متابعة السكشن: جدول أنواع الأنيميا + حل MCQ", noteEn: "Section follow-up: Anemia table + MCQ", done: false },
-          { mod: "Review", block: "Block G", title: "Night Recall + +1d Skeleton + IBS Rotation", noteAr: "تسميع اليوم + مراجعة إمبارح + 15 د IBS", noteEn: "Today recall + yesterday skeleton + 15' IBS", done: false }
+          { mod: "IHI", block: "Uni 10:30", title: "Cases: IHI (Anemia) 10:30", activityType: "study", durationMins: 45, noteAr: "كيس الأنيميا في الكلية", noteEn: "Anemia case at uni", done: false },
+          { mod: "IHI", block: "Block B", title: "Blood + Plasma proteins + RBC/Hb 39–43", activityType: "study", durationMins: 45, noteAr: "فسيولوجي ص 39–43", noteEn: "Physiology pp. 39–43", done: false },
+          { mod: "IHI", block: "Block C", title: "Erythropoiesis 44–49 (1/2)", activityType: "study", durationMins: 45, noteAr: "الجزء الأول", noteEn: "Part 1/2", done: false },
+          { mod: "IHI", block: "Block D", title: "Anemia + Polycythemia 50–57 (1/2)", activityType: "study", durationMins: 45, noteAr: "الجزء الأول", noteEn: "Part 1/2", done: false },
+          { mod: "IHI", block: "Block A", title: "Anemia types table from the case (30') + MCQ", activityType: "mcq", durationMins: 45, noteAr: "متابعة السكشن: جدول أنواع الأنيميا + حل MCQ", noteEn: "Section follow-up: Anemia table + MCQ", done: false },
+          { mod: "Review", block: "Block G", title: "Night Recall + +1d Skeleton + IBS Rotation", activityType: "study", durationMins: 45, noteAr: "تسميع اليوم + مراجعة إمبارح + 15 د IBS", noteEn: "Today recall + yesterday skeleton + 15' IBS", done: false }
         ]
       },
       {
         id: "2026-11-18", week: 1, dateEn: "Wed, 18 Nov", dateAr: "الأربعاء ١٨ نوفمبر",
         typeEn: "Section Day", typeAr: "يوم سكاشن",
         tasks: [
-          { mod: "IHI", block: "Uni Lab", title: "Prac Immuno + Prac Histo (WBCs)", noteAr: "سكشن عملي إميونو + هيستو WBCs", noteEn: "Practical Immuno + Histo WBCs", done: false },
-          { mod: "IHI", block: "Block B", title: "Erythropoiesis 44–49 (2/2)", noteAr: "تكميلة Erythropoiesis", noteEn: "Finish Erythropoiesis", done: false },
-          { mod: "IHI", block: "Block C", title: "Anemia + Polycythemia 50–57 (2/2)", noteAr: "تكميلة Anemia", noteEn: "Finish Anemia & Polycythemia", done: false },
-          { mod: "IBS", block: "Block D", title: "Gametogenesis 74–84 (1/3)", noteAr: "أول جزء إمبريولوجي", noteEn: "Embryology part 1/3", done: false },
-          { mod: "IHI", block: "Block A", title: "WBC table + slide images (3 ID points)", noteAr: "جدول الـ WBCs + صور الشرايح", noteEn: "WBC table + slide images", done: false },
-          { mod: "Review", block: "Block G", title: "Night Recall + IBS Rotation", noteAr: "ورقة بيضا + 15 د IBS", noteEn: "Blank page + 15' IBS rotation", done: false }
+          { mod: "IHI", block: "Uni Lab", title: "Prac Immuno + Prac Histo (WBCs)", activityType: "study", durationMins: 45, noteAr: "سكشن عملي إميونو + هيستو WBCs", noteEn: "Practical Immuno + Histo WBCs", done: false },
+          { mod: "IHI", block: "Block B", title: "Erythropoiesis 44–49 (2/2)", activityType: "study", durationMins: 45, noteAr: "تكميلة Erythropoiesis", noteEn: "Finish Erythropoiesis", done: false },
+          { mod: "IHI", block: "Block C", title: "Anemia + Polycythemia 50–57 (2/2)", activityType: "study", durationMins: 45, noteAr: "تكميلة Anemia", noteEn: "Finish Anemia & Polycythemia", done: false },
+          { mod: "IBS", block: "Block D", title: "Gametogenesis 74–84 (1/3)", activityType: "study", durationMins: 45, noteAr: "أول جزء إمبريولوجي", noteEn: "Embryology part 1/3", done: false },
+          { mod: "IHI", block: "Block A", title: "WBC table + slide images (3 ID points)", activityType: "study", durationMins: 45, noteAr: "جدول الـ WBCs + صور الشرايح", noteEn: "WBC table + slide images", done: false },
+          { mod: "Review", block: "Block G", title: "Night Recall + IBS Rotation", activityType: "study", durationMins: 45, noteAr: "ورقة بيضا + 15 د IBS", noteEn: "Blank page + 15' IBS rotation", done: false }
         ]
       },
       {
         id: "2026-11-19", week: 1, dateEn: "Thu, 19 Nov", dateAr: "الخميس ١٩ نوفمبر",
         typeEn: "Activities & Outing", typeAr: "أنشطة وخروجة الأسبوع",
         tasks: [
-          { mod: "Review", block: "T1 Review", title: "Review P1–P3 + H1", noteAr: "مراجعة الأسبوع من السكيلتون", noteEn: "Weekly review from skeleton", done: false },
-          { mod: "Review", block: "T2 MCQ", title: "MCQ — week's 2 weakest topics", noteAr: "حل على أضعف موضوعين في الأسبوع", noteEn: "Practice week's 2 weakest topics", done: false },
-          { mod: "Review", block: "Buffer", title: "Buffer: catch up / extra MCQ + 70% check", noteAr: "لو متأخر في حاجة لمّها + احسب نسبة الـ 70%", noteEn: "Catch up + check 70% completion", done: false },
-          { mod: "Outing", block: "5:30 PM", title: "5:30 PM outing — no guilt!", noteAr: "اخرج وغير جو من غير تأنيب ضمير!", noteEn: "Change of scene, zero guilt!", done: false }
+          { mod: "Review", block: "T1 Review", title: "Review P1–P3 + H1", activityType: "study", durationMins: 45, noteAr: "مراجعة الأسبوع من السكيلتون", noteEn: "Weekly review from skeleton", done: false },
+          { mod: "Review", block: "T2 MCQ", title: "MCQ — week's 2 weakest topics", activityType: "mcq", durationMins: 40, noteAr: "حل على أضعف موضوعين في الأسبوع", noteEn: "Practice week's 2 weakest topics", done: false },
+          { mod: "Review", block: "Buffer", title: "Buffer: catch up / extra MCQ + 70% check", activityType: "study", durationMins: 30, noteAr: "لو متأخر في حاجة لمّها + احسب نسبة الـ 70%", noteEn: "Catch up + check 70% completion", done: false },
+          { mod: "Outing", block: "5:30 PM", title: "5:30 PM outing — no guilt!", activityType: "study", durationMins: 60, noteAr: "اخرج وغير جو من غير تأنيب ضمير!", noteEn: "Change of scene, zero guilt!", done: false }
         ]
       },
       {
         id: "2026-11-20", week: 1, dateEn: "Fri, 20 Nov", dateAr: "الجمعة ٢٠ نوفمبر",
         typeEn: "Full Study Day", typeAr: "يوم مذاكرة كامل",
         tasks: [
-          { mod: "IHI", block: "Block 1", title: "Platelets + RBC 13–20", noteAr: "ص 13–20", noteEn: "Pages 13–20", done: false },
-          { mod: "IHI", block: "Block 2", title: "Hemostasis + abnormalities 58–62 (1/2)", noteAr: "الجزء الأول", noteEn: "Part 1/2", done: false },
-          { mod: "IHI", block: "Block 3", title: "Hemostasis + abnormalities 58–62 (2/2)", noteAr: "الجزء الثاني", noteEn: "Part 2/2", done: false },
-          { mod: "IBS", block: "Block 4", title: "Gametogenesis 74–84 (2/3)", noteAr: "الجزء الثاني إمبريو", noteEn: "Embryo part 2/3", done: false },
-          { mod: "Review", block: "Evening", title: "Error log review + 45' room clean + Block G", noteAr: "مراجعة الأخطاء + ترويق الأوضة 45 د بتايمر + Block G", noteEn: "Error log + 45' room clean + Block G", done: false }
+          { mod: "IHI", block: "Block 1", title: "Platelets + RBC 13–20", activityType: "study", durationMins: 45, noteAr: "ص 13–20", noteEn: "Pages 13–20", done: false },
+          { mod: "IHI", block: "Block 2", title: "Hemostasis + abnormalities 58–62 (1/2)", activityType: "study", durationMins: 45, noteAr: "الجزء الأول", noteEn: "Part 1/2", done: false },
+          { mod: "IHI", block: "Block 3", title: "Hemostasis + abnormalities 58–62 (2/2)", activityType: "study", durationMins: 45, noteAr: "الجزء الثاني", noteEn: "Part 2/2", done: false },
+          { mod: "IBS", block: "Block 4", title: "Gametogenesis 74–84 (2/3)", activityType: "study", durationMins: 45, noteAr: "الجزء الثاني إمبريو", noteEn: "Embryo part 2/3", done: false },
+          { mod: "Review", block: "Evening", title: "Error log review + 45' room clean + Block G", activityType: "study", durationMins: 45, noteAr: "مراجعة الأخطاء + ترويق الأوضة 45 د بتايمر + Block G", noteEn: "Error log + 45' room clean + Block G", done: false }
         ]
       },
       {
         id: "2026-11-21", week: 1, dateEn: "Sat, 21 Nov", dateAr: "السبت ٢١ نوفمبر",
         typeEn: "Study + Test #1", typeAr: "مذاكرة + امتحان #1",
         tasks: [
-          { mod: "Review", block: "Block 1", title: "Buffer (Platelets+RBC catch-up / revision)", noteAr: "تأكيد ومراجعة", noteEn: "Catch-up / consolidation", done: false },
-          { mod: "IHI", block: "Block 2", title: "Clotting + Anti-clotting 63–69 (1/2)", noteAr: "ص 63–69 الجزء الأول", noteEn: "Pages 63–69 (1/2)", done: false },
-          { mod: "IBS", block: "Block 3", title: "Gametogenesis 74–84 (3/3)", noteAr: "تكميلة Gametogenesis", noteEn: "Finish Gametogenesis", done: false },
-          { mod: "Test", block: "Sat Eve", title: "TEST #1 — 30 MCQ IHI Physio + Histo (35 min)", noteAr: "امتحان بوقت 35 دقيقة + سجل كل غلطة في الـ Error Log", noteEn: "Timed 35 min + log mistakes in Error Log", done: false }
+          { mod: "Review", block: "Block 1", title: "Buffer (Platelets+RBC catch-up / revision)", activityType: "study", durationMins: 45, noteAr: "تأكيد ومراجعة", noteEn: "Catch-up / consolidation", done: false },
+          { mod: "IHI", block: "Block 2", title: "Clotting + Anti-clotting 63–69 (1/2)", activityType: "study", durationMins: 45, noteAr: "ص 63–69 الجزء الأول", noteEn: "Pages 63–69 (1/2)", done: false },
+          { mod: "IBS", block: "Block 3", title: "Gametogenesis 74–84 (3/3)", activityType: "study", durationMins: 45, noteAr: "تكميلة Gametogenesis", noteEn: "Finish Gametogenesis", done: false },
+          { mod: "Test", block: "Sat Eve", title: "TEST #1 — 30 MCQ IHI Physio + Histo (35 min)", activityType: "mcq", durationMins: 35, noteAr: "امتحان بوقت 35 دقيقة + سجل كل غلطة في الـ Error Log", noteEn: "Timed 35 min + log mistakes in Error Log", done: false }
         ]
       },
       {
@@ -994,7 +1401,7 @@
           { mod: "IBS", block: "Block 2", title: "Implantation 97–103 (1/2)", noteAr: "الجزء 1/2", noteEn: "Part 1/2", done: false },
           { mod: "IBS", block: "Block 3", title: "Implantation 97–103 (2/2)", noteAr: "الجزء 2/2 (SAQ 5 درجات)", noteEn: "Part 2/2 (5-mark SAQ)", done: false },
           { mod: "IBS", block: "Block 4", title: "Fertilization 93–96 ★", noteAr: "مهم جداً ★", noteEn: "High yield ★", done: false },
-          { mod: "Test", block: "Sat Eve", title: "TEST #2 — 30 MCQ IMB + Embryology (35 min)", noteAr: "امتحان بوقت 35 دقيقة + Error Log", noteEn: "Timed 35 min + Error Log", done: false }
+          { mod: "Test", block: "Sat Eve", title: "TEST #2 — 30 MCQ IMB + Embryology (35 min)", activityType: "mcq", durationMins: 35, noteAr: "امتحان بوقت 35 دقيقة + Error Log", noteEn: "Timed 35 min + Error Log", done: false }
         ]
       },
       {
@@ -1073,7 +1480,7 @@
           { mod: "IHI", block: "Block 2", title: "T-cell mediated immunity 24–29 (2/2)", noteAr: "الجزء 2/2 (SAQ متوقع)", noteEn: "Part 2/2 (SAQ)", done: false },
           { mod: "IBF", block: "Block 3", title: "Lipid chemistry 3 (1/2) ★", noteAr: "الجزء 1/2 ★", noteEn: "Part 1/2 ★", done: false },
           { mod: "IBF", block: "Block 4", title: "Lipid chemistry 3 (2/2) ★ + Trophoblast 111–115 (2/2)", noteAr: "تكميلة Lipid 3 + Placenta", noteEn: "Finish Lipid 3 + Placenta", done: false },
-          { mod: "Test", block: "Sat Eve", title: "TEST #3 — 30 MCQ Immunology + Embryology (35 min)", noteAr: "امتحان بوقت 35 دقيقة + Error Log", noteEn: "Timed 35 min + Error Log", done: false }
+          { mod: "Test", block: "Sat Eve", title: "TEST #3 — 30 MCQ Immunology + Embryology (35 min)", activityType: "mcq", durationMins: 35, noteAr: "امتحان بوقت 35 دقيقة + Error Log", noteEn: "Timed 35 min + Error Log", done: false }
         ]
       },
       {
@@ -1081,7 +1488,7 @@
         typeEn: "Section Day", typeAr: "يوم سكاشن",
         tasks: [
           { mod: "IHI", block: "Uni Lab", title: "Prac Physio (Hct & ESR) + Sectra (lymph node)", noteAr: "عملي Hct/ESR + سيكترا", noteEn: "Physio Hct/ESR + Sectra", done: false },
-          { mod: "IBF", block: "Block B", title: "Carbohydrate chemistry 1 (1/2) ★", noteAr: "بداية الـ الكارب (10 درجات!) ★", noteEn: "Carbs start (10 marks!) ★", done: false },
+          { mod: "IBF", block: "Block B", title: "Carbohydrate chemistry 1 (1/2) ★", noteAr: "بداية الكارب (10 درجات!) ★", noteEn: "Carbs start (10 marks!) ★", done: false },
           { mod: "IBF", block: "Block C", title: "Carbohydrate chemistry 1 (2/2) ★", noteAr: "الجزء 2/2 ★", noteEn: "Part 2/2 ★", done: false },
           { mod: "IBS", block: "Block D", title: "Cord, amnion, yolk sac, allantois 116–123", noteAr: "آخر درس إمبريولوجي!", noteEn: "Final Embryology lesson!", done: false },
           { mod: "IHI", block: "Block A", title: "ESR/Hct + lymph node slide", noteAr: "متابعة السكشن", noteEn: "Section follow-up", done: false },
@@ -1152,7 +1559,7 @@
           { mod: "IBF", block: "Block 2", title: "Amino acids 1–3", noteAr: "أحماض أمينية", noteEn: "Amino acids 1–3", done: false },
           { mod: "IBF", block: "Block 3", title: "ANS + Parasympathetic 67–79 (1/3) ★", noteAr: "بداية الـ ANS (مهم ★)", noteEn: "ANS start ★", done: false },
           { mod: "IBF", block: "Block 4", title: "ANS + Parasympathetic 67–79 (2/3) ★", noteAr: "الجزء 2/3 ★", noteEn: "Part 2/3 ★", done: false },
-          { mod: "Test", block: "Sat Eve", title: "TEST #4 — 30 MCQ IBF Biochem + IMB (35 min)", noteAr: "امتحان بوقت 35 دقيقة + Error Log", noteEn: "Timed 35 min + Error Log", done: false }
+          { mod: "Test", block: "Sat Eve", title: "TEST #4 — 30 MCQ IBF Biochem + IMB (35 min)", activityType: "mcq", durationMins: 35, noteAr: "امتحان بوقت 35 دقيقة + Error Log", noteEn: "Timed 35 min + Error Log", done: false }
         ]
       },
       {
@@ -1218,7 +1625,7 @@
         typeEn: "Round 2 Diagnostic", typeAr: "بداية Round 2 + تحديد المستوى",
         tasks: [
           { mod: "Review", block: "Catch-up", title: "Carry over anything late from Round 1", noteAr: "لمّ أي حاجة متبقية قبل بداية المراجعة", noteEn: "Finish any leftover blocks", done: false },
-          { mod: "Test", block: "Diagnostic", title: "Diagnostic Test: 30 MCQ per module (IHI, IBS, IBF, IMB)", noteAr: "النتيجة هي اللي بتحدد ترتيب مواد Round 2 (10–12 يوم من السكيلتون)", noteEn: "Result sets the module order for Round 2 (10–12 days from skeleton)", done: false }
+          { mod: "Test", block: "Diagnostic", title: "Diagnostic Test: 30 MCQ per module (IHI, IBS, IBF, IMB)", activityType: "mcq", durationMins: 60, noteAr: "النتيجة هي اللي بتحدد ترتيب مواد Round 2 (10–12 يوم من السكيلتون)", noteEn: "Result sets the module order for Round 2 (10–12 days from skeleton)", done: false }
         ]
       }
     ];
@@ -1249,25 +1656,137 @@
       ibsRot: {},
       saqs: JSON.parse(JSON.stringify(SAQ_TOPICS)),
       errors: JSON.parse(JSON.stringify(INITIAL_ERRORS)),
-      sessionLogs: [],
-      activeTimer: null
+      sessionLogs: []
     };
 
-    function loadState() {
-      try {
-        const saved = localStorage.getItem("cozy_med_study_hub_v3") || localStorage.getItem("cozy_med_study_hub_v2");
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          state = { ...state, ...parsed };
-          if (!Array.isArray(state.sessionLogs)) state.sessionLogs = [];
+    const APP_VERSION = "2026-11-16.1";
+    const STORE_KEY = "cozy_med_study_hub_v4";
+    let lastMovedHighlight = null, lastSavedJson = "", resetting = false, timerEndAt = 0, bootTimer = null, saveTimer = null;
+    const $ = id => document.getElementById(id);
+    const isAr = () => state.lang === "ar";
+    const newUid = () => "t" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+    const taskKey = (dayId, tk) => dayId + "#" + tk.title;
+    const fmtH = m => Math.floor(m / 60) + "h " + (m % 60) + "m";
+    const fmtTs = ts => new Date(ts).toLocaleString(isAr() ? "ar-EG" : "en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+
+    function findTaskByUid(uid) {
+      if (!uid) return null;
+      for (const day of state.plan) {
+        const idx = day.tasks.findIndex(x => x.uid === uid);
+        if (idx >= 0) return { day, idx, tk: day.tasks[idx] };
+      }
+      return null;
+    }
+    function ensureUids() {
+      state.plan.forEach(d => d.tasks.forEach(tk => { if (!tk.uid) tk.uid = newUid(); }));
+    }
+    // Merges NEW default tasks/days from an updated index.html without touching progress or edits/deletes
+    function mergeDefaultPlan() {
+      const first = !Array.isArray(state.knownKeys);
+      const known = new Set(first ? [] : state.knownKeys);
+      DEFAULT_PLAN.forEach((dd, di) => {
+        let day = state.plan.find(d => d.id === dd.id);
+        const isNew = !day;
+        if (isNew) {
+          day = JSON.parse(JSON.stringify({ ...dd, tasks: [] }));
+          state.plan.splice(Math.min(di, state.plan.length), 0, day);
         }
-      } catch (e) {}
+        dd.tasks.forEach(tk => {
+          const k = taskKey(dd.id, tk);
+          if (isNew || (!first && !known.has(k))) day.tasks.push(JSON.parse(JSON.stringify(tk)));
+          known.add(k);
+        });
+      });
+      state.knownKeys = [...known];
+    }
+    function todayPlanId() {
+      const d = new Date();
+      let id = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+      if (id === "2026-12-19") id = "2026-12-18";
+      return state.plan.some(x => x.id === id) ? id : null;
+    }
+    function goToday() {
+      const id = todayPlanId();
+      if (id) { state.selectedDayId = id; state.selectedWeek = state.plan.find(d => d.id === id).week; }
+      else toast(isAr() ? "النهاردة برّه أيام الخطة" : "Today is outside the plan dates");
+      saveState(); renderSchedule();
+    }
+    function jumpToTodayIfNewDay() {
+      const stamp = new Date().toDateString(), id = todayPlanId();
+      if (id && state.lastOpenDay !== stamp) { state.selectedDayId = id; state.selectedWeek = state.plan.find(d => d.id === id).week; }
+      state.lastOpenDay = stamp;
     }
 
+    const idb = {
+      open() { return new Promise((res, rej) => { const r = indexedDB.open("cozy_med", 1); r.onupgradeneeded = () => r.result.createObjectStore("kv"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); },
+      async set(v) { if (resetting) return; try { const db = await this.open(); db.transaction("kv", "readwrite").objectStore("kv").put(v, "state"); } catch (e) {} },
+      async get() { try { const db = await this.open(); return await new Promise(res => { const q = db.transaction("kv").objectStore("kv").get("state"); q.onsuccess = () => res(q.result); q.onerror = () => res(null); }); } catch (e) { return null; } },
+      async clear() { try { const db = await this.open(); await new Promise(res => { const q = db.transaction("kv", "readwrite").objectStore("kv").clear(); q.onsuccess = q.onerror = () => res(); }); } catch (e) {} }
+    };
+
+    function finishLoad() {
+      if (!Array.isArray(state.sessionLogs)) state.sessionLogs = [];
+      if (!Array.isArray(state.plan) || !state.plan.length) state.plan = JSON.parse(JSON.stringify(DEFAULT_PLAN));
+      bootTimer = state.timer ? { ...state.timer } : null;
+      mergeDefaultPlan(); ensureUids(); jumpToTodayIfNewDay();
+    }
+    function loadState() {
+      let saved = null;
+      try { saved = localStorage.getItem(STORE_KEY) || localStorage.getItem("cozy_med_study_hub_v3") || localStorage.getItem("cozy_med_study_hub_v2"); } catch (e) {}
+      if (saved) { try { state = { ...state, ...JSON.parse(saved) }; } catch (e) { saved = null; } }
+      finishLoad();
+      return !!saved;
+    }
+    // Auto-save: saves on every change + every 3s safety net + when the app is hidden/closed. localStorage + IndexedDB mirror.
     function saveState() {
+      if (resetting) return;
+      let json; try { json = JSON.stringify(state); } catch (e) { return; }
+      if (json === lastSavedJson) return;
+      lastSavedJson = json;
+      try { localStorage.setItem(STORE_KEY, json); } catch (e) {}
+      clearTimeout(saveTimer); saveTimer = setTimeout(() => idb.set(json), 800);
+      showSaved();
+    }
+    function flushSave() { saveState(); if (lastSavedJson && !resetting) idb.set(lastSavedJson); }
+    function showSaved() {
+      const el = $("saveInd"); if (!el) return;
+      const d = new Date();
+      el.textContent = (isAr() ? "💾 اتحفظ تلقائي ✓ " : "💾 Auto-saved ✓ ") + String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+    }
+    function toast(msg) {
+      const el = $("toast"); if (!el) return;
+      el.textContent = msg; el.classList.add("show");
+      clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove("show"), 2600);
+    }
+
+    // ---- One-tap update: no need to recreate the link. Checks the live index.html for a newer APP_VERSION ----
+    function applyUpdate(ver) {
+      flushSave();
+      try { sessionStorage.setItem("cozy_upd", ver); } catch (e) {}
+      location.replace(location.pathname + "?v=" + encodeURIComponent(ver) + "&t=" + Date.now());
+    }
+    function showUpdBanner(ver) {
+      window.__newVer = ver;
+      const b = $("updBanner");
+      b.textContent = isAr() ? "🔄 فيه نسخة جديدة — دوس هنا للتحديث (مذاكرتك محفوظة)" : "🔄 New version ready — tap to update (your progress is saved)";
+      b.style.display = "block";
+    }
+    async function checkForUpdate(manual) {
+      if (location.protocol === "file:") { if (manual) toast(isAr() ? "التحديث بيشتغل بس لما الموقع يكون على لينك" : "Updates only work when hosted on a link"); return; }
       try {
-        localStorage.setItem("cozy_med_study_hub_v3", JSON.stringify(state));
-      } catch (e) {}
+        const r = await fetch(location.pathname + "?_=" + Date.now(), { cache: "no-store" });
+        const m = (await r.text()).match(new RegExp("APP_VERSION" + ' = "([^"]+)"'));
+        if (!m) throw new Error("no version");
+        if (m[1] !== APP_VERSION) {
+          let tried = ""; try { tried = sessionStorage.getItem("cozy_upd") || ""; } catch (e) {}
+          const busy = timerInterval || $("taskModal").classList.contains("open");
+          if (!manual && !busy && tried !== m[1]) return applyUpdate(m[1]);
+          if (manual) return applyUpdate(m[1]);
+          showUpdBanner(m[1]);
+        } else if (manual) {
+          toast(isAr() ? "✅ أنت على آخر نسخة (" + APP_VERSION + ")" : "✅ You're on the latest version (" + APP_VERSION + ")");
+        }
+      } catch (e) { if (manual) toast(isAr() ? "مقدرتش أتأكد — شوف النت" : "Couldn't check — check your connection"); }
     }
 
     const UI = {
@@ -1280,7 +1799,7 @@
         exportBtn: "💾 حفظ نسخة",
         importBtn: "📂 استرجاع",
         tabSchedule: "📅 الجدول والمتابعة",
-        tabRhythm: "⏱️ تايمر الدرس ونظام اليوم",
+        tabRhythm: "✈️ حجز تذكرة المذاكرة ونظام اليوم",
         tabMarks: "🎯 توزيع الـ 170 درجة",
         tabRules: "🧠 طريقة المذاكرة والقواعد",
         tabErrors: "📓 كشكول الأخطاء (Error Log)",
@@ -1289,35 +1808,52 @@
         viewAll: "🗓️ الجدول كامل",
         searchPh: "ابحث عن درس أو صفحة...",
         addTask: "+ إضافة تاسك",
-        startLessonTip: "ابدأ تايمر الدرس ده",
+        startLessonTip: "احجز تذكرة الدرس ده",
+        moveUpTip: "طلع لفوق",
+        moveDownTip: "نزل لتحت",
         postponeTip: "رحّل لبكرة",
-        editTip: "تعديل",
+        editTip: "تعديل الدرس والوقت",
         delTip: "حذف",
         statTotal: "إجمالي إنجاز الخطة",
         statBlocks: "بلوك خلص",
-        timerTitle: "⏱️ مخطط الجلسة وتايمر الدرس الذكي",
-        timerHint: "اختار اسم الدرس، وحدد هتسـمع فيديو 🎬 ولا هتـذاكر 📖، والتايمر هيحسبلك الوقت ويقسمهولك!",
+        bpAirlineTitle: "✈️ COZY MED AIRLINES • تذكرة صعود للتركيز",
+        bpOriginCity: "مكتب المذاكرة",
+        bpDestCity: "هدف الإنجاز",
+        bpLblDep: "الإقلاع",
+        bpLblDur: "مدة الرحلة",
+        bpLblArr: "الوصول",
+        bpLblGate: "البوابة",
+        timerTitle: "🎫 شباك حجز تذكرة الدرس والوقت",
+        timerHint: "اختار اسم الدرس، وحدد هتسـمع فيديو 🎬 ولا هتـذاكر 📖، واحجز تذكرة الوقت المناسب ليك!",
         lblPickLesson: "1️⃣ اختار اسم الدرس (من الجدول أو اكتب اسم مخصص)",
         customLessonOpt: "✍️ اكتب اسم درس مخصص...",
         customLessonPh: "اكتب اسم الدرس هنا...",
-        lblPickMode: "2️⃣ هتعمل إيه في الجلسة دي؟",
+        lblPickMode: "2️⃣ نوع الرحلة (سماع فيديو ولا مذاكرة؟)",
         modeVideo: "🎬 سماع فيديو",
         modeStudy: "📖 مذاكرة وتسميع",
         modeMcq: "✍️ حل أسئلة MCQ",
-        vidCalcHeading: "🎬 حاسبة وقت الفيديو الذكية:",
+        vidCalcHeading: "🎬 حاسبة تذكرة الفيديو الذكية:",
         lblRawVid: "مدة الفيديو الأصلي (دقيقة):",
         lblSpeed: "السرعة:",
         lblPauseBuf: "أضف +3 دقايق توقيف وتسميع كل 12 دقيقة (عشان متسرحش)",
-        studyCalcHeading: "📖 حدد وقت المذاكرة المطلوب:",
-        mcqCalcHeading: "✍️ حدد وقت حل الأسئلة:",
+        studyCalcHeading: "🎫 اختار تذكرة الوقت المطلوب:",
+        mcqCalcHeading: "🎫 اختار تذكرة وقت حل الأسئلة:",
+        slot20Title: "⚡ رحلة سريعة",
+        slot20Sub: "لوب نشط سريع",
+        slot30Title: "☕ رحلة متوسطة",
+        slot30Sub: "قراءة + تسميع",
+        slot45Title: "✈️ رحلة كاملة",
+        slot45Sub: "بلوك مذاكرة كامل",
+        slot60Title: "🚀 رحلة طويلة",
+        slot60Sub: "درس دسم + حل",
         lblCustomMins: "أو اكتب عدد الدقايق:",
         lblMinUnit: "دقيقة",
-        start: "▶ ابدأ الجلسة",
-        running: "⏳ شغال في الخلفية...",
+        issueTicketBtn: "🎫 احجز التذكرة واطبع البوردينج باس ✈️",
+        start: "🛫 ابدأ الرحلة (Takeoff)",
         pause: "⏸ إيقاف مؤقت",
-        doneSession: "✅ خلصت الجلسة",
+        doneSession: "🛬 وصلت بالسلامة (تم)",
         reset: "↺ إعادة",
-        sessionLogTitle: "📊 سجل جلسات الفيديو والمذاكرة",
+        sessionLogTitle: "📊 سجل رحلات الفيديو والمذاكرة",
         ibsRotTitle: "🦴 IBS 15-Min Nightly Rotation (جوه Block G)",
         ibsRotDesc: "كل ليلة 15 دقيقة لموضوع واحد بالترتيب، ولما يخلصوا عيد من الأول:",
         resetRot: "↺ تصفير الدورة",
@@ -1335,21 +1871,23 @@
         thuCheckTitle: "📊 تقييم كل خميس (قاعدة الـ 70%)",
         thuCheckDesc: "كل خميس احسب نسبة الإنجاز في الأسبوع. لو أقل من 70%، بنعيد ترتيب الأولويات ونأجل المواضيع اللي مش ★ والـ T3 الاختيارية.",
         errListTitle: "📓 كشكول أخطائي",
-        modalEdit: "✏️ تعديل البلوك",
-        modalAdd: "➕ إضافة بلوك جديد",
-        mLblTitle: "عنوان الدرس / التاسك",
-        mLblMod: "الموديول",
+        modalEdit: "✏️ تعديل الدرس والوقت",
+        modalAdd: "➕ إضافة درس وتحديد وقته",
+        mLblTitle: "✍️ اسم الدرس (بيتكتب لوحده — عدّله لو عايز)",
+        mLblSubj: "2️⃣ المادة",
+        mLblCont: "3️⃣ المحتوى (اختار واحد أو أكتر)",
+        mFull: "كامل",
+        mLblMod: "1️⃣ الموديول",
         mLblBlock: "البلوك / التوقيت",
+        mLblActType: "4️⃣ هتعمل إيه في الدرس ده؟ (سماع فيديو ولا مذاكرة؟)",
+        mLblRawVid: "مدة الفيديو الأصلي (دقيقة):",
+        mLblSpeed: "السرعة:",
+        mLblPauseBuf: "+3 دقايق توقيف وتسميع كل 12 دقيقة",
+        mLblDuration: "5️⃣ الوقت المفروض تذاكره / تسمعه (بالدقايق)",
+        mLblMinUnit: "دقيقة",
         mLblNote: "ملاحظة شخصية (أرقام صفحات / تحشيشة)",
         mCancel: "إلغاء",
-        mSave: "حفظ",
-        ftHeading: "⏱️ تسجيل وقت الجلسة",
-        ftDesc: "خلصت الدرس ونسيت تفتح التايمر؟ اختار النوع والمدة وهيتسجل كأنك كنت مشغّله بالظبط:",
-        ftLblMode: "نوع الجلسة",
-        ftLblMins: "المدة اللي خدتها (بالدقايق)",
-        ftCancelBtn: "إلغاء",
-        ftSkipTimeBtn: "✔️ بدون وقت",
-        ftConfirmBtn: "✅ خلصتها وسجّل الوقت"
+        mSave: "حفظ التعديل"
       },
       en: {
         title: "☕ Cozy Med Study Hub",
@@ -1360,7 +1898,7 @@
         exportBtn: "💾 Backup JSON",
         importBtn: "📂 Restore",
         tabSchedule: "📅 Schedule & Tracker",
-        tabRhythm: "⏱️ Lesson Timer & Rhythm",
+        tabRhythm: "✈️ Flight Ticket Timer & Rhythm",
         tabMarks: "🎯 170 Marks Split",
         tabRules: "🧠 Study Loop & Rules",
         tabErrors: "📓 Error Log & 70% Check",
@@ -1369,35 +1907,52 @@
         viewAll: "🗓️ Full 32-Day Grid",
         searchPh: "Search topic or page...",
         addTask: "+ Add Task",
-        startLessonTip: "Start timer for this lesson",
+        startLessonTip: "Book flight ticket for this lesson",
+        moveUpTip: "Move Up",
+        moveDownTip: "Move Down",
         postponeTip: "Move to tomorrow",
-        editTip: "Edit",
+        editTip: "Edit lesson & time",
         delTip: "Delete",
         statTotal: "Overall Plan Progress",
         statBlocks: "blocks done",
-        timerTitle: "⏱️ Smart Lesson Session Timer",
-        timerHint: "Pick the lesson, choose Video 🎬 or Study 📖, and get a tailored time plan!",
+        bpAirlineTitle: "✈️ COZY MED AIRLINES • FOCUS BOARDING PASS",
+        bpOriginCity: "Study Desk",
+        bpDestCity: "Focus Goal",
+        bpLblDep: "DEPARTURE",
+        bpLblDur: "FLIGHT TIME",
+        bpLblArr: "ARRIVAL",
+        bpLblGate: "GATE / MODE",
+        timerTitle: "🎫 Flight Ticket Booking & Time Selector",
+        timerHint: "Pick the lesson, choose Video 🎬 or Study 📖, and issue your boarding pass!",
         lblPickLesson: "1️⃣ Choose Lesson Name (from plan or custom)",
         customLessonOpt: "✍️ Enter custom lesson name...",
         customLessonPh: "Type lesson name here...",
-        lblPickMode: "2️⃣ What are you doing this session?",
+        lblPickMode: "2️⃣ Flight Type (Watch Video or Study?)",
         modeVideo: "🎬 Watch Video",
         modeStudy: "📖 Active Study",
         modeMcq: "✍️ Solve MCQs",
-        vidCalcHeading: "🎬 Smart Video Time Calculator:",
+        vidCalcHeading: "🎬 Smart Video Ticket Calculator:",
         lblRawVid: "Original video length (min):",
         lblSpeed: "Speed:",
         lblPauseBuf: "Add +3 min pause & recall every 12 min (prevents zoning out)",
-        studyCalcHeading: "📖 Set Study Duration:",
-        mcqCalcHeading: "✍️ Set MCQ Practice Duration:",
+        studyCalcHeading: "🎫 Pick Study Ticket Duration:",
+        mcqCalcHeading: "🎫 Pick MCQ Practice Ticket:",
+        slot20Title: "⚡ Express Hop",
+        slot20Sub: "Quick active loop",
+        slot30Title: "☕ Standard Flight",
+        slot30Sub: "Read + recall",
+        slot45Title: "✈️ Full Block",
+        slot45Sub: "Complete study block",
+        slot60Title: "🚀 Long Haul",
+        slot60Sub: "Deep topic + MCQs",
         lblCustomMins: "Or enter minutes:",
         lblMinUnit: "min",
-        start: "▶ Start Session",
-        running: "⏳ Running in background...",
+        issueTicketBtn: "🎫 Issue Boarding Pass & Animate ✈️",
+        start: "🛫 Takeoff (Start)",
         pause: "⏸ Pause",
-        doneSession: "✅ Finish & Log",
+        doneSession: "🛬 Landed (Finish & Log)",
         reset: "↺ Reset",
-        sessionLogTitle: "📊 Video & Study Session Log",
+        sessionLogTitle: "📊 Flight Log (Video & Study Sessions)",
         ibsRotTitle: "🦴 IBS 15-Min Nightly Rotation (inside Block G)",
         ibsRotDesc: "One topic per night for 15 minutes, then start over:",
         resetRot: "↺ Reset Cycle",
@@ -1415,21 +1970,23 @@
         thuCheckTitle: "📊 Thursday 70% Rule Check",
         thuCheckDesc: "Every Thursday count completed blocks. Under 70%? Re-cut priorities by postponing non-★ and optional T3 topics first.",
         errListTitle: "📓 My Error Log",
-        modalEdit: "✏️ Edit Block",
-        modalAdd: "➕ Add New Block",
-        mLblTitle: "Lesson / Task Title",
-        mLblMod: "Module",
-        mLblBlock: "Block / Time",
+        modalEdit: "✏️ Edit Lesson & Time",
+        modalAdd: "➕ Add Lesson & Set Time",
+        mLblTitle: "✍️ Lesson title (auto-filled — edit if needed)",
+        mLblSubj: "2️⃣ Subject",
+        mLblCont: "3️⃣ Content (pick one or more)",
+        mFull: "Full",
+        mLblMod: "1️⃣ Module",
+        mLblBlock: "Block / Slot",
+        mLblActType: "4️⃣ Activity Type (Video or Study?)",
+        mLblRawVid: "Original video length (min):",
+        mLblSpeed: "Speed:",
+        mLblPauseBuf: "+3 min pause & recall every 12 min",
+        mLblDuration: "5️⃣ Target Study / Video Minutes",
+        mLblMinUnit: "min",
         mLblNote: "Personal Note (pages / mnemonic)",
         mCancel: "Cancel",
-        mSave: "Save",
-        ftHeading: "⏱️ Log Session Time",
-        ftDesc: "Finished this lesson and forgot to start the timer? Pick the type and duration to log it just like a timed session:",
-        ftLblMode: "Session Type",
-        ftLblMins: "Duration (minutes)",
-        ftCancelBtn: "Cancel",
-        ftSkipTimeBtn: "✔️ No Time",
-        ftConfirmBtn: "✅ Done & Log Time"
+        mSave: "Save"
       }
     };
 
@@ -1446,6 +2003,8 @@
       document.getElementById("themeToggle").textContent = state.theme === "latte" ? t("themeDark") : t("themeLight");
       document.getElementById("exportBtn").textContent = t("exportBtn");
       document.getElementById("importBtn").textContent = t("importBtn");
+      $("updBtn").textContent = isAr() ? "🔄 تحديث" : "🔄 Update";
+      $("verFooter").textContent = (isAr() ? "نسخة الموقع: " : "App version: ") + APP_VERSION + (isAr() ? " — لو عملت تحديث ومش باين، دوس 🔄 فوق" : " — press 🔄 above if an update isn't showing");
 
       document.getElementById("tabSchedule").textContent = t("tabSchedule");
       document.getElementById("tabRhythm").textContent = t("tabRhythm");
@@ -1457,6 +2016,14 @@
       document.getElementById("viewWeek").textContent = t("viewWeek");
       document.getElementById("viewAll").textContent = t("viewAll");
       document.getElementById("searchInput").placeholder = t("searchPh");
+
+      document.getElementById("bpAirlineTitle").textContent = t("bpAirlineTitle");
+      document.getElementById("bpOriginCity").textContent = t("bpOriginCity");
+      document.getElementById("bpDestCity").textContent = t("bpDestCity");
+      document.getElementById("bpLblDep").textContent = t("bpLblDep");
+      document.getElementById("bpLblDur").textContent = t("bpLblDur");
+      document.getElementById("bpLblArr").textContent = t("bpLblArr");
+      document.getElementById("bpLblGate").textContent = t("bpLblGate");
 
       document.getElementById("timerTitle").textContent = t("timerTitle");
       document.getElementById("timerHint").textContent = t("timerHint");
@@ -1471,10 +2038,21 @@
       document.getElementById("lblRawVid").textContent = t("lblRawVid");
       document.getElementById("lblSpeed").textContent = t("lblSpeed");
       document.getElementById("lblPauseBuf").textContent = t("lblPauseBuf");
+
+      document.getElementById("slot20Title").textContent = t("slot20Title");
+      document.getElementById("slot20Sub").textContent = t("slot20Sub");
+      document.getElementById("slot30Title").textContent = t("slot30Title");
+      document.getElementById("slot30Sub").textContent = t("slot30Sub");
+      document.getElementById("slot45Title").textContent = t("slot45Title");
+      document.getElementById("slot45Sub").textContent = t("slot45Sub");
+      document.getElementById("slot60Title").textContent = t("slot60Title");
+      document.getElementById("slot60Sub").textContent = t("slot60Sub");
+
       document.getElementById("lblCustomMins").textContent = t("lblCustomMins");
       document.getElementById("lblMinUnit").textContent = t("lblMinUnit");
+      document.getElementById("issueTicketBtn").textContent = t("issueTicketBtn");
 
-      document.getElementById("startTimerBtn").textContent = timerInterval ? t("running") : t("start");
+      document.getElementById("startTimerBtn").textContent = t("start");
       document.getElementById("pauseTimerBtn").textContent = t("pause");
       document.getElementById("doneSessionBtn").textContent = t("doneSession");
       document.getElementById("resetTimerBtn").textContent = t("reset");
@@ -1503,21 +2081,18 @@
       document.getElementById("mLblTitle").textContent = t("mLblTitle");
       document.getElementById("mLblMod").textContent = t("mLblMod");
       document.getElementById("mLblBlock").textContent = t("mLblBlock");
+      document.getElementById("mLblActType").textContent = t("mLblActType");
+      document.getElementById("mModeVideo").textContent = t("modeVideo");
+      document.getElementById("mModeStudy").textContent = t("modeStudy");
+      document.getElementById("mModeMcq").textContent = t("modeMcq");
+      document.getElementById("mLblRawVid").textContent = t("mLblRawVid");
+      document.getElementById("mLblSpeed").textContent = t("mLblSpeed");
+      document.getElementById("mLblPauseBuf").textContent = t("mLblPauseBuf");
+      document.getElementById("mLblDuration").textContent = t("mLblDuration");
+      document.getElementById("mLblMinUnit").textContent = t("mLblMinUnit");
       document.getElementById("mLblNote").textContent = t("mLblNote");
       document.getElementById("mCancel").textContent = t("mCancel");
       document.getElementById("mSave").textContent = t("mSave");
-
-      document.getElementById("ftHeading").textContent = t("ftHeading");
-      document.getElementById("ftDesc").textContent = t("ftDesc");
-      document.getElementById("ftLblMode").textContent = t("ftLblMode");
-      document.getElementById("ftModeVideo").textContent = t("modeVideo");
-      document.getElementById("ftModeStudy").textContent = t("modeStudy");
-      document.getElementById("ftModeMcq").textContent = t("modeMcq");
-      document.getElementById("ftLblMins").textContent = t("ftLblMins");
-      document.getElementById("ftMinUnit").textContent = t("lblMinUnit");
-      document.getElementById("ftCancelBtn").textContent = t("ftCancelBtn");
-      document.getElementById("ftSkipTimeBtn").textContent = t("ftSkipTimeBtn");
-      document.getElementById("ftConfirmBtn").textContent = t("ftConfirmBtn");
 
       populateLessonDropdown();
       renderStats();
@@ -1545,6 +2120,9 @@
     function switchTab(tabName) {
       document.querySelectorAll(".nav-tab").forEach(b => b.classList.toggle("active", b.dataset.tab === tabName));
       document.querySelectorAll(".section").forEach(s => s.classList.toggle("active", s.id === "sec-" + tabName));
+      if (tabName === "rhythm") {
+        updateBoardingPassTimes();
+      }
     }
 
     function renderStats() {
@@ -1591,6 +2169,15 @@
         `;
       });
 
+      const day0 = new Date(); day0.setHours(0, 0, 0, 0);
+      let todayMin = 0, totalMin = 0;
+      state.sessionLogs.forEach(l => { totalMin += l.minutes || 0; if ((l.ts || l.id || 0) >= day0.getTime()) todayMin += l.minutes || 0; });
+      html += `
+        <div class="stat-card">
+          <div class="stat-label">${isAr() ? "⏱️ وقت المذاكرة النهاردة" : "⏱️ Study time today"}</div>
+          <div class="stat-value">${fmtH(todayMin)}</div>
+          <div style="font-size:0.78rem;color:var(--text-muted)">${isAr() ? "الإجمالي" : "Total"}: ${fmtH(totalMin)}</div>
+        </div>`;
       document.getElementById("statsGrid").innerHTML = html;
     }
 
@@ -1601,11 +2188,24 @@
       renderSchedule();
     }
 
+    function getTaskActivityBadge(tk) {
+      const mins = tk.durationMins || (tk.mod === "Test" ? 35 : 45);
+      const act = tk.activityType || (tk.mod === "Test" ? "mcq" : "study");
+      if (act === "video") {
+        const spdTxt = tk.videoSpeed ? ` ${tk.videoSpeed}x` : "";
+        return `<span class="act-badge act-video">🎬 ${state.lang === "ar" ? "فيديو" : "Video"}${spdTxt} • ${mins}m</span>`;
+      } else if (act === "mcq") {
+        return `<span class="act-badge act-mcq">✍️ MCQ • ${mins}m</span>`;
+      } else {
+        return `<span class="act-badge act-study">📖 ${state.lang === "ar" ? "مذاكرة" : "Study"} • ${mins}m</span>`;
+      }
+    }
+
     function renderSchedule() {
       const subWrap = document.getElementById("subSelectorWrap");
       if (state.view === "today") {
         let opts = state.plan.map(d => `<option value="${d.id}" ${d.id === state.selectedDayId ? "selected" : ""}>${state.lang === "ar" ? d.dateAr : d.dateEn}</option>`).join("");
-        subWrap.innerHTML = `<select onchange="state.selectedDayId=this.value;saveState();renderSchedule()">${opts}</select>`;
+        subWrap.innerHTML = `<select onchange="state.selectedDayId=this.value;saveState();renderSchedule()">${opts}</select><button type="button" class="small" onclick="goToday()">📍 ${isAr() ? "النهاردة" : "Today"}</button>`;
       } else if (state.view === "week") {
         let btns = [1, 2, 3, 4, 5].map(w => `
           <button type="button" class="pill ${state.selectedWeek === w ? "active" : ""}" onclick="state.selectedWeek=${w};saveState();renderSchedule()">
@@ -1631,6 +2231,7 @@
       container.className = state.view === "today" ? "days-grid single-focus" : "days-grid";
 
       container.innerHTML = daysToShow.map(day => {
+        const totalInDay = day.tasks.length;
         const filteredTasks = day.tasks.map((tk, idx) => ({ ...tk, origIdx: idx })).filter(tk => {
           const matchMod = modFilter === "ALL" || tk.mod === modFilter;
           const textBlob = (tk.title + " " + (tk.noteAr || "") + " " + (tk.noteEn || "") + " " + tk.block).toLowerCase();
@@ -1645,26 +2246,33 @@
 
         const tasksHtml = filteredTasks.map(tk => {
           const note = state.lang === "ar" ? (tk.noteAr || tk.noteEn || "") : (tk.noteEn || tk.noteAr || "");
-          const timeBadge = tk.loggedMinutes
-            ? `<span class="logged-time-tag">⏱️ ${tk.loggedMinutes}${state.lang === "ar" ? " د" : "m"}</span>`
-            : "";
+          const isFlashing = lastMovedHighlight && lastMovedHighlight.dayId === day.id && lastMovedHighlight.idx === tk.origIdx;
+          const isFirst = tk.origIdx === 0;
+          const isLast = tk.origIdx === totalInDay - 1;
+
           return `
-            <div class="task-item ${tk.done ? "done" : ""}">
+            <div class="task-item ${tk.done ? "done" : ""} ${isFlashing ? "task-moved-flash" : ""}">
               <input type="checkbox" class="task-check" ${tk.done ? "checked" : ""} onchange="toggleTask('${day.id}', ${tk.origIdx})" />
               <div class="task-body">
                 <div class="task-top">
                   <span class="mod-tag mod-${tk.mod}">${tk.mod}</span>
-                  <span class="block-tag">${tk.block}</span>
-                  ${timeBadge}
+                  <span class="block-tag">${escapeHtml(tk.block)}</span>
+                  ${getTaskActivityBadge(tk)}
                 </div>
                 <div class="task-title">${escapeHtml(tk.title)}</div>
                 ${note ? `<div class="task-note">${escapeHtml(note)}</div>` : ""}
               </div>
               <div class="task-actions">
-                <button type="button" class="icon-btn play-btn" title="${t("startLessonTip")}" onclick="launchLessonSession('${day.id}', ${tk.origIdx})">▶️</button>
-                <button type="button" class="icon-btn" title="${t("postponeTip")}" onclick="postponeTask('${day.id}', ${tk.origIdx})">⏭️</button>
-                <button type="button" class="icon-btn" title="${t("editTip")}" onclick="openEditModal('${day.id}', ${tk.origIdx})">✏️</button>
-                <button type="button" class="icon-btn" title="${t("delTip")}" onclick="deleteTask('${day.id}', ${tk.origIdx})">🗑️</button>
+                <div class="action-row">
+                  <button type="button" class="icon-btn" title="${t("moveUpTip")}" ${isFirst ? "disabled" : ""} onclick="moveTask('${day.id}', ${tk.origIdx}, -1)">⬆️</button>
+                  <button type="button" class="icon-btn" title="${t("moveDownTip")}" ${isLast ? "disabled" : ""} onclick="moveTask('${day.id}', ${tk.origIdx}, 1)">⬇️</button>
+                  <button type="button" class="icon-btn play-btn" title="${t("startLessonTip")}" onclick="launchLessonSession('${day.id}', ${tk.origIdx})">✈️</button>
+                </div>
+                <div class="action-row">
+                  <button type="button" class="icon-btn" title="${t("postponeTip")}" onclick="postponeTask('${day.id}', ${tk.origIdx})">⏭️</button>
+                  <button type="button" class="icon-btn" title="${t("editTip")}" onclick="openEditModal('${day.id}', ${tk.origIdx})">✏️</button>
+                  <button type="button" class="icon-btn" title="${t("delTip")}" onclick="deleteTask('${day.id}', ${tk.origIdx})">🗑️</button>
+                </div>
               </div>
             </div>
           `;
@@ -1688,619 +2296,63 @@
       }).join("");
     }
 
-    let forgotTimerMode = "study";
+    function moveTask(dayId, idx, dir) {
+      const day = state.plan.find(d => d.id === dayId);
+      if (!day) return;
+      const targetIdx = idx + dir;
+      if (targetIdx < 0 || targetIdx >= day.tasks.length) return;
+
+      const temp = day.tasks[idx];
+      day.tasks[idx] = day.tasks[targetIdx];
+      day.tasks[targetIdx] = temp;
+
+      lastMovedHighlight = { dayId, idx: targetIdx };
+      saveState();
+      populateLessonDropdown();
+      renderSchedule();
+
+      setTimeout(() => {
+        if (lastMovedHighlight && lastMovedHighlight.dayId === dayId && lastMovedHighlight.idx === targetIdx) {
+          lastMovedHighlight = null;
+          renderSchedule();
+        }
+      }, 650);
+    }
 
     function toggleTask(dayId, idx) {
       const day = state.plan.find(d => d.id === dayId);
-      if (!day || !day.tasks[idx]) return;
-      const tk = day.tasks[idx];
-
-      if (!tk.done) {
-        const taskKey = `${dayId}|${idx}`;
-        const alreadyLogged = tk.loggedMinutes > 0 || state.sessionLogs.some(s => s.taskKey === taskKey);
-        if (tk.mod === "Outing" || alreadyLogged) {
-          tk.done = true;
-          saveState();
-          renderStats();
-          renderSchedule();
-        } else {
-          // Re-render checkbox unchecked until user confirms in modal
-          renderSchedule();
-          openForgotTimerModal(dayId, idx);
-        }
-      } else {
-        tk.done = false;
-        delete tk.loggedMinutes;
-        delete tk.loggedMode;
-        const taskKey = `${dayId}|${idx}`;
-        state.sessionLogs = state.sessionLogs.filter(s => s.taskKey !== taskKey);
-        saveState();
-        renderStats();
-        renderSchedule();
-        renderSessionLogs();
-        populateLessonDropdown();
-      }
-    }
-
-    function openForgotTimerModal(dayId, idx) {
-      const day = state.plan.find(d => d.id === dayId);
-      if (!day || !day.tasks[idx]) return;
-      const tk = day.tasks[idx];
-
-      document.getElementById("ftDayId").value = dayId;
-      document.getElementById("ftTaskIdx").value = idx;
-      document.getElementById("ftLessonBadge").innerHTML = `<span class="mod-tag mod-${tk.mod}">${tk.mod}</span> <span class="block-tag">${tk.block}</span>`;
-      document.getElementById("ftLessonTitle").textContent = tk.title;
-
-      if (tk.mod === "Test" || tk.title.toLowerCase().includes("mcq")) {
-        setForgotTimerMode("mcq");
-        document.getElementById("ftMinutesInput").value = 35;
-      } else if (tk.mod === "Review") {
-        setForgotTimerMode("study");
-        document.getElementById("ftMinutesInput").value = 20;
-      } else {
-        setForgotTimerMode("study");
-        document.getElementById("ftMinutesInput").value = 45;
-      }
-
-      document.getElementById("forgotTimerModal").classList.add("open");
-    }
-
-    function setForgotTimerMode(mode) {
-      forgotTimerMode = mode;
-      document.getElementById("ftModeVideo").className = "mode-btn" + (mode === "video" ? " active-video" : "");
-      document.getElementById("ftModeStudy").className = "mode-btn" + (mode === "study" ? " active-study" : "");
-      document.getElementById("ftModeMcq").className = "mode-btn" + (mode === "mcq" ? " active-mcq" : "");
-    }
-
-    function closeForgotTimerModal() {
-      document.getElementById("forgotTimerModal").classList.remove("open");
-    }
-
-    function markDoneWithoutTime() {
-      const dayId = document.getElementById("ftDayId").value;
-      const idx = parseInt(document.getElementById("ftTaskIdx").value, 10);
-      const day = state.plan.find(d => d.id === dayId);
       if (day && day.tasks[idx]) {
-        day.tasks[idx].done = true;
-        saveState();
-        renderStats();
-        renderSchedule();
-        populateLessonDropdown();
+        const tk = day.tasks[idx];
+        tk.done = !tk.done;
+        if (tk.done) autoLogTask(tk, dayId);
+        else state.sessionLogs = state.sessionLogs.filter(l => !(l.auto && l.taskUid === tk.uid));
+        saveState(); renderStats(); renderSchedule(); populateLessonDropdown(); renderSessionLogs();
       }
-      closeForgotTimerModal();
     }
-
-    function confirmForgotTimerLog() {
-      const dayId = document.getElementById("ftDayId").value;
-      const idx = parseInt(document.getElementById("ftTaskIdx").value, 10);
-      const mins = Math.max(1, Math.min(360, parseInt(document.getElementById("ftMinutesInput").value || "45", 10)));
-      const day = state.plan.find(d => d.id === dayId);
-      if (!day || !day.tasks[idx]) {
-        closeForgotTimerModal();
-        return;
-      }
-
-      const tk = day.tasks[idx];
-      tk.done = true;
-      tk.loggedMinutes = mins;
-      tk.loggedMode = forgotTimerMode;
-
+    // Ticking a block as done without the stopwatch = logs it as a finished flight with the planned time
+    function autoLogTask(tk, dayId) {
+      if (!tk.uid || tk.mod === "Outing" || state.sessionLogs.some(l => l.taskUid === tk.uid)) return;
+      const found = findTaskByUid(currentSession.taskUid);
       state.sessionLogs.unshift({
-        id: Date.now(),
-        title: tk.title,
-        mod: tk.mod,
-        mode: forgotTimerMode,
-        minutes: mins,
-        taskKey: `${dayId}|${idx}`
-      });
-
-      saveState();
-      closeForgotTimerModal();
-      renderStats();
-      renderSchedule();
-      renderSessionLogs();
-      populateLessonDropdown();
-    }
-
-    function deleteTask(dayId, idx) {
-      const day = state.plan.find(d => d.id === dayId);
-      if (day) {
-        day.tasks.splice(idx, 1);
-        saveState();
-        populateLessonDropdown();
-        renderStats();
-        renderSchedule();
-      }
-    }
-
-    function postponeTask(dayId, idx) {
-      const dIndex = state.plan.findIndex(d => d.id === dayId);
-      if (dIndex >= 0 && dIndex < state.plan.length - 1) {
-        const [moved] = state.plan[dIndex].tasks.splice(idx, 1);
-        moved.noteAr = (moved.noteAr ? moved.noteAr + " • " : "") + "مرحّل من اليوم السابق";
-        moved.noteEn = (moved.noteEn ? moved.noteEn + " • " : "") + "Carried over";
-        state.plan[dIndex + 1].tasks.unshift(moved);
-        saveState();
-        populateLessonDropdown();
-        renderStats();
-        renderSchedule();
-      }
-    }
-
-    function openEditModal(dayId, idx) {
-      const day = state.plan.find(d => d.id === dayId);
-      const tk = day.tasks[idx];
-      document.getElementById("modalHeading").textContent = t("modalEdit");
-      document.getElementById("modalDayId").value = dayId;
-      document.getElementById("modalTaskIdx").value = idx;
-      document.getElementById("mTitle").value = tk.title;
-      document.getElementById("mMod").value = tk.mod;
-      document.getElementById("mBlock").value = tk.block;
-      document.getElementById("mNote").value = state.lang === "ar" ? (tk.noteAr || "") : (tk.noteEn || "");
-      document.getElementById("taskModal").classList.add("open");
-    }
-
-    function openAddModal(dayId) {
-      document.getElementById("modalHeading").textContent = t("modalAdd");
-      document.getElementById("modalDayId").value = dayId;
-      document.getElementById("modalTaskIdx").value = "-1";
-      document.getElementById("mTitle").value = "";
-      document.getElementById("mMod").value = "IHI";
-      document.getElementById("mBlock").value = "Block H";
-      document.getElementById("mNote").value = "";
-      document.getElementById("taskModal").classList.add("open");
-    }
-
-    function closeModal() {
-      document.getElementById("taskModal").classList.remove("open");
-    }
-
-    function saveTaskModal() {
-      const dayId = document.getElementById("modalDayId").value;
-      const idx = parseInt(document.getElementById("modalTaskIdx").value, 10);
-      const title = document.getElementById("mTitle").value.trim();
-      if (!title) return;
-      const mod = document.getElementById("mMod").value;
-      const block = document.getElementById("mBlock").value.trim() || "Block";
-      const note = document.getElementById("mNote").value.trim();
-
-      const day = state.plan.find(d => d.id === dayId);
-      if (!day) return;
-
-      if (idx >= 0) {
-        day.tasks[idx].title = title;
-        day.tasks[idx].mod = mod;
-        day.tasks[idx].block = block;
-        if (state.lang === "ar") day.tasks[idx].noteAr = note;
-        else day.tasks[idx].noteEn = note;
-      } else {
-        day.tasks.push({ mod, block, title, noteAr: note, noteEn: note, done: false });
-      }
-      saveState();
-      closeModal();
-      populateLessonDropdown();
-      renderStats();
-      renderSchedule();
-    }
-
-    /* ==========================================
-       SMART LESSON SESSION & VIDEO CALCULATOR
-       (WITH REAL-TIME SCREEN-LOCK PERSISTENCE)
-       ========================================== */
-    let currentSession = {
-      lessonKey: "2026-11-16|1",
-      lessonTitle: "Leucocytes 4–12 (1/2)",
-      lessonMod: "IHI",
-      mode: "video", // 'video' | 'study' | 'mcq'
-      videoSpeed: 1.25,
-      targetMinutes: 41
-    };
-
-    let timerSeconds = 41 * 60;
-    let totalSessionSeconds = 41 * 60;
-    let timerEndTimestamp = null;
-    let timerInterval = null;
-    let wakeLockSentinel = null;
-
-    async function requestScreenWakeLock() {
-      try {
-        if ("wakeLock" in navigator && !wakeLockSentinel) {
-          wakeLockSentinel = await navigator.wakeLock.request("screen");
-          wakeLockSentinel.addEventListener("release", () => {
-            wakeLockSentinel = null;
-          });
-        }
-      } catch (e) {}
-    }
-
-    function releaseScreenWakeLock() {
-      try {
-        if (wakeLockSentinel) {
-          wakeLockSentinel.release();
-          wakeLockSentinel = null;
-        }
-      } catch (e) {}
-    }
-
-    function persistActiveTimerState(isRunning) {
-      state.activeTimer = {
-        isRunning: !!isRunning,
-        endTimestamp: isRunning ? timerEndTimestamp : null,
-        totalSessionSeconds: totalSessionSeconds,
-        remainingSeconds: timerSeconds,
-        lessonKey: currentSession.lessonKey,
-        lessonTitle: currentSession.lessonTitle,
-        lessonMod: currentSession.lessonMod,
-        mode: currentSession.mode,
-        videoSpeed: currentSession.videoSpeed,
-        targetMinutes: currentSession.targetMinutes
-      };
-      saveState();
-    }
-
-    function updateTimerUI() {
-      const disp = document.getElementById("timerDisplay");
-      const bar = document.getElementById("timerProgressBar");
-      const startBtn = document.getElementById("startTimerBtn");
-      if (disp) disp.textContent = formatTime(timerSeconds);
-      if (bar) {
-        const pct = totalSessionSeconds > 0
-          ? Math.min(100, Math.round(((totalSessionSeconds - timerSeconds) / totalSessionSeconds) * 100))
-          : 0;
-        bar.style.width = pct + "%";
-      }
-      if (startBtn) {
-        startBtn.textContent = timerInterval ? t("running") : t("start");
-      }
-    }
-
-    function syncTimerFromClock() {
-      if (!timerEndTimestamp) return;
-      const remaining = Math.max(0, Math.ceil((timerEndTimestamp - Date.now()) / 1000));
-      timerSeconds = remaining;
-      updateTimerUI();
-
-      if (remaining <= 0) {
-        pauseTimer();
-        playCozyChime();
-        completeCurrentSession(true);
-      }
-    }
-
-    function restoreTimerFromState() {
-      if (!state.activeTimer) return false;
-      const saved = state.activeTimer;
-      currentSession.lessonKey = saved.lessonKey || currentSession.lessonKey;
-      currentSession.lessonTitle = saved.lessonTitle || currentSession.lessonTitle;
-      currentSession.lessonMod = saved.lessonMod || currentSession.lessonMod;
-      currentSession.mode = saved.mode || currentSession.mode;
-      currentSession.videoSpeed = saved.videoSpeed || currentSession.videoSpeed;
-      currentSession.targetMinutes = saved.targetMinutes || currentSession.targetMinutes;
-      totalSessionSeconds = saved.totalSessionSeconds || (currentSession.targetMinutes * 60);
-
-      const vBtn = document.getElementById("modeVideoBtn");
-      const sBtn = document.getElementById("modeStudyBtn");
-      const mBtn = document.getElementById("modeMcqBtn");
-      if (vBtn && sBtn && mBtn) {
-        vBtn.className = "mode-btn" + (currentSession.mode === "video" ? " active-video" : "");
-        sBtn.className = "mode-btn" + (currentSession.mode === "study" ? " active-study" : "");
-        mBtn.className = "mode-btn" + (currentSession.mode === "mcq" ? " active-mcq" : "");
-      }
-      const vidBox = document.getElementById("videoCalcBox");
-      const studyBox = document.getElementById("studyCalcBox");
-      if (vidBox && studyBox) {
-        vidBox.style.display = currentSession.mode === "video" ? "flex" : "none";
-        studyBox.style.display = currentSession.mode === "video" ? "none" : "flex";
-      }
-
-      if (saved.isRunning && saved.endTimestamp) {
-        const remaining = Math.max(0, Math.ceil((saved.endTimestamp - Date.now()) / 1000));
-        timerSeconds = remaining;
-        timerEndTimestamp = saved.endTimestamp;
-        updateSessionBanner();
-        updateTimerUI();
-        if (remaining > 0) {
-          startTimer(true);
-        } else {
-          timerEndTimestamp = null;
-          persistActiveTimerState(false);
-          playCozyChime();
-          completeCurrentSession(true);
-        }
-        return true;
-      } else if (typeof saved.remainingSeconds === "number") {
-        timerSeconds = saved.remainingSeconds;
-        timerEndTimestamp = null;
-        updateSessionBanner();
-        updateTimerUI();
-        return true;
-      }
-      return false;
-    }
-
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible" && timerEndTimestamp) {
-        syncTimerFromClock();
-        requestScreenWakeLock();
-      }
-    });
-    window.addEventListener("pageshow", () => {
-      if (timerEndTimestamp) syncTimerFromClock();
-    });
-    window.addEventListener("focus", () => {
-      if (timerEndTimestamp) syncTimerFromClock();
-    });
-
-    function populateLessonDropdown() {
-      const sel = document.getElementById("lessonSelect");
-      if (!sel) return;
-      const prevVal = currentSession.lessonKey || "2026-11-16|1";
-
-      let html = `<option value="CUSTOM">${t("customLessonOpt")}</option>`;
-      state.plan.forEach(day => {
-        const dayLabel = state.lang === "ar" ? day.dateAr : day.dateEn;
-        html += `<optgroup label="W${day.week} • ${escapeHtml(dayLabel)}">`;
-        day.tasks.forEach((tk, idx) => {
-          const val = `${day.id}|${idx}`;
-          const doneMark = tk.done ? "✓ " : "";
-          html += `<option value="${val}" ${val === prevVal ? "selected" : ""}>${doneMark}[${tk.mod}] ${escapeHtml(tk.title)}</option>`;
-        });
-        html += `</optgroup>`;
-      });
-      sel.innerHTML = html;
-
-      if (prevVal === "CUSTOM") {
-        sel.value = "CUSTOM";
-        document.getElementById("customLessonInput").style.display = "block";
-      } else {
-        document.getElementById("customLessonInput").style.display = "none";
-      }
-    }
-
-    function handleLessonSelectChange() {
-      const sel = document.getElementById("lessonSelect");
-      const customInp = document.getElementById("customLessonInput");
-      if (sel.value === "CUSTOM") {
-        customInp.style.display = "block";
-        customInp.focus();
-        currentSession.lessonKey = "CUSTOM";
-        currentSession.lessonMod = "Study";
-        currentSession.lessonTitle = customInp.value.trim() || (state.lang === "ar" ? "درس مخصص" : "Custom Lesson");
-      } else {
-        customInp.style.display = "none";
-        currentSession.lessonKey = sel.value;
-        const [dId, tIdxStr] = sel.value.split("|");
-        const day = state.plan.find(d => d.id === dId);
-        const tk = day ? day.tasks[parseInt(tIdxStr, 10)] : null;
-        if (tk) {
-          currentSession.lessonTitle = tk.title;
-          currentSession.lessonMod = tk.mod;
-          if (tk.mod === "Test" || tk.title.toLowerCase().includes("mcq")) {
-            setSessionMode("mcq");
-          }
-        }
-      }
-      updateSessionBanner();
-    }
-
-    function updateActiveSessionFromInputs() {
-      const customInp = document.getElementById("customLessonInput");
-      if (document.getElementById("lessonSelect").value === "CUSTOM") {
-        currentSession.lessonTitle = customInp.value.trim() || (state.lang === "ar" ? "درس مخصص" : "Custom Lesson");
-        updateSessionBanner();
-      }
-    }
-
-    function launchLessonSession(dayId, idx) {
-      const day = state.plan.find(d => d.id === dayId);
-      if (!day || !day.tasks[idx]) return;
-      const tk = day.tasks[idx];
-      currentSession.lessonKey = `${dayId}|${idx}`;
-      currentSession.lessonTitle = tk.title;
-      currentSession.lessonMod = tk.mod;
-
-      populateLessonDropdown();
-      document.getElementById("lessonSelect").value = currentSession.lessonKey;
-      document.getElementById("customLessonInput").style.display = "none";
-
-      if (tk.mod === "Test" || tk.title.toLowerCase().includes("mcq")) {
-        setSessionMode("mcq");
-      } else if (tk.mod === "Review") {
-        setSessionMode("study");
-        setCustomDuration(20);
-      } else {
-        setSessionMode("video");
-      }
-
-      switchTab("rhythm");
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    function setSessionMode(mode) {
-      currentSession.mode = mode;
-      const vBtn = document.getElementById("modeVideoBtn");
-      const sBtn = document.getElementById("modeStudyBtn");
-      const mBtn = document.getElementById("modeMcqBtn");
-
-      vBtn.className = "mode-btn" + (mode === "video" ? " active-video" : "");
-      sBtn.className = "mode-btn" + (mode === "study" ? " active-study" : "");
-      mBtn.className = "mode-btn" + (mode === "mcq" ? " active-mcq" : "");
-
-      const vidBox = document.getElementById("videoCalcBox");
-      const studyBox = document.getElementById("studyCalcBox");
-
-      if (mode === "video") {
-        vidBox.style.display = "flex";
-        studyBox.style.display = "none";
-        calculateVideoTime();
-      } else {
-        vidBox.style.display = "none";
-        studyBox.style.display = "flex";
-        document.getElementById("studyCalcHeading").textContent = mode === "mcq" ? t("mcqCalcHeading") : t("studyCalcHeading");
-        const defaultMins = mode === "mcq" ? 35 : 45;
-        document.getElementById("manualDurationInput").value = defaultMins;
-        setCustomDuration(defaultMins);
-      }
-    }
-
-    function setVideoSpeed(spd) {
-      currentSession.videoSpeed = spd;
-      document.querySelectorAll("[data-spd]").forEach(b => {
-        b.classList.toggle("active", parseFloat(b.dataset.spd) === spd);
-      });
-      calculateVideoTime();
-    }
-
-    function calculateVideoTime() {
-      const rawMins = Math.max(1, parseInt(document.getElementById("rawVideoMins").value || "40", 10));
-      const spd = currentSession.videoSpeed || 1.25;
-      const addBuffer = document.getElementById("includePauseBuffer").checked;
-
-      const watchMins = Math.ceil(rawMins / spd);
-      const checkpoints = Math.max(1, Math.floor(watchMins / 12));
-      const pauseMins = addBuffer ? checkpoints * 3 : 0;
-      const totalMins = watchMins + pauseMins;
-
-      const resEl = document.getElementById("videoCalcResult");
-      if (state.lang === "ar") {
-        resEl.innerHTML = `⏱️ الوقت المطلوب: <strong>${totalMins} دقيقة</strong> (${watchMins} د مشاهدة على ${spd}x${addBuffer ? ` + ${pauseMins} د توقيف وتسميع كل 12 د` : ""})`;
-      } else {
-        resEl.innerHTML = `⏱️ Target Time: <strong>${totalMins} min</strong> (${watchMins}m watch @ ${spd}x${addBuffer ? ` + ${pauseMins}m recall pauses` : ""})`;
-      }
-
-      applyTimerDuration(totalMins);
-    }
-
-    function setCustomDuration(mins) {
-      const validMins = Math.max(1, Math.min(240, parseInt(mins || 45, 10)));
-      const inp = document.getElementById("manualDurationInput");
-      if (inp) inp.value = validMins;
-
-      const planEl = document.getElementById("studyPlanBreakdown");
-      if (currentSession.mode === "mcq") {
-        const estQs = Math.round(validMins * 0.85);
-        planEl.innerHTML = state.lang === "ar"
-          ? `✍️ الخطة: حل حوالي <strong>${estQs} سؤال MCQ</strong> بوقت (دقيقة للسؤال) + تسجيل أي غلطة في الـ Error Log.`
-          : `✍️ Plan: Solve ~<strong>${estQs} MCQs</strong> timed (1 min/Q) + log mistakes in Error Log.`;
-      } else {
-        const readM = Math.max(5, Math.round(validMins * 0.67));
-        const recallM = Math.max(3, Math.round(validMins * 0.22));
-        const mcqM = Math.max(2, validMins - readM - recallM);
-        planEl.innerHTML = state.lang === "ar"
-          ? `📖 تقسيمة الـ ${validMins} دقيقة: <strong>${readM} د</strong> قراءة وتلخيص Skeleton + <strong>${recallM} د</strong> تسميع ورقة بيضا + <strong>${mcqM} د</strong> حل 5 MCQ.`
-          : `📖 ${validMins}-min split: <strong>${readM}m</strong> read & skeleton + <strong>${recallM}m</strong> blank-page recall + <strong>${mcqM}m</strong> 5 quick MCQs.`;
-      }
-
-      applyTimerDuration(validMins);
-    }
-
-    function applyTimerDuration(mins) {
-      pauseTimer();
-      currentSession.targetMinutes = mins;
-      timerSeconds = mins * 60;
-      totalSessionSeconds = timerSeconds;
-      timerEndTimestamp = null;
-      persistActiveTimerState(false);
-      updateTimerUI();
-      updateSessionBanner();
-    }
-
-    function updateSessionBanner() {
-      const badgeEl = document.getElementById("activeSessionBadge");
-      const titleEl = document.getElementById("activeLessonDisplay");
-      const subEl = document.getElementById("activeTargetText");
-      if (!badgeEl) return;
-
-      let modeTag = "";
-      if (currentSession.mode === "video") {
-        modeTag = `<span class="mod-tag mod-IBF">${t("modeVideo")} (${currentSession.videoSpeed}x)</span>`;
-      } else if (currentSession.mode === "mcq") {
-        modeTag = `<span class="mod-tag mod-IMB">${t("modeMcq")}</span>`;
-      } else {
-        modeTag = `<span class="mod-tag mod-IBS">${t("modeStudy")}</span>`;
-      }
-
-      badgeEl.innerHTML = `<span class="mod-tag mod-${currentSession.lessonMod}">${currentSession.lessonMod}</span> ${modeTag}`;
-      titleEl.textContent = currentSession.lessonTitle;
-      subEl.textContent = state.lang === "ar"
-        ? `المدة المحددة للجلسة: ${currentSession.targetMinutes} دقيقة`
-        : `Target session duration: ${currentSession.targetMinutes} minutes`;
-    }
-
-    function formatTime(sec) {
-      const m = String(Math.floor(sec / 60)).padStart(2, "0");
-      const s = String(sec % 60).padStart(2, "0");
-      return `${m}:${s}`;
-    }
-
-    function startTimer(resumingFromStorage) {
-      if (timerInterval) return;
-      if (timerSeconds <= 0) {
-        timerSeconds = (currentSession.targetMinutes || 45) * 60;
-        totalSessionSeconds = timerSeconds;
-      }
-      if (!resumingFromStorage || !timerEndTimestamp) {
-        timerEndTimestamp = Date.now() + timerSeconds * 1000;
-      }
-      persistActiveTimerState(true);
-      requestScreenWakeLock();
-      timerInterval = setInterval(syncTimerFromClock, 250);
-      updateTimerUI();
-    }
-
-    function pauseTimer() {
-      if (timerEndTimestamp) {
-        const remaining = Math.max(0, Math.ceil((timerEndTimestamp - Date.now()) / 1000));
-        timerSeconds = remaining;
-      }
-      clearInterval(timerInterval);
-      timerInterval = null;
-      timerEndTimestamp = null;
-      releaseScreenWakeLock();
-      persistActiveTimerState(false);
-      updateTimerUI();
-    }
-
-    function resetTimer() {
-      applyTimerDuration(currentSession.targetMinutes || 45);
-    }
-
-    function completeCurrentSession(autoTriggered) {
-      pauseTimer();
-      const elapsedSecs = totalSessionSeconds - timerSeconds;
-      const loggedMins = elapsedSecs >= 60 ? Math.round(elapsedSecs / 60) : currentSession.targetMinutes;
-
-      state.sessionLogs.unshift({
-        id: Date.now(),
+        id: Date.now(), ts: Date.now(),
         title: currentSession.lessonTitle,
         mod: currentSession.lessonMod,
         mode: currentSession.mode,
         minutes: loggedMins,
-        taskKey: currentSession.lessonKey !== "CUSTOM" ? currentSession.lessonKey : undefined
+        taskUid: found ? found.tk.uid : ""
       });
 
-      // If linked to a schedule task, ask to mark it done
-      if (currentSession.lessonKey && currentSession.lessonKey !== "CUSTOM") {
-        const [dId, tIdxStr] = currentSession.lessonKey.split("|");
-        const day = state.plan.find(d => d.id === dId);
-        const idx = parseInt(tIdxStr, 10);
-        if (day && day.tasks[idx] && !day.tasks[idx].done) {
-          const askMsg = state.lang === "ar"
-            ? `عاش! اتسجلت الجلسة (${loggedMins} دقيقة). تعلّم صح (✓) على درس "${currentSession.lessonTitle}" في الجدول؟`
-            : `Nice! Logged ${loggedMins} min. Mark "${currentSession.lessonTitle}" as done (✓) in schedule?`;
-          if (confirm(askMsg)) {
-            day.tasks[idx].done = true;
-            day.tasks[idx].loggedMinutes = loggedMins;
-            day.tasks[idx].loggedMode = currentSession.mode;
-            renderStats();
-            renderSchedule();
-            populateLessonDropdown();
-          }
-        }
+      if (found && !found.tk.done) {
+        const askMsg = state.lang === "ar"
+          ? `حمدلله على السلامة! اتسجلت الرحلة (${loggedMins} دقيقة). تعلّم صح (✓) على درس "${currentSession.lessonTitle}" في الجدول؟`
+          : `Landed safely! Logged ${loggedMins} min. Mark "${currentSession.lessonTitle}" as done (✓) in schedule?`;
+        if (confirm(askMsg)) found.tk.done = true;
       }
 
       saveState();
+      renderStats();
+      renderSchedule();
+      populateLessonDropdown();
       renderSessionLogs();
       resetTimer();
     }
@@ -2321,7 +2373,7 @@
         : `<span class="mod-tag mod-IBF">🎬 Video: ${vidMins} min</span> <span class="mod-tag mod-IBS">📖 Study & MCQ: ${studyMins} min</span>`;
 
       if (state.sessionLogs.length === 0) {
-        listEl.innerHTML = `<div style="font-size:0.84rem;color:var(--text-muted);">${state.lang === "ar" ? "لسه مفيش جلسات متسجلة — ابدأ أول درس فوق!" : "No logged sessions yet — start your first session above!"}</div>`;
+        listEl.innerHTML = `<div style="font-size:0.84rem;color:var(--text-muted);">${state.lang === "ar" ? "لسه مفيش رحلات متسجلة — احجز أول تذكرة فوق!" : "No flights logged yet — issue your first boarding pass above!"}</div>`;
         return;
       }
 
@@ -2335,7 +2387,8 @@
               <div class="task-top">
                 <span class="mod-tag mod-${s.mod}">${s.mod}</span>
                 ${modeBadge}
-                <span class="block-tag">${s.minutes} ${t("lblMinUnit")}</span>
+                <span class="block-tag">✈️ ${s.minutes} ${t("lblMinUnit")}</span>
+                ${s.auto ? `<span class="block-tag">${isAr() ? "✓ تلقائي" : "✓ auto"}</span>` : ""}${s.ts ? `<span class="block-tag">${fmtTs(s.ts)}</span>` : ""}
               </div>
               <div class="task-title">${escapeHtml(s.title)}</div>
             </div>
@@ -2345,7 +2398,7 @@
       }).join("");
     }
 
-    function playCozyChime() {
+    function webChime() {
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if (!AudioCtx) return;
@@ -2628,10 +2681,9 @@
       reader.onload = ev => {
         try {
           const parsed = JSON.parse(ev.target.result);
-          state = { ...state, ...parsed };
+          state = { ...state, ...parsed, session: currentSession, timer: null }; finishLoad();
           saveState();
           applyLangAndTheme();
-          restoreTimerFromState();
         } catch (err) {
           alert("Invalid backup file");
         }
@@ -2642,15 +2694,13 @@
     function resetAll() {
       const msg = state.lang === "ar" ? "متأكد إنك عايز ترجع الجدول لحالته الأصلية؟" : "Reset all progress back to the original plan?";
       if (confirm(msg)) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-        timerEndTimestamp = null;
-        releaseScreenWakeLock();
+        resetting = true; clearTimeout(saveTimer);
         try {
+          localStorage.removeItem("cozy_med_study_hub_v4");
           localStorage.removeItem("cozy_med_study_hub_v3");
           localStorage.removeItem("cozy_med_study_hub_v2");
         } catch (e) {}
-        location.reload();
+        idb.clear().then(() => location.reload(), () => location.reload());
       }
     }
 
@@ -2658,10 +2708,26 @@
       return String(str).replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
     }
 
-    loadState();
+    const hadLocal = loadState();
     applyLangAndTheme();
-    if (!restoreTimerFromState()) {
-      calculateVideoTime();
+    calculateVideoTime();
+    restoreSession();
+
+    try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
+    saveState(); showSaved();
+    setInterval(saveState, 3000);
+    window.addEventListener("pagehide", flushSave);
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) flushSave();
+      else { tickTimer(); checkForUpdate(false); }
+    });
+    setTimeout(() => checkForUpdate(false), 1500);
+    setInterval(() => checkForUpdate(false), 180000);
+    if (!hadLocal) {
+      idb.get().then(v => {
+        if (!v) return;
+        try { state = { ...state, ...JSON.parse(v) }; finishLoad(); applyLangAndTheme(); restoreSession(); } catch (e) {}
+      });
     }
   </script>
 </body>
