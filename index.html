@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="latte">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Cozy Med Study Hub | أولى طب 6 أكتوبر</title>
+  <style>
+    :root {
+      --bg: #FAF6F0;
+      --bg-soft: #F3ECE1;
+      --card: #FFFDF9;
+      --card-hover: #FDF9F2;
+      --text: #3E2F23;
+      --text-muted: #7C6A58;
+      --border: #E6DCCD;
+      --accent: #8B5E34;
+      --accent-soft: #EFE3D3;
+      --accent-text: #FFFDF9;
+      --shadow: 0 6px 20px rgba(62, 47, 35, 0.06);
+      --radius: 18px;
+
+      --ihi-bg: #FDECEA; --ihi-fg: #9E2A2B; --ihi-bd: #F5C6C2;
+      --ibs-bg: #E8F3EC; --ibs-fg: #2D6A4F; --ibs-bd: #C3DFCE;
+      --ibf-bg: #FEF5E4; --ibf-fg: #9C6615; --ibf-bd: #F3DCAC;
+      --imb-bg: #EFEAFA; --imb-fg: #5A3E96; --imb-bd: #D5C8F2;
+      --rev-bg: #EBF1F6; --rev-fg: #355C7D; --rev-bd: #C5D6E5;
+      --tst-bg: #FCE8F3; --tst-fg: #8E245D; --tst-bd: #F2C1DC;
+      --out-bg: #E6F6F4; --out-fg: #1F6E68; --out-bd: #BCE3DF;
+    }
+
+    [data-theme="midnight"] {
+      --bg: #1A1614;
+      --bg-soft: #231E1B;
+      --card: #2B2420;
+      --card-hover: #332B26;
+      --text: #F2E9DF;
+      --text-muted: #B09F8E;
+      --border: #3E342E;
+      --accent: #D4A373;
+      --accent-soft: #3B3028;
+      --accent-text: #1A1614;
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+
+      --ihi-bg: #3D2322; --ihi-fg: #F5A3A1; --ihi-bd: #5C3332;
+      --ibs-bg: #1F3529; --ibs-fg: #95D5B2; --ibs-bd: #2E523F;
+      --ibf-bg: #3B301D; --ibf-fg: #F4C97A; --ibf-bd: #59482A;
+      --imb-bg: #2D2540; --imb-fg: #C8B6FF; --imb-bd: #453863;
+      --rev-bg: #212E3B; --rev-fg: #9EC5E5; --rev-bd: #314659;
+      --tst-bg: #3B2130; --tst-fg: #F2A2CE; --tst-bd: #593148;
+      --out-bg: #1D3533; --out-fg: #8CE0D8; --out-bd: #2B524E;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Geeza Pro", "Tahoma", "Noto Sans Arabic", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      transition: background 0.2s ease, color 0.2s ease;
+      padding-bottom: 64px;
+    }
+
+    .js-warning {
+      background: #9E2A2B;
+      color: #FFF;
+      padding: 14px 18px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.92rem;
+      border-bottom: 2px solid #F5C6C2;
+    }
+
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 18px 16px;
+    }
+
+    header.topbar {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 22px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .brand h1 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      touch-action: manipulation;
+      user-select: none;
+      border: 1px solid var(--border);
+      background: var(--bg-soft);
+      color: var(--text);
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.08s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    button:hover {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+    }
+    button:active { transform: scale(0.98); }
+    button.primary {
+      background: var(--accent);
+      color: var(--accent-text);
+      border-color: var(--accent);
+    }
+    button.primary:hover { opacity: 0.92; }
+    button.small { padding: 6px 11px; font-size: 0.8rem; border-radius: 9px; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+    }
+    .stat-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
+    .stat-value { font-size: 1.3rem; font-weight: 800; margin: 4px 0; }
+    .progress-bar {
+      height: 8px;
+      background: var(--bg-soft);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 99px;
+      transition: width 0.25s ease;
+    }
+
+    .nav-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+      background: var(--card);
+      padding: 8px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+    }
+    .nav-tab {
+      flex: 1 1 auto;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+    .nav-tab.active {
+      background: var(--accent);
+      color: var(--accent-text);
+    }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 12px 16px;
+      border-radius: 15px;
+      margin-bottom: 16px;
+    }
+    .view-pills, .filter-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    .pill {
+      padding: 7px 13px;
+      border-radius: 99px;
+      font-size: 0.82rem;
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+    }
+    .pill.active {
+      background: var(--accent);
+      color: var(--accent-text);
+      border-color: var(--accent);
+    }
+    input[type="text"], select, textarea {
+      font-family: inherit;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 8px 12px;
+      font-size: 0.88rem;
+      outline: none;
+    }
+    input[type="text"]:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .days-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+      gap: 16px;
+    }
+    .days-grid.single-focus {
+      grid-template-columns: 1fr;
+      max-width: 780px;
+      margin: 0 auto;
+    }
+    .day-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .day-card.today-highlight { border: 2px solid var(--accent); }
+    .day-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px dashed var(--border);
+      padding-bottom: 10px;
+      gap: 8px;
+    }
+    .day-title { font-weight: 800; font-size: 1.05rem; }
+    .day-sub { font-size: 0.8rem; color: var(--text-muted); }
+    .day-badge {
+      font-size: 0.74rem;
+      padding: 3px 9px;
+      border-radius: 99px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .task-list { display: flex; flex-direction: column; gap: 8px; }
+    .task-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .task-item.done { opacity: 0.62; }
+    .task-item.done .task-title { text-decoration: line-through; }
+    .task-check {
+      width: 22px;
+      height: 22px;
+      margin-top: 2px;
+      accent-color: var(--accent);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .task-body { flex: 1; min-width: 0; }
+    .task-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 3px;
+    }
+    .mod-tag {
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 7px;
+      border: 1px solid transparent;
+    }
+    .mod-IHI { background: var(--ihi-bg); color: var(--ihi-fg); border-color: var(--ihi-bd); }
+    .mod-IBS { background: var(--ibs-bg); color: var(--ibs-fg); border-color: var(--ibs-bd); }
+    .mod-IBF { background: var(--ibf-bg); color: var(--ibf-fg); border-color: var(--ibf-bd); }
+    .mod-IMB { background: var(--imb-bg); color: var(--imb-fg); border-color: var(--imb-bd); }
+    .mod-Review { background: var(--rev-bg); color: var(--rev-fg); border-color: var(--rev-bd); }
+    .mod-Test { background: var(--tst-bg); color: var(--tst-fg); border-color: var(--tst-bd); }
+    .mod-Outing { background: var(--out-bg); color: var(--out-fg); border-color: var(--out-bd); }
+
+    .block-tag {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      background: var(--bg-soft);
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+    .task-title { font-size: 0.92rem; font-weight: 700; word-break: break-word; }
+    .task-note { font-size: 0.8rem; color: var(--text-muted); margin-top: 3px; }
+    .task-actions { display: flex; gap: 4px; flex-shrink: 0; }
+    .icon-btn { padding: 5px 8px; font-size: 0.82rem; border-radius: 8px; background: var(--card); }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+    .card h2 {
+      font-size: 1.12rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 16px;
+    }
+    .timer-display {
+      font-size: 3.2rem;
+      font-weight: 800;
+      text-align: center;
+      letter-spacing: 2px;
+      margin: 12px 0;
+      font-variant-numeric: tabular-nums;
+    }
+    .timeline-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border-bottom: 1px dashed var(--border);
+      font-size: 0.88rem;
+      gap: 10px;
+    }
+    .timeline-row:last-child { border-bottom: none; }
+    .time-chip { font-weight: 700; color: var(--accent); white-space: nowrap; }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 15, 12, 0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 999;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      width: 100%;
+      max-width: 460px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group label { font-size: 0.82rem; font-weight: 700; color: var(--text-muted); }
+
+    table.marks-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    table.marks-table th, table.marks-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      text-align: start;
+    }
+    table.marks-table th { background: var(--bg-soft); font-weight: 800; }
+
+    .chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .rot-chip {
+      padding: 7px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      cursor: pointer;
+      font-size: 0.84rem;
+      font-weight: 600;
+    }
+    .rot-chip.checked {
+      background: var(--ibs-bg);
+      color: var(--ibs-fg);
+      border-color: var(--ibs-bd);
+      text-decoration: line-through;
+    }
+
+    @media (max-width: 600px) {
+      .days-grid { grid-template-columns: 1fr; }
+      .timer-display { font-size: 2.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div id="jsGuardBanner" class="js-warning">
+    ⚠️ تنبيه: البرنامج اللي فتحت بيه الملف ده (زي معاينة الملفات أو Drive) موقف تشغيل الـ JavaScript! افتح الملف في Safari أو Chrome أو من رابط GitHub Pages عشان كل الزراير تشتغل.
+  </div>
+
+  <div class="container">
+    <header class="topbar">
+      <div class="brand">
+        <h1 id="appTitle">☕ Cozy Med Study Hub</h1>
+        <p id="appSubtitle">أولى طب بشري — جامعة 6 أكتوبر | خطة الفاينل (16 Nov → 17 Dec 2026)</p>
+      </div>
+      <div class="controls">
+        <button type="button" id="langToggle" onclick="toggleLang()">🌐 English</button>
+        <button type="button" id="themeToggle" onclick="toggleTheme()">🌙 Midnight Desk</button>
+        <button type="button" onclick="exportData()" id="exportBtn">💾 حفظ نسخة</button>
+        <button type="button" onclick="document.getElementById('importInput').click()" id="importBtn">📂 استرجاع</button>
+        <input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)" />
+        <button type="button" onclick="resetAll()" id="resetBtn" title="Reset">↺</button>
+      </div>
+    </header>
+
+    <section class="stats-grid" id="statsGrid"></section>
+
+    <nav class="nav-tabs">
+      <button type="button" class="nav-tab active" data-tab="schedule" onclick="switchTab('schedule')" id="tabSchedule">📅 الجدول والمتابعة</button>
+      <button type="button" class="nav-tab" data-tab="rhythm" onclick="switchTab('rhythm')" id="tabRhythm">⏱️ التايمر ونظام اليوم</button>
+      <button type="button" class="nav-tab" data-tab="marks" onclick="switchTab('marks')" id="tabMarks">🎯 توزيع الـ 170 درجة</button>
+      <button type="button" class="nav-tab" data-tab="rules" onclick="switchTab('rules')" id="tabRules">🧠 طريقة المذاكرة والقواعد</button>
+      <button type="button" class="nav-tab" data-tab="errors" onclick="switchTab('errors')" id="tabErrors">📓 كشكول الأخطاء (Error Log)</button>
+    </nav>
+
+    <section id="sec-schedule" class="section active">
+      <div class="toolbar">
+        <div class="view-pills">
+          <button type="button" class="pill active" data-view="today" onclick="setView('today')" id="viewToday">🎯 تركيز اليوم</button>
+          <button type="button" class="pill" data-view="week" onclick="setView('week')" id="viewWeek">📆 أسبوع بأسبوع</button>
+          <button type="button" class="pill" data-view="all" onclick="setView('all')" id="viewAll">🗓️ الجدول كامل</button>
+        </div>
+
+        <div class="view-pills" id="subSelectorWrap"></div>
+
+        <div class="filter-pills">
+          <select id="moduleFilter" onchange="renderSchedule()">
+            <option value="ALL">All Modules / كل المواد</option>
+            <option value="IHI">IHI (50)</option>
+            <option value="IBS">IBS (50)</option>
+            <option value="IBF">IBF (40)</option>
+            <option value="IMB">IMB (30)</option>
+            <option value="Review">Review / Block G</option>
+            <option value="Test">Weekly Tests</option>
+          </select>
+          <input type="text" id="searchInput" placeholder="ابحث عن درس أو صفحة..." oninput="renderSchedule()" />
+        </div>
+      </div>
+
+      <div id="scheduleContainer" class="days-grid"></div>
+    </section>
+
+    <section id="sec-rhythm" class="section">
+      <div class="two-col">
+        <div class="card">
+          <h2 id="timerTitle">⏱️ تايمر التركيز الهادي (Focus Timer)</h2>
+          <p style="font-size:0.85rem;color:var(--text-muted)" id="timerHint">45 دقيقة تركيز + 10 دقايق راحة (من غير موبايل) • جرس هادي لما يخلص</p>
+          <div class="timer-display" id="timerDisplay">45:00</div>
+          <div class="view-pills" style="justify-content:center;margin-bottom:12px;">
+            <button type="button" class="small" onclick="setTimerMinutes(45)">45m Block</button>
+            <button type="button" class="small" onclick="setTimerMinutes(20)">20m Loop</button>
+            <button type="button" class="small" onclick="setTimerMinutes(10)">10m Rest</button>
+            <button type="button" class="small" onclick="setTimerMinutes(35)">35m Test (30 MCQ)</button>
+            <button type="button" class="small" onclick="setTimerMinutes(60)">60m YouTube</button>
+          </div>
+          <div style="display:flex;justify-content:center;gap:10px;">
+            <button type="button" class="primary" onclick="startTimer()" id="startTimerBtn">▶ ابدأ</button>
+            <button type="button" onclick="pauseTimer()" id="pauseTimerBtn">⏸ وقف مؤقت</button>
+            <button type="button" onclick="resetTimer()" id="resetTimerBtn">↺ إعادة</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 id="ibsRotTitle">🦴 IBS 15-Min Nightly Rotation (جوه Block G)</h2>
+          <p style="font-size:0.84rem;color:var(--text-muted);margin-bottom:8px;" id="ibsRotDesc">كل ليلة 15 دقيقة لموضوع واحد بالترتيب، ولما يخلصوا عيد من الأول:</p>
+          <div class="chip-list" id="ibsRotList"></div>
+          <button type="button" class="small" style="margin-top:12px;" onclick="resetIbsRotation()" id="resetRotBtn">↺ تصفير الدورة</button>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <h2 id="secDaysTitle">🏫 أيام السكاشن (الأحد – الأربعاء ≈ 5.5–6 ساعات تركيز)</h2>
+          <div id="secDaysTimeline"></div>
+        </div>
+        <div class="card">
+          <h2 id="fullDaysTitle">🏡 أيام المذاكرة الكاملة (الجمعة والسبت)</h2>
+          <div id="fullDaysTimeline"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sec-marks" class="section">
+      <div class="card">
+        <h2 id="marksMainTitle">🎯 توزيع الدرجات المتوقع (المجموع = 170 درجة)</h2>
+        <p style="font-size:0.86rem;color:var(--text-muted);margin-bottom:14px;" id="marksSubDesc">
+          الخطة متقسمة على حسب وزن كل موديول: IHI (36 بلوك) • IBF (21 بلوك) • IMB (19 بلوك) • Embryology (14 بلوك). علامة ★ معناها وزن عالي أو سؤال SAQ متوقع.
+        </p>
+        <div style="overflow-x:auto;">
+          <table class="marks-table" id="marksTable"></table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 id="saqChecklistTitle">✍️ قائمة أسئلة الـ SAQ المتوقعة (اكتب الإجابة النموذجية من الذاكرة في 5 دقايق)</h2>
+        <div id="saqList" class="task-list"></div>
+      </div>
+    </section>
+
+    <section id="sec-rules" class="section">
+      <div class="two-col" id="rulesContainer"></div>
+    </section>
+
+    <section id="sec-errors" class="section">
+      <div class="two-col">
+        <div class="card">
+          <h2 id="errFormTitle">➕ سجل غلطة جديدة (Error Log)</h2>
+          <p style="font-size:0.83rem;color:var(--text-muted);margin-bottom:10px;" id="errFormHint">
+            أي سؤال تغلط فيه: اكتب "غلطت ليه؟" + القاعدة الصح في سطر واحد، وراجعه كل خميس.
+          </p>
+          <div class="form-group">
+            <label id="lblErrMod">المادة / Module</label>
+            <select id="errMod">
+              <option value="IHI">IHI (Blood & Immunity)</option>
+              <option value="IBS">IBS (Embryology & Anatomy/Histo)</option>
+              <option value="IBF">IBF (Biochem & ANS)</option>
+              <option value="IMB">IMB (DNA & Genetics)</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-top:8px;">
+            <label id="lblErrTopic">السؤال أو الدرس</label>
+            <input type="text" id="errTopic" placeholder="مثال: Coombs test / Oncogenes p82" />
+          </div>
+          <div class="form-group" style="margin-top:8px;">
+            <label id="lblErrWhy">غلطت ليه + القاعدة في سطر</label>
+            <textarea id="errWhy" rows="2" placeholder="اتلخبطت بين Direct و Indirect — الـ Direct بيكشف على RBCs المريض مباشرة"></textarea>
+          </div>
+          <button type="button" class="primary" style="margin-top:10px;" onclick="addErrorLog()" id="addErrBtn">+ إضافة للكشكول</button>
+        </div>
+
+        <div class="card">
+          <h2 id="thuCheckTitle">📊 تقييم كل خميس (قاعدة الـ 70%)</h2>
+          <p style="font-size:0.86rem;color:var(--text-muted);margin-bottom:10px;" id="thuCheckDesc">
+            كل خميس احسب نسبة الإنجاز في الأسبوع. لو أقل من 70%، بنعيد ترتيب الأولويات ونأجل المواضيع اللي مش ★ والـ T3 الاختيارية.
+          </p>
+          <div id="weeklyHealthBox"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 id="errListTitle">📓 كشكول أخطائي</h2>
+        <div id="errorLogList" class="task-list"></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="taskModal">
+    <div class="modal">
+      <h3 id="modalHeading">✏️ تعديل البلوك</h3>
+      <input type="hidden" id="modalDayId" />
+      <input type="hidden" id="modalTaskIdx" />
+      <div class="form-group">
+        <label id="mLblTitle">عنوان الدرس / التاسك</label>
+        <input type="text" id="mTitle" />
+      </div>
+      <div class="two-col" style="grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="form-group">
+          <label id="mLblMod">الموديول</label>
+          <select id="mMod">
+            <option value="IHI">IHI</option>
+            <option value="IBS">IBS</option>
+            <option value="IBF">IBF</option>
+            <option value="IMB">IMB</option>
+            <option value="Review">Review</option>
+            <option value="Test">Test</option>
+            <option value="Outing">Outing</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label id="mLblBlock">البلوك / التوقيت</label>
+          <input type="text" id="mBlock" placeholder="Block B / 45m" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label id="mLblNote">ملاحظة شخصية (أرقام صفحات / تحشيشة)</label>
+        <input type="text" id="mNote" />
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px;">
+        <button type="button" onclick="closeModal()" id="mCancel">إلغاء</button>
+        <button type="button" class="primary" onclick="saveTaskModal()" id="mSave">حفظ التعديل</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Hide the JS-disabled warning immediately once JS runs
+    var guard = document.getElementById("jsGuardBanner");
+    if (guard) guard.style.display = "none";
+
+    const DEFAULT_PLAN = [
+      {
+        id: "2026-11-16", week: 1, dateEn: "Mon, 16 Nov", dateAr: "الإثنين ١٦ نوفمبر",
+        typeEn: "Day 1 — Kickoff", typeAr: "اليوم الأول — البداية",
+        tasks: [
+          { mod: "Review", block: "Setup 20'", title: "20' Setup: Folder per module + doctors' Qs + prayer app + thermos", noteAr: "فولدر لكل مادة + أسئلة الدكاترة + الترمس", noteEn: "Folder per module + doctors' Qs + thermos", done: false },
+          { mod: "IHI", block: "Block B", title: "Leucocytes 4–12 (1/2)", noteAr: "أول بلوك مذاكرة 45 دقيقة", noteEn: "First 45' study block", done: false },
+          { mod: "IHI", block: "Block C", title: "Leucocytes 4–12 (2/2) ★", noteAr: "موضوع مهم — ركز على التجميعة", noteEn: "High-weight topic ★", done: false },
+          { mod: "Review", block: "Block G", title: "Recall: blank page + 5 MCQ → sleep 12:30", noteAr: "ورقة بيضا من الذاكرة + 5 أسئلة ونوم 12:30", noteEn: "Blank page recall + 5 MCQs → sleep 12:30", done: false }
+        ]
+      },
+      {
+        id: "2026-11-17", week: 1, dateEn: "Tue, 17 Nov", dateAr: "الثلاثاء ١٧ نوفمبر",
+        typeEn: "Section Day", typeAr: "يوم سكاشن",
+        tasks: [
+          { mod: "IHI", block: "Uni 10:30", title: "Cases: IHI (Anemia) 10:30", noteAr: "كيس الأنيميا في الكلية", noteEn: "Anemia case at uni", done: false },
+          { mod: "IHI", block: "Block B", title: "Blood + Plasma proteins + RBC/Hb 39–43", noteAr: "فسيولوجي ص 39–43", noteEn: "Physiology pp. 39–43", done: false },
+          { mod: "IHI", block: "Block C", title: "Erythropoiesis 44–49 (1/2)", noteAr: "الجزء الأول", noteEn: "Part 1/2", done: false },
+          { mod: "IHI", block: "Block D", title: "Anemia + Polycythemia 50–57 (1/2)", noteAr: "الجزء الأول", noteEn: "Part 1/2", done: false },
+          { mod: "IHI", block: "Block A", title: "Anemia types table from the case (30') + MCQ", noteAr: "متابعة السكشن: جدول أنواع الأنيميا + حل MCQ", noteEn: "Section follow-up: Anemia table + MCQ", done: false },
+          { mod: "Review", block: "Block G", title: "Night Recall + +1d Skeleton + IBS Rotation", noteAr: "تسميع اليوم + مراجعة إمبارح + 15 د IBS", noteEn: "Today recall + yesterday skeleton + 15' IBS", done: false }
+        ]
+      },
+      {
+        id: "2026-11-18", week: 1, dateEn: "Wed, 18 Nov", dateAr: "الأربعاء ١٨ نوفمبر",
+        typeEn: "Section Day", typeAr: "يوم سكاشن",
+        tasks: [
+          { mod: "IHI", block: "Uni Lab", title: "Prac Immuno + Prac Histo (WBCs)", noteAr: "سكشن عملي إميونو + هيستو WBCs", noteEn: "Practical Immuno + Histo WBCs", done: false },
+          { mod: "IHI", block: "Block B", title: "Erythropoiesis 44–49 (2/2)", noteAr: "تكميلة Erythropoiesis", noteEn: "Finish Erythropoiesis", done: false },
+          { mod: "IHI", block: "Block C", title: "Anemia + Polycythemia 50–57 (2/2)", noteAr: "تكميلة Anemia", noteEn: "Finish Anemia & Polycythemia", done: false },
+          { mod: "IBS", block: "Block D", title: "Gametogenesis 74–84 (1/3)", noteAr: "أول جزء إمبريولوجي", noteEn: "Embryology part 1/3", done: false },
+          { mod: "IHI", block: "Block A", title: "WBC table + slide images (3 ID points)", noteAr: "جدول الـ WBCs + صور الشرايح", noteEn: "WBC table + slide images", done: false },
+          { mod: "Review", block: "Block G", title: "Night Recall + IBS Rotation", noteAr: "ورقة بيضا + 15 د IBS", noteEn: "Blank page + 15' IBS rotation", done: false }
+        ]
+      },
+      {
+        id: "2026-11-19", week: 1, dateEn: "Thu, 19 Nov", dateAr: "الخميس ١٩ نوفمبر",
+        typeEn: "Activities & Outing", typeAr: "أنشطة وخروجة الأسبوع",
+        tasks: [
+          { mod: "Review", block: "T1 Review", title: "Review P1–P3 + H1", noteAr: "مراجعة الأسبوع من السكيلتون", noteEn: "Weekly review from skeleton", done: false },
+          { mod: "Review", block: "T2 MCQ", title: "MCQ — week's 2 weakest topics", noteAr: "حل على أضعف موضوعين في الأسبوع", noteEn: "Practice week's 2 weakest topics", done: false },
+          { mod: "Review", block: "Buffer", title: "Buffer: catch up / extra MCQ + 70% check", noteAr: "لو متأخر في حاجة لمّها + احسب نسبة الـ 70%", noteEn: "Catch up + check 70% completion", done: false },
+          { mod: "Outing", block: "5:30 PM", title: "5:30 PM outing — no guilt!", noteAr: "اخرج وغير جو من غير تأنيب ضمير!", noteEn: "Change of scene, zero guilt!", done: false }
+        ]
+      },
+      {
+        id: "2026-11-20", week: 1, dateEn: "Fri, 20 Nov", dateAr: "الجمعة ٢٠ نوفمبر",
+        typeEn: "Full Study Day", typeAr: "يوم مذاكرة كامل",
+        tasks: [
+          { mod: "IHI", block: "Block 1", title: "Platelets + RBC 13–20", noteAr: "ص 13–20", noteEn: "Pages 13–20", done: false },
+          { mod: "IHI", block: "Block 2", title: "Hemostasis + abnormalities 58–62 (1/2)", noteAr: "الجزء الأول", noteEn: "Part 1/2", done: false },
+          { mod: "IHI", block: "Block 3", title: "Hemostasis + abnormalities 58–62 (2/2)", noteAr: "الجزء الثاني", noteEn: "Part 2/2", done: false },
+          { mod: "IBS", block: "Block 4", title: "Gametogenesis 74–84 (2/3)", noteAr: "الجزء الثاني إمبريو", noteEn: "Embryo part 2/3", done: false },
+          { mod: "Review", block: "Evening", title: "Error log review + 45' room clean + Block G", noteAr: "مراجعة الأخطاء + ترويق الأوضة 45 د بتايمر + Block G", noteEn: "Error log + 45' room clean + Block G", done: false }
+        ]
+      },
+      {
+        id: "2026-11-21", week: 1, dateEn: "Sat, 21 Nov", dateAr: "السبت ٢١ نوفمبر",
+        typeEn: "Study + Test #1", typeAr: "مذاكرة + امتحان #1",
+        tasks: [
+          { mod: "Review", block: "Block 1", title: "Buffer (Platelets+RBC catch-up / revision)", noteAr: "تأكيد ومراجعة", noteEn: "Catch-up / consolidation", done: false },
+          { mod: "IHI", block: "Block 2", title: "Clotting + Anti-clotting 63–69 (1/2)", noteAr: "ص 63–69 الجزء الأول", noteEn: "Pages 63–69 (1/2)", done: false },
+          { mod: "IBS", block: "Block 3", title: "Gametogenesis 74–84 (3/3)", noteAr: "تكميلة Gametogenesis", noteEn: "Finish Gametogenesis", done: false },
+          { mod: "Test", block: "Sat Eve", title: "TEST #1 — 30 MCQ IHI Physio + Histo (35 min)", noteAr: "امتحان بوقت 35 دقيقة + سجل كل غلطة في الـ Error Log", noteEn: "Timed 35 min + log mistakes in Error Log", done: false }
+        ]
+      },
+      {
+        id: "2026-11-22", week: 2, dateEn: "Sun, 22 Nov", dateAr: "الأحد ٢٢ نوفمبر",
+        typeEn: "Section Day", typeAr: "يوم سكاشن",
+        tasks: [
+          { mod: "IHI", block: "Uni Lab", title: "Prac Physio (Bleeding & clotting) + Sectra", noteAr: "عملي فسيولوجي + سيكترا", noteEn: "Physio lab + Sectra", done: false },
+          { mod: "IHI", block: "Block B", title: "Clotting + Anti-clotting 63–69 (2/2)", noteAr: "الجزء الثاني", noteEn: "Part 2/2", done: false },
+          { mod: "IHI", block: "Block C", title: "Blood groups + Transfusion 70–77 (1/2)", noteAr: "فصائل الدم الجزء الأول", noteEn: "Part 1/2", done: false },
+          { mod: "IHI", block: "Block D", title: "Blood groups + Transfusion 70–77 (2/2) ★", noteAr: "مهم جداً (MCQ + SAQ)", noteEn: "High yield ★", done: false },
+          { mod: "IHI", block: "Block A", title: "Bleeding & clotting (BT/CT) + eosinophil", noteAr: "متابعة السكشن", noteEn: "Section follow-up", done: false },
+          { mod: "Review", block: "Block G", title: "Night Recall + IBS Rotation", noteAr: "Block G الليلي", noteEn: "Nightly Block G", done: false }
+        ]
+      },
+      {
+        id: "2026-11-23", week: 2, dateEn: "Mon, 23 Nov", dateAr: "الإثنين ٢٣ نوفمبر",
+        typeEn: "Section Day", typeAr: "يوم سكاشن",
+        tasks: [
+          { mod: "IMB", block: "Uni Lab", title: "Prac IMB (Nucleus, cell cycle, karyotype) + ECE", noteAr: "عملي جيناتكس + ECE", noteEn: "IMB lab + ECE", done: false },
+          { mod: "IMB", block: "Block B", title: "Nucleus + Human chromosome 4–10", noteAr: "ص 4–10", noteEn: "Pages 4–10", done: false },
+          { mod: "IMB", block: "Block C", title: "Karyotype + Sex chromatin 20–21 ★", noteAr: "مهم ★", noteEn: "High yield ★", done: false },
+          { mod: "IMB", block: "Block D", title: "Cell cycle + Meiosis 11–19 (1/2)", noteAr: "الجزء الأول", noteEn: "Part 1/2", done: false },
+          { mod: "IMB", block: "Block A", title: "Cell cycle + karyotyping", noteAr: "متابعة السكشن", noteEn: "Section follow-up", done: false },
+          { mod: "Review", block: "Block G", title: "Night Recall + IBS Rotation", noteAr: "Block G الليلي", noteEn: "Nightly Block G", done: false }
+        ]
+      },
+      {
+        id: "2026-11-24", week: 2, dateEn: "Tue, 24 Nov", dateAr: "الثلاثاء ٢٤ نوفمبر",
+        typeEn: "Section Day", typeAr: "يوم سكاشن",
+        tasks: [
+          { mod: "IMB", block: "Uni", title: "Skill lab revision + Cases IMB (Down syndrome)", noteAr: "مراجعة سكيل لاب + كيس داون", noteEn: "Skill lab + Down syndrome case", done: false },
+          { mod: "IMB", block: "Block B", title: "Cell cycle + Meiosis 11–19 (2/2)", noteAr: "الجزء الثاني", noteEn: "Part 2/2", done: false },
+          { mod: "IMB", block: "Block C", title: "Chromosomal aberrations p22– (1/2)", noteAr: "الجزء الأول", noteEn: "Part 1/2", done: false },
+          { mod: "IMB", block: "Block D", title: "Chromosomal aberrations p22– (2/2)", noteAr: "الجزء الثاني (SAQ متوقع)", noteEn: "Part 2/2 (SAQ)", done: false },
+          { mod: "IMB", block: "Block A", title: "Down syndrome: karyotype + features", noteAr: "متابعة السكشن", noteEn: "Section follow-up", done: false },
+          { mod: "Review", block: "Block G", title: "Night Recall + IBS Rotation", noteAr: "Block G الليلي", noteEn: "Nightly Block G", done: false }
+        ]
+      },
+      {
+        id: "2026-11-25", week: 2, dateEn: "Wed, 25 Nov", dateAr: "الأربعاء ٢٥ نوفمبر",
+        typeEn: "Section Day", typeAr: "يوم سكاشن",
+        tasks: [
+          { mod: "IHI", block: "Uni Lab", title: "Prac Immuno (Coombs...) + Prac Histo (RBC, platelets)", noteAr: "عملي Coombs + هيستو RBCs", noteEn: "Immuno Coombs + Histo RBC/platelets", done: false },
+          { mod: "IMB", block: "Block B", title: "Nucleotides + DNA/RNA structure 32–46 (1/2) ★", noteAr: "مهم ★", noteEn: "High yield ★", done: false },
+          { mod: "IMB", block: "Block C", title: "Nucleotides + DNA/RNA structure 32–46 (2/2) ★", noteAr: "مهم ★", noteEn: "High yield ★", done: false },
+          { mod: "IBS", block: "Block D", title: "Ovarian follicles + cycles 85–92 (1/2) ★", noteAr: "إمبريو مهم ★", noteEn: "Embryo high yield ★", done: false },
+          { mod: "IHI", block: "Block A", title: "Coombs/agglutination + RBC & platelet slides", noteAr: "متابعة السكشن", noteEn: "Section follow-up", done: false },
+          { mod: "Review", block: "Block G", title: "Night Recall + IBS Rotation", noteAr: "Block G الليلي", noteEn: "Nightly Block G", done: false }
+        ]
+      },
+      {
+        id: "2026-11-26", week: 2, dateEn: "Thu, 26 Nov", dateAr: "الخميس ٢٦ نوفمبر",
+        typeEn: "Activities & Outing", typeAr: "أنشطة وخروجة الأسبوع",
+        tasks: [
+          { mod: "Review", block: "T1 Review", title: "Review M1–M4 + P4–P6", noteAr: "مراجعة الأسبوع", noteEn: "Weekly skeleton review", done: false },
+          { mod: "Review", block: "T2 MCQ", title: "MCQ — week's 2 weakest topics", noteAr: "حل على أضعف درسين + تقييم 70%", noteEn: "2 weakest topics + 70% check", done: false },
+          { mod: "Outing", block: "5:30 PM", title: "5:30 PM outing — no guilt!", noteAr: "خروجة الخميس", noteEn: "Weekly outing", done: false }
+        ]
+      },
+      {
+        id: "2026-11-27", week: 2, dateEn: "Fri, 27 Nov", dateAr: "الجمعة ٢٧ نوفمبر",
+        typeEn: "Full Study Day", typeAr: "يوم مذاكرة كامل",
+        tasks: [
+          { mod: "IMB", block: "Block 1", title: "Transcription + Regulation 58–67 (1/3)", noteAr: "الجزء 1/3", noteEn: "Part 1/3", done: false },
+          { mod: "IBS", block: "Block 2", title: "Ovarian follicles + cycles 85–92 (2/2) ★", noteAr: "تكميلة Ovarian cycles ★", noteEn: "Finish Ovarian cycles ★", done: false },
+          { mod: "IMB", block: "Block 3", title: "Replication + enzymes 47–55", noteAr: "جدول الإنزيمات مهم", noteEn: "Key enzymes table", done: false },
+          { mod: "IMB", block: "Block 4", title: "DNA repair 56–57 ★", noteAr: "ص 56–57 ★", noteEn: "Pages 56–57 ★", done: false },
+          { mod: "Review", block: "Evening", title: "Error log review + 45' room clean + Block G", noteAr: "ترويق الأوضة 45 د + Block G", noteEn: "45' room clean + Block G", done: false }
+        ]
+      },
+      {
+        id: "2026-11-28", week: 2, dateEn: "Sat, 28 Nov", dateAr: "السبت ٢٨ نوفمبر",
+        typeEn: "Study + Test #2", typeAr: "مذاكرة + امتحان #2",
+        tasks: [
+          { mod: "IMB", block: "Block 1", title: "Transcription + Regulation 58–67 (2/3)", noteAr: "الجزء 2/3", noteEn: "Part 2/3", done: false },
+          { mod: "IBS", block: "Block 2", title: "Implantation 97–103 (1/2)", noteAr: "الجزء 1/2", noteEn: "Part 1/2", done: false },
+          { mod: "IBS", block: "Block 3", title: "Implantation 97–103 (2/2)", noteAr: "الجزء 2/2 (SAQ 5 درجات)", noteEn: "Part 2/2 (5-mark SAQ)", done: false },
+          { mod: "IBS", block: "Block 4", title: "Fertilization 93–96 ★", noteAr: "مهم جداً ★", noteEn: "High yield ★", done: false },
+          { mod: "Test", block: "Sat Eve", title: "TEST #2 — 30 MCQ IMB + Embryology (35 min)", noteAr: "امتحان بوقت 35 دقيقة + Error Log", noteEn: "Timed 35 min + Error Log", done: false }
+        ]
+      },
+      {
+        id: "2026-11-29", week: 3, dateEn: "Sun, 29 Nov", dateAr: "الأحد ٢٩ نوفمبر",
+        typeEn: "Section Day", typeAr: "يوم سكاشن",
+        tasks: [
+          { mod: "IHI", block: "Uni Lab", title: "Prac Physio (Hemoglobin) + Sectra (all cells)", noteAr: "عملي Hb + سيكترا", noteEn: "Physio Hb lab + Sectra", done: false },
+          { mod: "IMB", block: "Block B", title: "Transcription + Regulation 58–67 (3/3)", noteAr: "تكميلة Transcription", noteEn: "Finish Transcription", done: false },
+          { mod: "IBF", block: "Block C", title: "Hemoglobin + Myoglobin 79–93", noteAr: "بايو ص 79–93", noteEn: "Biochem pp. 79–93", done: false },
+          { mod: "IBF", block: "Block D", title: "Lipid chemistry 1 (1/2) ★", noteAr: "بداية الـ Lipids (10 درجات!) ★", noteEn: "Lipids start (10 marks!) ★", done: false },
+          { mod: "IHI", block: "Block A", title: "Hemoglobin + all-cells slide", noteAr: "متابعة السكشن", noteEn: "Section follow-up", done: false },
+          { mod: "Review", block: "Block G", title: "Night Recall + IBS Rotation", noteAr: "Block G الليلي", noteEn: "Nightly Block G", done: false }
+        ]
+      },
+      {
+        id: "2026-11-30", week: 3, dateEn: "Mon, 30 Nov", dateAr: "الإثنين ٣٠ نوفمبر",
+        typeEn: "Section Day", typeAr: "يوم سكاشن",
+        tasks: [
+          { mod: "IMB", block: "Uni Lab", title: "Prac IMB (Transcription, translation) 1 section", noteAr: "سكشن IMB", noteEn: "IMB lab section", done: false },
+          { mod: "IMB", block: "Block B", title: "Translation 68–79 (1/2)", noteAr: "الجزء 1/2", noteEn: "Part 1/2", done: false },
+          { mod: "IMB", block: "Block C", title: "Translation 68–79 (2/2)", noteAr: "الجزء 2/2", noteEn: "Part 2/2", done: false },
+          { mod: "IBF", block: "Block D", title: "Lipid chemistry 1 (2/2) ★", noteAr: "تكميلة Lipid 1 ★", noteEn: "Finish Lipid 1 ★", done: false },
+          { mod: "IMB", block: "Block A", title: "Transcription / translation recall (M8 + M9)", noteAr: "متابعة السكشن", noteEn: "Section follow-up", done: false },
+          { mod: "Review", block: "Block G", title: "Night Recall + IBS Rotation", noteAr: "Block G الليلي", noteEn: "Nightly Block G", done: false }
+        ]
+      },
+      {
+        id: "2026-12-01", week: 3, dateEn: "Tue, 1 Dec", dateAr: "الثلاثاء ١ ديسمبر",
+        typeEn: "Section Day", typeAr: "يوم سكاشن",
+        tasks: [
+          { mod: "IHI", block: "Uni", title: "Cases IHI (Thrombocytopenic purpura, Erythroblastosis)", noteAr: "كيسات IHI", noteEn: "IHI Cases", done: false },
+          { mod: "IBS", block: "Block B", title: "Embryoblast + Folding 104–110 (1/3)", noteAr: "الجزء 1/3", noteEn: "Part 1/3", done: false },
+          { mod: "IBS", block: "Block C", title: "Embryoblast + Folding 104–110 (2/3)", noteAr: "الجزء 2/3", noteEn: "Part 2/3", done: false },
+          { mod: "IBS", block: "Block D", title: "Embryoblast + Folding 104–110 (3/3)", noteAr: "الجزء 3/3", noteEn: "Part 3/3", done: false },
+          { mod: "IHI", block: "Block A", title: "Link the case to Hemostasis + Rh (P4/P6)", noteAr: "ربط الكيس بالـ Hemostasis و Rh", noteEn: "Link case to Hemostasis + Rh", done: false },
+          { mod: "Review", block: "Block G", title: "Night Recall + IBS Rotation", noteAr: "Block G الليلي", noteEn: "Nightly Block G", done: false }
+        ]
+      },
+      {
+        id: "2026-12-02", week: 3, dateEn: "Wed, 2 Dec", dateAr: "الأربعاء ٢ ديسمبر",
+        typeEn: "Section Day", typeAr: "يوم سكاشن",
+        tasks: [
+          { mod: "IHI", block: "Uni Lab", title: "Prac Immuno (Toxin, complement) + Prac Histo (revision)", noteAr: "عملي إميونو + مراجعة هيستو", noteEn: "Immuno lab + Histo revision", done: false },
+          { mod: "IHI", block: "Block B", title: "Overview + Innate immunity 1–14 (1/2)", noteAr: "بداية الإميونولوجي 1/2", noteEn: "Immunology start 1/2", done: false },
+          { mod: "IHI", block: "Block C", title: "Overview + Innate immunity 1–14 (2/2)", noteAr: "الجزء 2/2", noteEn: "Part 2/2", done: false },
+          { mod: "IHI", block: "Block D", title: "Antigens + MHC + APC 15–23 (1/2)", noteAr: "الجزء 1/2", noteEn: "Part 1/2", done: false },
+          { mod: "IHI", block: "Block A", title: "Complement Histology revision (H1, H2)", noteAr: "متابعة السكشن", noteEn: "Section follow-up", done: false },
+          { mod: "Review", block: "Block G", title: "Night Recall + IBS Rotation", noteAr: "Block G الليلي", noteEn: "Nightly Block G", done: false }
+        ]
+      },
+      {
+        id: "2026-12-03", week: 3, dateEn: "Thu, 3 Dec", dateAr: "الخميس ٣ ديسمبر",
+        typeEn: "Activities & Outing", typeAr: "أنشطة وخروجة الأسبوع",
+        tasks: [
+          { mod: "Review", block: "T1 Review", title: "Review M5–M9 + E1–E5", noteAr: "مراجعة الأسبوع من السكيلتون", noteEn: "Weekly review", done: false },
+          { mod: "Review", block: "T2 MCQ", title: "MCQ — week's 2 weakest topics", noteAr: "حل على أضعف درسين + تقييم 70%", noteEn: "2 weakest topics + 70% check", done: false },
+          { mod: "Outing", block: "5:30 PM", title: "5:30 PM outing — no guilt!", noteAr: "خروجة الخميس", noteEn: "Weekly outing", done: false }
+        ]
+      },
+      {
+        id: "2026-12-04", week: 3, dateEn: "Fri, 4 Dec", dateAr: "الجمعة ٤ ديسمبر",
+        typeEn: "Full Study Day", typeAr: "يوم مذاكرة كامل",
+        tasks: [
+          { mod: "IHI", block: "Block 1", title: "Antigens + MHC + APC 15–23 (2/2)", noteAr: "الجزء 2/2", noteEn: "Part 2/2", done: false },
+          { mod: "IBF", block: "Block 2", title: "Lipid chemistry 2 (1/2) ★", noteAr: "الجزء 1/2 ★", noteEn: "Part 1/2 ★", done: false },
+          { mod: "IBF", block: "Block 3", title: "Lipid chemistry 2 (2/2) ★", noteAr: "الجزء 2/2 ★", noteEn: "Part 2/2 ★", done: false },
+          { mod: "IBS", block: "Block 4", title: "Trophoblast + placenta 111–115 (1/2)", noteAr: "إمبريو ص 111–115", noteEn: "Embryo pp. 111–115", done: false },
+          { mod: "Review", block: "Evening", title: "Error log review + 45' room clean + Block G", noteAr: "ترويق الأوضة 45 د + Block G", noteEn: "45' room clean + Block G", done: false }
+        ]
+      },
+      {
+        id: "2026-12-05", week: 3, dateEn: "Sat, 5 Dec", dateAr: "السبت ٥ ديسمبر",
+        typeEn: "Study + Test #3", typeAr: "مذاكرة + امتحان #3",
+        tasks: [
+          { mod: "IHI", block: "Block 1", title: "T-cell mediated immunity 24–29 (1/2)", noteAr: "الجزء 1/2", noteEn: "Part 1/2", done: false },
+          { mod: "IHI", block: "Block 2", title: "T-cell mediated immunity 24–29 (2/2)", noteAr: "الجزء 2/2 (SAQ متوقع)", noteEn: "Part 2/2 (SAQ)", done: false },
+          { mod: "IBF", block: "Block 3", title: "Lipid chemistry 3 (1/2) ★", noteAr: "الجزء 1/2 ★", noteEn: "Part 1/2 ★", done: false },
+          { mod: "IBF", block: "Block 4", title: "Lipid chemistry 3 (2/2) ★ + Trophoblast 111–115 (2/2)", noteAr: "تكميلة Lipid 3 + Placenta", noteEn: "Finish Lipid 3 + Placenta", done: false },
+          { mod: "Test", block: "Sat Eve", title: "TEST #3 — 30 MCQ Immunology + Embryology (35 min)", noteAr: "امتحان بوقت 35 دقيقة + Error Log", noteEn: "Timed 35 min + Error Log", done: false }
+        ]
+      },
+      {
+        id: "2026-12-06", week: 4, dateEn: "Sun, 6 Dec", dateAr: "الأحد ٦ ديسمبر",
+        typeEn: "Section Day", typeAr: "يوم سكاشن",
+        tasks: [
+          { mod: "IHI", block: "Uni Lab", title: "Prac Physio (Hct & ESR) + Sectra (lymph node)", noteAr: "عملي Hct/ESR + سيكترا", noteEn: "Physio Hct/ESR + Sectra", done: false },
+          { mod: "IBF", block: "Block B", title: "Carbohydrate chemistry 1 (1/2) ★", noteAr: "بداية الكارب (10 درجات!) ★", noteEn: "Carbs start (10 marks!) ★", done: false },
+          { mod: "IBF", block: "Block C", title: "Carbohydrate chemistry 1 (2/2) ★", noteAr: "الجزء 2/2 ★", noteEn: "Part 2/2 ★", done: false },
+          { mod: "IBS", block: "Block D", title: "Cord, amnion, yolk sac, allantois 116–123", noteAr: "آخر درس إمبريولوجي!", noteEn: "Final Embryology lesson!", done: false },
+          { mod: "IHI", block: "Block A", title: "ESR/Hct + lymph node slide", noteAr: "متابعة السكشن", noteEn: "Section follow-up", done: false },
+          { mod: "Review", block: "Block G", title: "Night Recall + IBS Rotation", noteAr: "Block G الليلي", noteEn: "Nightly Block G", done: false }
+        ]
+      },
+      {
+        id: "2026-12-07", week: 4, dateEn: "Mon, 7 Dec", dateAr: "الإثنين ٢ ديسمبر",
+        typeEn: "Section Day", typeAr: "يوم سكاشن",
+        tasks: [
+          { mod: "IMB", block: "Uni Lab", title: "Prac IMB (gene regulation, mutations, rDNA) 1 section", noteAr: "سكشن IMB", noteEn: "IMB lab section", done: false },
+          { mod: "IMB", block: "Block B", title: "Proto-oncogenes & Oncogenes 80–88", noteAr: "ص 80–88", noteEn: "Pages 80–88", done: false },
+          { mod: "IMB", block: "Block C", title: "Gene mutations 89–92", noteAr: "ص 89–92", noteEn: "Pages 89–92", done: false },
+          { mod: "IMB", block: "Block D", title: "Recombinant DNA + screening 93–98+ (1/2)", noteAr: "الجزء 1/2", noteEn: "Part 1/2", done: false },
+          { mod: "IMB", block: "Block A", title: "Recall M8 + M11 + M12", noteAr: "متابعة السكشن", noteEn: "Section follow-up", done: false },
+          { mod: "Review", block: "Block G", title: "Night Recall + IBS Rotation", noteAr: "Block G الليلي", noteEn: "Nightly Block G", done: false }
+        ]
+      },
+      {
+        id: "2026-12-08", week: 4, dateEn: "Tue, 8 Dec", dateAr: "الثلاثاء ٨ ديسمبر",
+        typeEn: "Skill Lab Exam", typeAr: "امتحان سكيل لاب",
+        tasks: [
+          { mod: "IMB", block: "Uni Exam", title: "Skill lab EXAM + Cases IMB (Polyposis) & IHI (Superantigens)", noteAr: "امتحان السكيل لاب (وقته متاخد من Block D فقط)", noteEn: "Skill lab exam (time taken from Block D only)", done: false },
+          { mod: "IMB", block: "Block B", title: "Recombinant DNA + screening 93–98+ (2/2)", noteAr: "الجزء 2/2", noteEn: "Part 2/2", done: false },
+          { mod: "IHI", block: "Block C", title: "Immunoglobulins 30–41 (1/2)", noteAr: "الجزء 1/2", noteEn: "Part 1/2", done: false },
+          { mod: "IHI", block: "Block D", title: "Immunoglobulins 30–41 (2/2)", noteAr: "الجزء 2/2", noteEn: "Part 2/2", done: false },
+          { mod: "IMB", block: "Block A", title: "Cases: Oncogenes (M10) + Hypersensitivity", noteAr: "متابعة السكشن", noteEn: "Section follow-up", done: false },
+          { mod: "Review", block: "Block G", title: "Night Recall + IBS Rotation", noteAr: "Block G الليلي", noteEn: "Nightly Block G", done: false }
+        ]
+      },
+      {
+        id: "2026-12-09", week: 4, dateEn: "Wed, 9 Dec", dateAr: "الأربعاء ٩ ديسمبر",
+        typeEn: "Section Day", typeAr: "يوم سكاشن",
+        tasks: [
+          { mod: "IHI", block: "Uni Lab", title: "Prac Immuno (Neutralization) + Prac Histo (nodes, spleen)", noteAr: "عملي إميونو + هيستو lymph node & spleen", noteEn: "Immuno lab + Histo nodes & spleen", done: false },
+          { mod: "IHI", block: "Block B", title: "Immunoglobulins 30–41 (3/3)", noteAr: "تكميلة Immunoglobulins (SAQ)", noteEn: "Finish Immunoglobulins (SAQ)", done: false },
+          { mod: "IHI", block: "Block C", title: "Lymph nodes + Spleen p21– (1/2)", noteAr: "هيستولوجي 1/2", noteEn: "Histology 1/2", done: false },
+          { mod: "IHI", block: "Block D", title: "Lymph nodes + Spleen p21– (2/2)", noteAr: "هيستولوجي 2/2 (SAQ)", noteEn: "Histology 2/2 (SAQ)", done: false },
+          { mod: "IHI", block: "Block A", title: "3 ID points for each organ", noteAr: "3 علامات مميزة لكل أورجان + رسمة cortex/medulla", noteEn: "3 ID points per organ", done: false },
+          { mod: "Review", block: "Block G", title: "Night Recall + IBS Rotation", noteAr: "Block G الليلي", noteEn: "Nightly Block G", done: false }
+        ]
+      },
+      {
+        id: "2026-12-10", week: 4, dateEn: "Thu, 10 Dec", dateAr: "الخميس ١٠ ديسمبر",
+        typeEn: "Activities & Outing", typeAr: "أنشطة وخروجة الأسبوع",
+        tasks: [
+          { mod: "Review", block: "T1 Review", title: "Review I1–I4 + F1–F4", noteAr: "مراجعة الأسبوع", noteEn: "Weekly review", done: false },
+          { mod: "Review", block: "T2 MCQ", title: "MCQ — week's 2 weakest topics", noteAr: "حل على أضعف درسين + تقييم 70%", noteEn: "2 weakest topics + 70% check", done: false },
+          { mod: "Outing", block: "5:30 PM", title: "5:30 PM outing — no guilt!", noteAr: "خروجة الخميس", noteEn: "Weekly outing", done: false }
+        ]
+      },
+      {
+        id: "2026-12-11", week: 4, dateEn: "Fri, 11 Dec", dateAr: "الجمعة ١١ ديسمبر",
+        typeEn: "Full Study Day", typeAr: "يوم مذاكرة كامل",
+        tasks: [
+          { mod: "IBF", block: "Block 1", title: "Carbohydrate chemistry 2 (1/2) ★", noteAr: "الجزء 1/2 ★", noteEn: "Part 1/2 ★", done: false },
+          { mod: "IBF", block: "Block 2", title: "Carbohydrate chemistry 2 (2/2) ★", noteAr: "الجزء 2/2 ★", noteEn: "Part 2/2 ★", done: false },
+          { mod: "IBF", block: "Block 3", title: "Carbohydrate chemistry 3 ★", noteAr: "تكميلة الكارب ★", noteEn: "Finish Carbs ★", done: false },
+          { mod: "IBF", block: "Block 4", title: "T3 Jaundice + Heme metabolism p94– (Optional)", noteAr: "اختياري لو مخلص اللي قبله", noteEn: "Optional light unit", done: false },
+          { mod: "Review", block: "Evening", title: "Error log review + 45' room clean + Block G", noteAr: "ترويق الأوضة 45 د + Block G", noteEn: "45' room clean + Block G", done: false }
+        ]
+      },
+      {
+        id: "2026-12-12", week: 4, dateEn: "Sat, 12 Dec", dateAr: "السبت ١٢ ديسمبر",
+        typeEn: "Study + Test #4", typeAr: "مذاكرة + امتحان #4",
+        tasks: [
+          { mod: "IBF", block: "Block 1", title: "Proteins + Extracell. proteins (1/2 & 2/2)", noteAr: "بروتينات", noteEn: "Proteins + Extracellular", done: false },
+          { mod: "IBF", block: "Block 2", title: "Amino acids 1–3", noteAr: "أحماض أمينية", noteEn: "Amino acids 1–3", done: false },
+          { mod: "IBF", block: "Block 3", title: "ANS + Parasympathetic 67–79 (1/3) ★", noteAr: "بداية الـ ANS (مهم ★)", noteEn: "ANS start ★", done: false },
+          { mod: "IBF", block: "Block 4", title: "ANS + Parasympathetic 67–79 (2/3) ★", noteAr: "الجزء 2/3 ★", noteEn: "Part 2/3 ★", done: false },
+          { mod: "Test", block: "Sat Eve", title: "TEST #4 — 30 MCQ IBF Biochem + IMB (35 min)", noteAr: "امتحان بوقت 35 دقيقة + Error Log", noteEn: "Timed 35 min + Error Log", done: false }
+        ]
+      },
+      {
+        id: "2026-12-13", week: 5, dateEn: "Sun, 13 Dec", dateAr: "الأحد ١٣ ديسمبر",
+        typeEn: "Section Day", typeAr: "يوم سكاشن",
+        tasks: [
+          { mod: "IHI", block: "Uni Lab", title: "Prac Physio (revision) + Sectra (spleen, node)", noteAr: "مراجعة عملي فسيولوجي + سيكترا", noteEn: "Physio lab revision + Sectra", done: false },
+          { mod: "IBF", block: "Block B", title: "ANS + Parasympathetic 67–79 (3/3) ★", noteAr: "تكميلة Parasympathetic ★", noteEn: "Finish Parasympathetic ★", done: false },
+          { mod: "IBF", block: "Block C", title: "Transmitters + Sympathetic 80–83 (1/2) ★", noteAr: "الجزء 1/2 ★", noteEn: "Part 1/2 ★", done: false },
+          { mod: "IBF", block: "Block D", title: "Transmitters + Sympathetic 80–83 (2/2) ★", noteAr: "اعمل جدول مقارنة Sympathetic vs Para", noteEn: "Comparison table Sympathetic vs Para", done: false },
+          { mod: "IHI", block: "Block A", title: "Physiology P1–P6 revision from skeleton", noteAr: "متابعة السكشن", noteEn: "Section follow-up", done: false },
+          { mod: "Review", block: "Block G", title: "Night Recall + IBS Rotation", noteAr: "Block G الليلي", noteEn: "Nightly Block G", done: false }
+        ]
+      },
+      {
+        id: "2026-12-14", week: 5, dateEn: "Mon, 14 Dec", dateAr: "الإثنين ١٤ ديسمبر",
+        typeEn: "Section Day", typeAr: "يوم سكاشن",
+        tasks: [
+          { mod: "IMB", block: "Uni Lab", title: "Prac IMB (Chromosomal abn. - Histology) 1 section", noteAr: "سكشن IMB", noteEn: "IMB lab section", done: false },
+          { mod: "IBF", block: "Block B", title: "Autonomic drugs + Adrenal gland 84–88", noteAr: "ص 84–88", noteEn: "Pages 84–88", done: false },
+          { mod: "IBF", block: "Block C", title: "Minerals + Acidosis / Alkalosis", noteAr: "آخر درس IBF!", noteEn: "Final IBF lesson!", done: false },
+          { mod: "IHI", block: "Block D", title: "Cytokines 42–46", noteAr: "إميونولوجي ص 42–46", noteEn: "Immunology pp. 42–46", done: false },
+          { mod: "IMB", block: "Block A", title: "Chromosomal abnormalities (M4)", noteAr: "متابعة السكشن", noteEn: "Section follow-up", done: false },
+          { mod: "Review", block: "Block G", title: "Night Recall + IBS Rotation", noteAr: "Block G الليلي", noteEn: "Nightly Block G", done: false }
+        ]
+      },
+      {
+        id: "2026-12-15", week: 5, dateEn: "Tue, 15 Dec", dateAr: "الثلاثاء ١٥ ديسمبر",
+        typeEn: "Skill Lab Exam", typeAr: "امتحان سكيل لاب",
+        tasks: [
+          { mod: "IHI", block: "Uni Exam", title: "Skill lab EXAM + Cases IHI & IMB (revision)", noteAr: "امتحان السكيل لاب (وقته من Block D فقط)", noteEn: "Skill lab exam (time from Block D only)", done: false },
+          { mod: "IHI", block: "Block B", title: "Immunization + therapy 47–52 ★", noteAr: "مهم (SAQ متوقع) ★", noteEn: "High yield (SAQ) ★", done: false },
+          { mod: "IHI", block: "Block C", title: "Hypersensitivity 53–61 (1/3)", noteAr: "الجزء 1/3", noteEn: "Part 1/3", done: false },
+          { mod: "IHI", block: "Block D", title: "Hypersensitivity 53–61 (2/3)", noteAr: "الجزء 2/3", noteEn: "Part 2/3", done: false },
+          { mod: "IHI", block: "Block A", title: "Cases revision (IMB + IHI)", noteAr: "متابعة السكشن", noteEn: "Section follow-up", done: false },
+          { mod: "Review", block: "Block G", title: "Night Recall + IBS Rotation", noteAr: "Block G الليلي", noteEn: "Nightly Block G", done: false }
+        ]
+      },
+      {
+        id: "2026-12-16", week: 5, dateEn: "Wed, 16 Dec", dateAr: "الأربعاء ١٦ ديسمبر",
+        typeEn: "Section Day", typeAr: "يوم سكاشن",
+        tasks: [
+          { mod: "IHI", block: "Uni Lab", title: "Prac Immuno (ELISA) + Prac Histo (thymus, tonsils)", noteAr: "آخر عملي: ELISA + thymus & tonsils", noteEn: "Final lab: ELISA + thymus & tonsils", done: false },
+          { mod: "IHI", block: "Block B", title: "Hypersensitivity 53–61 (3/3)", noteAr: "تكميلة Hypersensitivity (SAQ)", noteEn: "Finish Hypersensitivity (SAQ)", done: false },
+          { mod: "IHI", block: "Block C", title: "Thymus + Tonsils + Macrophages to p37 (1/2)", noteAr: "هيستولوجي 1/2", noteEn: "Histology 1/2", done: false },
+          { mod: "IHI", block: "Block D", title: "Thymus + Tonsils + Macrophages to p37 (2/2)", noteAr: "هيستولوجي 2/2 (SAQ)", noteEn: "Histology 2/2 (SAQ)", done: false },
+          { mod: "IHI", block: "Block A", title: "Thymus & tonsils + ELISA", noteAr: "متابعة السكشن", noteEn: "Section follow-up", done: false },
+          { mod: "Review", block: "Block G", title: "Night Recall + IBS Rotation", noteAr: "Block G الليلي", noteEn: "Nightly Block G", done: false }
+        ]
+      },
+      {
+        id: "2026-12-17", week: 5, dateEn: "Thu, 17 Dec", dateAr: "الخميس ١٧ ديسمبر",
+        typeEn: "End of Round 1 🎉", typeAr: "نهاية Round 1 🎉",
+        tasks: [
+          { mod: "Review", block: "T1 Review", title: "Weekly review + Round 2 plan", noteAr: "تقفيل Round 1 وتجهيز خطة Round 2", noteEn: "Wrap up Round 1 + Round 2 plan", done: false },
+          { mod: "Review", block: "T2 MCQ", title: "MCQ — week's 2 weakest topics", noteAr: "حل على أضعف موضوعين", noteEn: "2 weakest topics", done: false },
+          { mod: "IHI", block: "T3 Optional", title: "Tolerance, Autoimmunity, Tumor 62–70 (Optional)", noteAr: "اختياري لو فاضي", noteEn: "Optional topic", done: false },
+          { mod: "Outing", block: "5:30 PM", title: "5:30 PM outing — celebrate finishing Round 1!", noteAr: "مبروك خلصت Round 1 — اخرج واتبسط!", noteEn: "Celebrate finishing Round 1!", done: false }
+        ]
+      },
+      {
+        id: "2026-12-18", week: 5, dateEn: "Fri–Sat, 18–19 Dec", dateAr: "الجمعة والسبت ١٨–١٩ ديسمبر",
+        typeEn: "Round 2 Diagnostic", typeAr: "بداية Round 2 + تحديد المستوى",
+        tasks: [
+          { mod: "Review", block: "Catch-up", title: "Carry over anything late from Round 1", noteAr: "لمّ أي حاجة متبقية قبل بداية المراجعة", noteEn: "Finish any leftover blocks", done: false },
+          { mod: "Test", block: "Diagnostic", title: "Diagnostic Test: 30 MCQ per module (IHI, IBS, IBF, IMB)", noteAr: "النتيجة هي اللي بتحدد ترتيب مواد Round 2 (10–12 يوم من السكيلتون)", noteEn: "Result sets the module order for Round 2 (10–12 days from skeleton)", done: false }
+        ]
+      }
+    ];
+
+    const IBS_ROTATION_ITEMS = [
+      "1. Bones", "2. Joints", "3. Muscles", "4. Connective tissue", "5. Epithelium",
+      "6. Cell organelles", "7. CVS + Lymphatic", "8. Resp + GIT", "9. Nervous + Urinary", "10. Male + Female"
+    ];
+
+    const SAQ_TOPICS = [
+      { id: "saq1", mod: "IHI", title: "Immunology SAQs (2 marks each): T-cell immunity, Immunoglobulins, Immunization, Hypersensitivity", done: false },
+      { id: "saq2", mod: "IHI", title: "Histology & Physio SAQs: Lymph nodes & spleen (2), Thymus/tonsils/macrophages (2), Erythropoiesis + Blood grouping (1), Hemostasis (1)", done: false },
+      { id: "saq3", mod: "IBS", title: "IBS SAQs (5 marks each): Bones + Joints + Muscles (5), Fertilization + Morula + Implantation + Chorionic vesicle (5), Connective tissue (5)", done: false },
+      { id: "saq4", mod: "IMB", title: "IMB SAQs (2 marks each): DNA & RNA structure + repair (2), Translation & processing (2), Chromosomal abnormality (2)", done: false }
+    ];
+
+    const INITIAL_ERRORS = [
+      { id: 1, mod: "IHI", topic: "Example: Blood Grouping & Rh", whyAr: "مثال: اتلخبطت في Anti-D — بيتاخد خلال 72 ساعة من الولادة للأم Rh-negative.", whyEn: "Example: Mixed up Anti-D timing — given within 72h of delivery to Rh-negative mothers." }
+    ];
+
+    let state = {
+      lang: "ar",
+      theme: "latte",
+      view: "today",
+      selectedDayId: "2026-11-16",
+      selectedWeek: 1,
+      plan: JSON.parse(JSON.stringify(DEFAULT_PLAN)),
+      ibsRot: {},
+      saqs: JSON.parse(JSON.stringify(SAQ_TOPICS)),
+      errors: JSON.parse(JSON.stringify(INITIAL_ERRORS))
+    };
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem("cozy_med_study_hub_v2");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          state = { ...state, ...parsed };
+        }
+      } catch (e) {}
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem("cozy_med_study_hub_v2", JSON.stringify(state));
+      } catch (e) {}
+    }
+
+    const UI = {
+      ar: {
+        title: "☕ Cozy Med Study Hub",
+        subtitle: "أولى طب بشري — جامعة 6 أكتوبر | خطة الفاينل (16 Nov → 17 Dec 2026)",
+        langBtn: "🌐 English",
+        themeLight: "☀️ Warm Latte",
+        themeDark: "🌙 Midnight Desk",
+        exportBtn: "💾 حفظ نسخة",
+        importBtn: "📂 استرجاع",
+        tabSchedule: "📅 الجدول والمتابعة",
+        tabRhythm: "⏱️ التايمر ونظام اليوم",
+        tabMarks: "🎯 توزيع الـ 170 درجة",
+        tabRules: "🧠 طريقة المذاكرة والقواعد",
+        tabErrors: "📓 كشكول الأخطاء (Error Log)",
+        viewToday: "🎯 تركيز اليوم",
+        viewWeek: "📆 أسبوع بأسبوع",
+        viewAll: "🗓️ الجدول كامل",
+        searchPh: "ابحث عن درس أو صفحة...",
+        addTask: "+ إضافة تاسك",
+        postponeTip: "رحّل لبكرة",
+        editTip: "تعديل",
+        delTip: "حذف",
+        statTotal: "إجمالي إنجاز الخطة",
+        statBlocks: "بلوك خلص",
+        timerTitle: "⏱️ تايمر التركيز الهادي (Focus Timer)",
+        timerHint: "45 دقيقة تركيز + 10 دقايق راحة (من غير موبايل) • جرس هادي لما يخلص",
+        start: "▶ ابدأ",
+        pause: "⏸ وقف مؤقت",
+        reset: "↺ إعادة",
+        ibsRotTitle: "🦴 IBS 15-Min Nightly Rotation (جوه Block G)",
+        ibsRotDesc: "كل ليلة 15 دقيقة لموضوع واحد بالترتيب، ولما يخلصوا عيد من الأول:",
+        resetRot: "↺ تصفير الدورة",
+        secDaysTitle: "🏫 أيام السكاشن (الأحد – الأربعاء ≈ 5.5–6 ساعات تركيز)",
+        fullDaysTitle: "🏡 أيام المذاكرة الكاملة (الجمعة والسبت)",
+        marksMainTitle: "🎯 توزيع الدرجات المتوقع (المجموع = 170 درجة)",
+        marksSubDesc: "الخطة متقسمة على حسب وزن كل موديول: IHI (36 بلوك) • IBF (21 بلوك) • IMB (19 بلوك) • Embryology (14 بلوك). علامة ★ معناها وزن عالي أو سؤال SAQ متوقع.",
+        saqChecklistTitle: "✍️ قائمة أسئلة الـ SAQ المتوقعة (اكتب الإجابة النموذجية من الذاكرة في 5 دقايق)",
+        errFormTitle: "➕ سجل غلطة جديدة (Error Log)",
+        errFormHint: "أي سؤال تغلط فيه: اكتب 'غلطت ليه؟' + القاعدة الصح في سطر واحد، وراجعه كل خميس.",
+        lblErrMod: "المادة / Module",
+        lblErrTopic: "السؤال أو الدرس",
+        lblErrWhy: "غلطت ليه + القاعدة في سطر",
+        addErrBtn: "+ إضافة للكشكول",
+        thuCheckTitle: "📊 تقييم كل خميس (قاعدة الـ 70%)",
+        thuCheckDesc: "كل خميس احسب نسبة الإنجاز في الأسبوع. لو أقل من 70%، بنعيد ترتيب الأولويات ونأجل المواضيع اللي مش ★ والـ T3 الاختيارية.",
+        errListTitle: "📓 كشكول أخطائي",
+        modalEdit: "✏️ تعديل البلوك",
+        modalAdd: "➕ إضافة بلوك جديد",
+        mLblTitle: "عنوان الدرس / التاسك",
+        mLblMod: "الموديول",
+        mLblBlock: "البلوك / التوقيت",
+        mLblNote: "ملاحظة شخصية (أرقام صفحات / تحشيشة)",
+        mCancel: "إلغاء",
+        mSave: "حفظ"
+      },
+      en: {
+        title: "☕ Cozy Med Study Hub",
+        subtitle: "Medicine Year 1 — 6th October University | Final Exam Plan (16 Nov → 17 Dec 2026)",
+        langBtn: "🌐 مصري عامي",
+        themeLight: "☀️ Warm Latte",
+        themeDark: "🌙 Midnight Desk",
+        exportBtn: "💾 Backup JSON",
+        importBtn: "📂 Restore",
+        tabSchedule: "📅 Schedule & Tracker",
+        tabRhythm: "⏱️ Timer & Daily Rhythm",
+        tabMarks: "🎯 170 Marks Split",
+        tabRules: "🧠 Study Loop & Rules",
+        tabErrors: "📓 Error Log & 70% Check",
+        viewToday: "🎯 Today Focus",
+        viewWeek: "📆 Week by Week",
+        viewAll: "🗓️ Full 32-Day Grid",
+        searchPh: "Search topic or page...",
+        addTask: "+ Add Task",
+        postponeTip: "Move to tomorrow",
+        editTip: "Edit",
+        delTip: "Delete",
+        statTotal: "Overall Plan Progress",
+        statBlocks: "blocks done",
+        timerTitle: "⏱️ Cozy Focus Timer",
+        timerHint: "45' focus + 10' rest (phone away) • Soft chime when done",
+        start: "▶ Start",
+        pause: "⏸ Pause",
+        reset: "↺ Reset",
+        ibsRotTitle: "🦴 IBS 15-Min Nightly Rotation (inside Block G)",
+        ibsRotDesc: "One topic per night for 15 minutes, then start over:",
+        resetRot: "↺ Reset Cycle",
+        secDaysTitle: "🏫 Section Days (Sun – Wed ≈ 5.5–6h focus)",
+        fullDaysTitle: "🏡 Full Study Days (Fri & Sat)",
+        marksMainTitle: "🎯 Expected Marks Split (Total = 170 Marks)",
+        marksSubDesc: "Time split by weight: IHI (36 blocks) • IBF (21 blocks) • IMB (19 blocks) • Embryology (14 blocks). ★ = high weight or likely SAQ.",
+        saqChecklistTitle: "✍️ High-Yield SAQ Checklist (Write model answer from memory in 5 min)",
+        errFormTitle: "➕ Log a Mistake (Error Log)",
+        errFormHint: "Every wrong MCQ → write 'Why wrong?' + the rule in one line. Review every Thursday.",
+        lblErrMod: "Module",
+        lblErrTopic: "Question or Topic",
+        lblErrWhy: "Why wrong + 1-line rule",
+        addErrBtn: "+ Add to Error Log",
+        thuCheckTitle: "📊 Thursday 70% Rule Check",
+        thuCheckDesc: "Every Thursday count completed blocks. Under 70%? Re-cut priorities by postponing non-★ and optional T3 topics first.",
+        errListTitle: "📓 My Error Log",
+        modalEdit: "✏️ Edit Block",
+        modalAdd: "➕ Add New Block",
+        mLblTitle: "Lesson / Task Title",
+        mLblMod: "Module",
+        mLblBlock: "Block / Time",
+        mLblNote: "Personal Note (pages / mnemonic)",
+        mCancel: "Cancel",
+        mSave: "Save"
+      }
+    };
+
+    function t(key) { return UI[state.lang][key] || key; }
+
+    function applyLangAndTheme() {
+      document.documentElement.lang = state.lang;
+      document.documentElement.dir = state.lang === "ar" ? "rtl" : "ltr";
+      document.documentElement.setAttribute("data-theme", state.theme);
+
+      document.getElementById("appTitle").textContent = t("title");
+      document.getElementById("appSubtitle").textContent = t("subtitle");
+      document.getElementById("langToggle").textContent = t("langBtn");
+      document.getElementById("themeToggle").textContent = state.theme === "latte" ? t("themeDark") : t("themeLight");
+      document.getElementById("exportBtn").textContent = t("exportBtn");
+      document.getElementById("importBtn").textContent = t("importBtn");
+
+      document.getElementById("tabSchedule").textContent = t("tabSchedule");
+      document.getElementById("tabRhythm").textContent = t("tabRhythm");
+      document.getElementById("tabMarks").textContent = t("tabMarks");
+      document.getElementById("tabRules").textContent = t("tabRules");
+      document.getElementById("tabErrors").textContent = t("tabErrors");
+
+      document.getElementById("viewToday").textContent = t("viewToday");
+      document.getElementById("viewWeek").textContent = t("viewWeek");
+      document.getElementById("viewAll").textContent = t("viewAll");
+      document.getElementById("searchInput").placeholder = t("searchPh");
+
+      document.getElementById("timerTitle").textContent = t("timerTitle");
+      document.getElementById("timerHint").textContent = t("timerHint");
+      document.getElementById("startTimerBtn").textContent = t("start");
+      document.getElementById("pauseTimerBtn").textContent = t("pause");
+      document.getElementById("resetTimerBtn").textContent = t("reset");
+
+      document.getElementById("ibsRotTitle").textContent = t("ibsRotTitle");
+      document.getElementById("ibsRotDesc").textContent = t("ibsRotDesc");
+      document.getElementById("resetRotBtn").textContent = t("resetRot");
+      document.getElementById("secDaysTitle").textContent = t("secDaysTitle");
+      document.getElementById("fullDaysTitle").textContent = t("fullDaysTitle");
+
+      document.getElementById("marksMainTitle").textContent = t("marksMainTitle");
+      document.getElementById("marksSubDesc").textContent = t("marksSubDesc");
+      document.getElementById("saqChecklistTitle").textContent = t("saqChecklistTitle");
+
+      document.getElementById("errFormTitle").textContent = t("errFormTitle");
+      document.getElementById("errFormHint").textContent = t("errFormHint");
+      document.getElementById("lblErrMod").textContent = t("lblErrMod");
+      document.getElementById("lblErrTopic").textContent = t("lblErrTopic");
+      document.getElementById("lblErrWhy").textContent = t("lblErrWhy");
+      document.getElementById("addErrBtn").textContent = t("addErrBtn");
+      document.getElementById("thuCheckTitle").textContent = t("thuCheckTitle");
+      document.getElementById("thuCheckDesc").textContent = t("thuCheckDesc");
+      document.getElementById("errListTitle").textContent = t("errListTitle");
+
+      document.getElementById("mLblTitle").textContent = t("mLblTitle");
+      document.getElementById("mLblMod").textContent = t("mLblMod");
+      document.getElementById("mLblBlock").textContent = t("mLblBlock");
+      document.getElementById("mLblNote").textContent = t("mLblNote");
+      document.getElementById("mCancel").textContent = t("mCancel");
+      document.getElementById("mSave").textContent = t("mSave");
+
+      renderStats();
+      renderSchedule();
+      renderRhythm();
+      renderMarks();
+      renderRules();
+      renderErrors();
+    }
+
+    function toggleLang() {
+      state.lang = state.lang === "ar" ? "en" : "ar";
+      saveState();
+      applyLangAndTheme();
+    }
+
+    function toggleTheme() {
+      state.theme = state.theme === "latte" ? "midnight" : "latte";
+      saveState();
+      applyLangAndTheme();
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll(".nav-tab").forEach(b => b.classList.toggle("active", b.dataset.tab === tabName));
+      document.querySelectorAll(".section").forEach(s => s.classList.toggle("active", s.id === "sec-" + tabName));
+    }
+
+    function renderStats() {
+      const mods = ["IHI", "IBS", "IBF", "IMB"];
+      let total = 0, done = 0;
+      const modStats = { IHI: [0,0], IBS: [0,0], IBF: [0,0], IMB: [0,0] };
+
+      state.plan.forEach(d => {
+        d.tasks.forEach(tk => {
+          total++;
+          if (tk.done) done++;
+          if (modStats[tk.mod]) {
+            modStats[tk.mod][1]++;
+            if (tk.done) modStats[tk.mod][0]++;
+          }
+        });
+      });
+
+      const pct = total ? Math.round((done / total) * 100) : 0;
+      const marksMap = { IHI: "50 marks", IBS: "50 marks", IBF: "40 marks", IMB: "30 marks" };
+
+      let html = `
+        <div class="stat-card">
+          <div class="stat-label">${t("statTotal")}</div>
+          <div class="stat-value">${pct}%</div>
+          <div style="font-size:0.78rem;color:var(--text-muted)">${done} / ${total} ${t("statBlocks")}</div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+        </div>
+      `;
+
+      mods.forEach(m => {
+        const [dCount, tCount] = modStats[m];
+        const mp = tCount ? Math.round((dCount / tCount) * 100) : 0;
+        html += `
+          <div class="stat-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="mod-tag mod-${m}">${m}</span>
+              <span style="font-size:0.76rem;color:var(--text-muted);font-weight:700;">${marksMap[m]}</span>
+            </div>
+            <div class="stat-value">${mp}%</div>
+            <div style="font-size:0.78rem;color:var(--text-muted)">${dCount} / ${tCount} ${t("statBlocks")}</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:${mp}%"></div></div>
+          </div>
+        `;
+      });
+
+      document.getElementById("statsGrid").innerHTML = html;
+    }
+
+    function setView(v) {
+      state.view = v;
+      document.querySelectorAll(".view-pills [data-view]").forEach(b => b.classList.toggle("active", b.dataset.view === v));
+      saveState();
+      renderSchedule();
+    }
+
+    function renderSchedule() {
+      const subWrap = document.getElementById("subSelectorWrap");
+      if (state.view === "today") {
+        let opts = state.plan.map(d => `<option value="${d.id}" ${d.id === state.selectedDayId ? "selected" : ""}>${state.lang === "ar" ? d.dateAr : d.dateEn}</option>`).join("");
+        subWrap.innerHTML = `<select onchange="state.selectedDayId=this.value;saveState();renderSchedule()">${opts}</select>`;
+      } else if (state.view === "week") {
+        let btns = [1, 2, 3, 4, 5].map(w => `
+          <button type="button" class="pill ${state.selectedWeek === w ? "active" : ""}" onclick="state.selectedWeek=${w};saveState();renderSchedule()">
+            ${state.lang === "ar" ? "أسبوع " + w : "Week " + w}
+          </button>
+        `).join("");
+        subWrap.innerHTML = btns;
+      } else {
+        subWrap.innerHTML = "";
+      }
+
+      const modFilter = document.getElementById("moduleFilter").value;
+      const query = document.getElementById("searchInput").value.trim().toLowerCase();
+
+      let daysToShow = state.plan;
+      if (state.view === "today") {
+        daysToShow = state.plan.filter(d => d.id === state.selectedDayId);
+      } else if (state.view === "week") {
+        daysToShow = state.plan.filter(d => d.week === state.selectedWeek);
+      }
+
+      const container = document.getElementById("scheduleContainer");
+      container.className = state.view === "today" ? "days-grid single-focus" : "days-grid";
+
+      container.innerHTML = daysToShow.map(day => {
+        const filteredTasks = day.tasks.map((tk, idx) => ({ ...tk, origIdx: idx })).filter(tk => {
+          const matchMod = modFilter === "ALL" || tk.mod === modFilter;
+          const textBlob = (tk.title + " " + (tk.noteAr || "") + " " + (tk.noteEn || "") + " " + tk.block).toLowerCase();
+          const matchQ = !query || textBlob.includes(query);
+          return matchMod && matchQ;
+        });
+
+        if (query && filteredTasks.length === 0) return "";
+
+        const doneCount = day.tasks.filter(x => x.done).length;
+        const isToday = day.id === state.selectedDayId;
+
+        const tasksHtml = filteredTasks.map(tk => {
+          const note = state.lang === "ar" ? (tk.noteAr || tk.noteEn || "") : (tk.noteEn || tk.noteAr || "");
+          return `
+            <div class="task-item ${tk.done ? "done" : ""}">
+              <input type="checkbox" class="task-check" ${tk.done ? "checked" : ""} onchange="toggleTask('${day.id}', ${tk.origIdx})" />
+              <div class="task-body">
+                <div class="task-top">
+                  <span class="mod-tag mod-${tk.mod}">${tk.mod}</span>
+                  <span class="block-tag">${tk.block}</span>
+                </div>
+                <div class="task-title">${escapeHtml(tk.title)}</div>
+                ${note ? `<div class="task-note">${escapeHtml(note)}</div>` : ""}
+              </div>
+              <div class="task-actions">
+                <button type="button" class="icon-btn" title="${t("postponeTip")}" onclick="postponeTask('${day.id}', ${tk.origIdx})">⏭️</button>
+                <button type="button" class="icon-btn" title="${t("editTip")}" onclick="openEditModal('${day.id}', ${tk.origIdx})">✏️</button>
+                <button type="button" class="icon-btn" title="${t("delTip")}" onclick="deleteTask('${day.id}', ${tk.origIdx})">🗑️</button>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        return `
+          <div class="day-card ${isToday ? "today-highlight" : ""}">
+            <div class="day-header">
+              <div>
+                <div class="day-title">${state.lang === "ar" ? day.dateAr : day.dateEn}</div>
+                <div class="day-sub">${state.lang === "ar" ? day.typeAr : day.typeEn} • (${doneCount}/${day.tasks.length})</div>
+              </div>
+              <div style="display:flex;gap:6px;align-items:center;">
+                <span class="day-badge">W${day.week}</span>
+                <button type="button" class="small" onclick="openAddModal('${day.id}')">${t("addTask")}</button>
+              </div>
+            </div>
+            <div class="task-list">${tasksHtml}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function toggleTask(dayId, idx) {
+      const day = state.plan.find(d => d.id === dayId);
+      if (day && day.tasks[idx]) {
+        day.tasks[idx].done = !day.tasks[idx].done;
+        saveState();
+        renderStats();
+        renderSchedule();
+      }
+    }
+
+    function deleteTask(dayId, idx) {
+      const day = state.plan.find(d => d.id === dayId);
+      if (day) {
+        day.tasks.splice(idx, 1);
+        saveState();
+        renderStats();
+        renderSchedule();
+      }
+    }
+
+    function postponeTask(dayId, idx) {
+      const dIndex = state.plan.findIndex(d => d.id === dayId);
+      if (dIndex >= 0 && dIndex < state.plan.length - 1) {
+        const [moved] = state.plan[dIndex].tasks.splice(idx, 1);
+        moved.noteAr = (moved.noteAr ? moved.noteAr + " • " : "") + "مرحّل من اليوم السابق";
+        moved.noteEn = (moved.noteEn ? moved.noteEn + " • " : "") + "Carried over";
+        state.plan[dIndex + 1].tasks.unshift(moved);
+        saveState();
+        renderStats();
+        renderSchedule();
+      }
+    }
+
+    function openEditModal(dayId, idx) {
+      const day = state.plan.find(d => d.id === dayId);
+      const tk = day.tasks[idx];
+      document.getElementById("modalHeading").textContent = t("modalEdit");
+      document.getElementById("modalDayId").value = dayId;
+      document.getElementById("modalTaskIdx").value = idx;
+      document.getElementById("mTitle").value = tk.title;
+      document.getElementById("mMod").value = tk.mod;
+      document.getElementById("mBlock").value = tk.block;
+      document.getElementById("mNote").value = state.lang === "ar" ? (tk.noteAr || "") : (tk.noteEn || "");
+      document.getElementById("taskModal").classList.add("open");
+    }
+
+    function openAddModal(dayId) {
+      document.getElementById("modalHeading").textContent = t("modalAdd");
+      document.getElementById("modalDayId").value = dayId;
+      document.getElementById("modalTaskIdx").value = "-1";
+      document.getElementById("mTitle").value = "";
+      document.getElementById("mMod").value = "IHI";
+      document.getElementById("mBlock").value = "Block H";
+      document.getElementById("mNote").value = "";
+      document.getElementById("taskModal").classList.add("open");
+    }
+
+    function closeModal() {
+      document.getElementById("taskModal").classList.remove("open");
+    }
+
+    function saveTaskModal() {
+      const dayId = document.getElementById("modalDayId").value;
+      const idx = parseInt(document.getElementById("modalTaskIdx").value, 10);
+      const title = document.getElementById("mTitle").value.trim();
+      if (!title) return;
+      const mod = document.getElementById("mMod").value;
+      const block = document.getElementById("mBlock").value.trim() || "Block";
+      const note = document.getElementById("mNote").value.trim();
+
+      const day = state.plan.find(d => d.id === dayId);
+      if (!day) return;
+
+      if (idx >= 0) {
+        day.tasks[idx].title = title;
+        day.tasks[idx].mod = mod;
+        day.tasks[idx].block = block;
+        if (state.lang === "ar") day.tasks[idx].noteAr = note;
+        else day.tasks[idx].noteEn = note;
+      } else {
+        day.tasks.push({ mod, block, title, noteAr: note, noteEn: note, done: false });
+      }
+      saveState();
+      closeModal();
+      renderStats();
+      renderSchedule();
+    }
+
+    let timerSeconds = 45 * 60;
+    let timerInterval = null;
+
+    function formatTime(sec) {
+      const m = String(Math.floor(sec / 60)).padStart(2, "0");
+      const s = String(sec % 60).padStart(2, "0");
+      return `${m}:${s}`;
+    }
+
+    function setTimerMinutes(mins) {
+      pauseTimer();
+      timerSeconds = mins * 60;
+      document.getElementById("timerDisplay").textContent = formatTime(timerSeconds);
+    }
+
+    function startTimer() {
+      if (timerInterval) return;
+      timerInterval = setInterval(() => {
+        if (timerSeconds > 0) {
+          timerSeconds--;
+          document.getElementById("timerDisplay").textContent = formatTime(timerSeconds);
+        } else {
+          pauseTimer();
+          playCozyChime();
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+
+    function resetTimer() {
+      setTimerMinutes(45);
+    }
+
+    function playCozyChime() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        [523.25, 659.25, 783.99].forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "sine";
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0.15, ctx.currentTime + i * 0.25);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.25 + 1.2);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + i * 0.25);
+          osc.stop(ctx.currentTime + i * 0.25 + 1.2);
+        });
+      } catch (e) {}
+    }
+
+    function renderRhythm() {
+      const rotHtml = IBS_ROTATION_ITEMS.map((item, idx) => `
+        <button type="button" class="rot-chip ${state.ibsRot[idx] ? "checked" : ""}" onclick="toggleIbsRot(${idx})">${item}</button>
+      `).join("");
+      document.getElementById("ibsRotList").innerHTML = rotHtml;
+
+      const secTimeline = state.lang === "ar" ? [
+        ["12:10 – 12:30", "الرجوع من الكلية + ترمس القهوة وفتح صفحة النهاردة (من غير غسيل أطباق ولا تسخين أكل)"],
+        ["12:50 – 1:35", "Block A: متابعة السكشن (30 د تسميع من الذاكرة + 15 د MCQ)"],
+        ["1:45 – 2:00", "تدريب صور الهستولوجي (غطي الاسم ← سمّيه ← قول 3 علامات)"],
+        ["2:00 – 2:45", "غدا بره + صلاة العصر + 10 دقايق مشي (مش السرير!)"],
+        ["3:00 – 4:40", "Block B (45' جديد + 10' راحة) ثم Block C (45' جديد)"],
+        ["4:40 – 5:20", "المغرب + سناك خفيف + مشي"],
+        ["5:20 – 6:05", "Block D: أصعب درس في اليوم (قمة التركيز بعد الساعة 5)"],
+        ["6:05 – 6:25", "العشاء + صلاة العشاء + راحة"],
+        ["6:25 – 8:05", "Block E (MCQ أسئلة الدكاترة) + Block F (MCQ أو كتابة SAQ في 5 دقايق)"],
+        ["8:05 – 8:30", "لوجستيات: غسيل الأطباق مرة واحدة + تجهيز ترمس وشنطة بكرة"],
+        ["8:30 – 9:15", "Block G: 15' ورقة بيضا لليوم + 15' سكيلتون (-1/-3/-7 أيام) + 15' IBS Rotation"],
+        ["9:15 – 10:15", "Block H (احتياطي لأي بلوك فاتك — لو مفيش يبقى وقت حر)"],
+        ["10:15 – 12:30", "وقت حر (يوتيوب بحد أقصى 60 د بتايمر) → 11:30 هدوء → 12:30 نوم (وصحيان 7:30)"]
+      ] : [
+        ["12:10 – 12:30", "Arrive from uni + thermos + open today's page (no dishes, no heating food)"],
+        ["12:50 – 1:35", "Block A: Section follow-up (30' recall from memory + 15' MCQ)"],
+        ["1:45 – 2:00", "Histology image drill (cover name → name it → 3 ID points)"],
+        ["2:00 – 2:45", "Lunch out + Asr + 10' walk (not the bed!)"],
+        ["3:00 – 4:40", "Block B (45' NEW + 10' rest) then Block C (45' NEW)"],
+        ["4:40 – 5:20", "Maghrib + light snack + walk"],
+        ["5:20 – 6:05", "Block D: NEW hardest topic (peak focus after 5 PM)"],
+        ["6:05 – 6:25", "Dinner + Isha + rest"],
+        ["6:25 – 8:05", "Block E (Doctors' MCQs first) + Block F (MCQ or 5' SAQ from memory)"],
+        ["8:05 – 8:30", "Logistics: dishes once + prepare tomorrow's thermos & bag"],
+        ["8:30 – 9:15", "Block G: 15' blank page today + 15' skeleton (-1/-3/-7d) + 15' IBS rotation"],
+        ["9:15 – 10:15", "Block H: Reserve for any missed block (nothing missed = free)"],
+        ["10:15 – 12:30", "Free time (60' YouTube timer) → 11:30 wind-down → 12:30 sleep (up 7:30)"]
+      ];
+
+      const fullTimeline = state.lang === "ar" ? [
+        ["8:00 – 9:30", "صحيان + فطار + ترويق خفيف 10 دقايق"],
+        ["9:30 – 10:25", "Block R (Recall): ورقة بيضا لإمبارح + مراجعة +3 / +7 أيام"],
+        ["10:25 – 12:05", "Block 1 NEW (45') + 10' راحة + Block 2 NEW (45') • (الجمعة: صلاة الجمعة 11:30–1:15)"],
+        ["12:05 – 2:00", "الظهر + غدا بره + راحة"],
+        ["2:00 – 3:45", "Block 3 NEW (45') + العصر + Block 4 NEW (45')"],
+        ["4:10 – 5:30", "Block MCQ 1 + المغرب + Block MCQ 2 / SAQ"],
+        ["6:30 – 9:00", "العشاء + Block G (ورقة بيضا + Error log) + الجمعة: ترويق الأوضة 45' بتايمر"],
+        ["9:30 – 12:30", "السبت: الامتحان الأسبوعي (30 MCQ في 35 د) | الجمعة: مراجعة أخطاء الأسبوع → نوم 12:30"]
+      ] : [
+        ["8:00 – 9:30", "Wake + breakfast + 10' light tidy"],
+        ["9:30 – 10:25", "Block R (Recall): Blank page of yesterday + review +3 / +7 days"],
+        ["10:25 – 12:05", "Block 1 NEW (45') + 10' rest + Block 2 NEW (45') • (Fri: Jumu'ah 11:30–1:15)"],
+        ["12:05 – 2:00", "Dhuhr + lunch out + rest"],
+        ["2:00 – 3:45", "Block 3 NEW (45') + Asr + Block 4 NEW (45')"],
+        ["4:10 – 5:30", "Block MCQ 1 + Maghrib + Block MCQ 2 / SAQ"],
+        ["6:30 – 9:00", "Dinner + Block G (blank page + error log) + Fri: 45' room clean with timer"],
+        ["9:30 – 12:30", "Sat: Weekly timed test (30 MCQ in 35') | Fri: review errors → sleep 12:30"]
+      ];
+
+      document.getElementById("secDaysTimeline").innerHTML = secTimeline.map(r => `<div class="timeline-row"><span class="time-chip">${r[0]}</span><span>${r[1]}</span></div>`).join("");
+      document.getElementById("fullDaysTimeline").innerHTML = fullTimeline.map(r => `<div class="timeline-row"><span class="time-chip">${r[0]}</span><span>${r[1]}</span></div>`).join("");
+    }
+
+    function toggleIbsRot(idx) {
+      state.ibsRot[idx] = !state.ibsRot[idx];
+      saveState();
+      renderRhythm();
+    }
+
+    function resetIbsRotation() {
+      state.ibsRot = {};
+      saveState();
+      renderRhythm();
+    }
+
+    function renderMarks() {
+      const rows = [
+        ["IHI", "50", "Immunology ≈22 (16 MCQ + 3 SAQ×2) • Physiology ≈15 (13 MCQ + 2 SAQ×1) • Histology ≈12 (8 MCQ + 2 SAQ×2) • Biochem ≈1–2", "36 blocks"],
+        ["IBS", "50", "35 MCQ + 15 SAQ • Embryology ≈30 (Gametogenesis 9, Placenta/membranes 6, Fertilization/Implantation 6, Chorionic vesicle SAQ 6) + Anatomy/Histo ≈20", "14 new + 15'/night"],
+        ["IBF", "40", "Lipids (10) + Carbs (10) + Parasympathetic (6) + Sympathetic (4) = 30/40 (75%!) • Amino acids (2), Proteins (2), Extracell (2), Minerals (2), Acidosis/Alkalosis (2)", "21 blocks"],
+        ["IMB", "30", "24 MCQ + 6 SAQ • Chromosomal abn. (4), Gene regulation (3), Oncogenes+Mutations (3), rDNA (3), DNA/RNA+repair (2), Translation (2), Karyotyping (2)", "19 blocks"]
+      ];
+
+      document.getElementById("marksTable").innerHTML = `
+        <thead>
+          <tr>
+            <th>Module</th>
+            <th>Marks</th>
+            <th>High-Yield Breakdown</th>
+            <th>Study Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(r => `
+            <tr>
+              <td><span class="mod-tag mod-${r[0]}">${r[0]}</span></td>
+              <td><strong>${r[1]}</strong></td>
+              <td>${r[2]}</td>
+              <td>${r[3]}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      `;
+
+      document.getElementById("saqList").innerHTML = state.saqs.map((s, i) => `
+        <div class="task-item ${s.done ? "done" : ""}">
+          <input type="checkbox" class="task-check" ${s.done ? "checked" : ""} onchange="state.saqs[${i}].done=!state.saqs[${i}].done;saveState();renderMarks();" />
+          <div class="task-body">
+            <span class="mod-tag mod-${s.mod}">${s.mod}</span>
+            <div class="task-title" style="margin-top:4px;">${s.title}</div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderRules() {
+      const cards = state.lang === "ar" ? [
+        {
+          title: "🔁 اللوب السريع (20 دقيقة × مرتين لكل بلوك)",
+          items: [
+            "1. اتفرج 12 دقيقة بسرعة 1.25–1.5x (وقف كل 10–12 د مش في آخر المحاضرة).",
+            "2. اقفل الفيديو والكشكول وسمّع بصوت عالي (دقيقتين) واكتب Skeleton من 5–7 سطور.",
+            "3. افتح السلايد وصحح اللي نسيته بلون تاني (دقيقة واحدة) — الغلط إنك تنسخ الدرس كله.",
+            "4. حل 5 أسئلة MCQ سريعة في آخر البلوك. (الهدف: 6–8 صفحات كتاب في البلوك).",
+            "5. لو وقفت في نقطة: حاول مرتين بس، علّم عليها بـ '؟' وكمل، وراجعها في Block G."
+          ]
+        },
+        {
+          title: "🔬 قواعد الهستولوجي والبايو والجيناتكس",
+          items: [
+            "الهستولوجي: كل خلية أو أورجان = 3 علامات مميزة (ID points) + شبيهه + الوظيفة/الكلينيكال + رسمة cortex/medulla.",
+            "IBF (البايو والـ ANS): شجرة لكل درس (Carbs / Lipids) + جدول مقارنة واحد بين Sympathetic و Parasympathetic.",
+            "IMB (الجيناتكس): جدول واحد يجمع Replication → Transcription → Translation بأهم الإنزيمات + شجرة للـ Chromosomal abnormalities.",
+            "ترتيب حل الـ MCQ: 1) أسئلة الدكاترة بوقت (دقيقة للسؤال) ← 2) امتحانات السنين اللي فاتت ← 3) أسئلة AI (بحد أقصى 20% من وقت الحل ومن السلايدز بس)."
+          ]
+        },
+        {
+          title: "☕ قواعد السكن والموبايل والقهوة",
+          items: [
+            "قاعدة الـ 5 دقايق: البلوك بدأ ← شغّل التايمر وافتح الدرس فوراً حتى لو مفيش مزاج (ابدأ بأسهل جزء).",
+            "الموبايل في كل بلوك بره الأوضة أو Airplane mode (إلا لو الفيديو عليه فافتح المنصة بس).",
+            "القهوة في ترمس أو كوباية ورق تتجهز بالليل في وقت اللوجستيات — مش وقت المذاكرة.",
+            "7 ساعات نوم أحسن من أي ساعة مذاكرة زيادة. لو فاتك بلوك ← Block H بالليل، ولو لسه متأخر أجّل المواضيع اللي مش ★ والـ T3 الاختيارية."
+          ]
+        },
+        {
+          title: "🗺️ الطريق لحد الامتحانات (Rounds 1 → 3)",
+          items: [
+            "Round 1 (16 Nov → 17 Dec): الخريطة اليومية + Block G كل ليلة + امتحان سبت أسبوعي.",
+            "18–19 Dec: ترحيل أي متأخرات + امتحان تحديد مستوى (30 MCQ لكل موديول) يحدد ترتيب Round 2.",
+            "Round 2 (≈10–12 يوم): المراجعة من السكيلتون مش الفيديوهات (Immunology 2d • IHI Physio/Histo 2d • Embryo 2d • IMB 2d • IBF 2d • Anat/Histo SAQs 1d).",
+            "Round 3 (آخر 5–7 أيام): مواضيع ★ فقط + امتحان شامل بوقت + صور الهستو + Error log (وآخر 48 ساعة مفيش أي جديد)."
+          ]
+        }
+      ] : [
+        {
+          title: "🔁 The 20-Minute Active Loop (Twice per Block)",
+          items: [
+            "1. Watch 12 min at 1.25–1.5x speed (pause every 10–12 min, not at the end).",
+            "2. Video off, notebook closed: say it out loud (2 min) + write a 5–7 line skeleton.",
+            "3. Open slides and fix what you forgot in a second pen color (1 min) — no copying.",
+            "4. Solve 5 quick MCQs at the end of the block. (Target: 6–8 book pages per block).",
+            "5. Stuck on a point? Try twice only, mark '?' and move on — review in Block G."
+          ]
+        },
+        {
+          title: "🔬 Module-Specific Shortcuts",
+          items: [
+            "Histology: Each cell/organ = 3 ID points + look-alike + function/clinical + 1 simple cortex/medulla sketch.",
+            "IBF: 1 tree per topic (Carbs / Lipids) + 1 comparison table (Parasympathetic vs Sympathetic).",
+            "IMB: 1 flow table (Replication → Transcription → Translation with key enzymes) + 1 Chromosomal abnormalities tree.",
+            "MCQ order: 1) Doctors' questions timed (1 min/Q) → 2) Past exams → 3) AI questions from slides only (max 20% of MCQ time)."
+          ]
+        },
+        {
+          title: "☕ Dorm, Phone & Coffee Rules",
+          items: [
+            "5-minute rule: Block starts → timer on → open the lesson immediately, starting with the easiest part.",
+            "Phone away or on airplane mode during every block (unless watching the lecture on it).",
+            "Prepare coffee in a thermos during night logistics — never during study blocks.",
+            "7h sleep beats any extra study hour. Missed block → Block H; still behind → postpone non-★ & optional T3 first."
+          ]
+        },
+        {
+          title: "🗺️ Roadmap to Exams (Rounds 1 → 3)",
+          items: [
+            "Round 1 (16 Nov → 17 Dec): Daily map + nightly Block G + Saturday 30-MCQ tests.",
+            "18–19 Dec: Catch-up + Diagnostic Test (30 MCQ per module) to set Round 2 order.",
+            "Round 2 (≈10–12 days): Revise from skeletons, not videos (Immuno 2d • Physio/Histo 2d • Embryo 2d • IMB 2d • IBF 2d • SAQs 1d).",
+            "Round 3 (last 5–7 days): ★ topics only + full timed mock + Histology images + Error log (no new material in final 48h)."
+          ]
+        }
+      ];
+
+      document.getElementById("rulesContainer").innerHTML = cards.map(c => `
+        <div class="card">
+          <h2>${c.title}</h2>
+          <ul style="padding-inline-start:20px;display:flex;flex-direction:column;gap:8px;font-size:0.9rem;">
+            ${c.items.map(i => `<li>${i}</li>`).join("")}
+          </ul>
+        </div>
+      `).join("");
+    }
+
+    function renderErrors() {
+      const weekBars = [1, 2, 3, 4, 5].map(w => {
+        const days = state.plan.filter(d => d.week === w);
+        let tot = 0, dn = 0;
+        days.forEach(d => d.tasks.forEach(tk => { tot++; if (tk.done) dn++; }));
+        const p = tot ? Math.round((dn / tot) * 100) : 0;
+        const status = p >= 70 ? "✅ ≥ 70%" : (dn > 0 ? "⚠️ < 70%" : "⏳");
+        return `
+          <div style="margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;font-size:0.84rem;font-weight:700;">
+              <span>${state.lang === "ar" ? "الأسبوع " + w : "Week " + w} (${dn}/${tot})</span>
+              <span>${p}% ${status}</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:${p}%"></div></div>
+          </div>
+        `;
+      }).join("");
+      document.getElementById("weeklyHealthBox").innerHTML = weekBars;
+
+      document.getElementById("errorLogList").innerHTML = state.errors.map((e, i) => `
+        <div class="task-item">
+          <div class="task-body">
+            <span class="mod-tag mod-${e.mod}">${e.mod}</span>
+            <div class="task-title" style="margin-top:4px;">${escapeHtml(e.topic)}</div>
+            <div class="task-note">${escapeHtml(state.lang === "ar" ? (e.whyAr || e.whyEn) : (e.whyEn || e.whyAr))}</div>
+          </div>
+          <button type="button" class="icon-btn" onclick="state.errors.splice(${i},1);saveState();renderErrors();">🗑️</button>
+        </div>
+      `).join("");
+    }
+
+    function addErrorLog() {
+      const mod = document.getElementById("errMod").value;
+      const topic = document.getElementById("errTopic").value.trim();
+      const why = document.getElementById("errWhy").value.trim();
+      if (!topic || !why) return;
+      state.errors.unshift({ id: Date.now(), mod, topic, whyAr: why, whyEn: why });
+      document.getElementById("errTopic").value = "";
+      document.getElementById("errWhy").value = "";
+      saveState();
+      renderErrors();
+    }
+
+    function exportData() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "cozy-med-study-backup.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function importData(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        try {
+          const parsed = JSON.parse(ev.target.result);
+          state = { ...state, ...parsed };
+          saveState();
+          applyLangAndTheme();
+        } catch (err) {
+          alert("Invalid backup file");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetAll() {
+      const msg = state.lang === "ar" ? "متأكد إنك عايز ترجع الجدول لحالته الأصلية؟" : "Reset all progress back to the original plan?";
+      if (confirm(msg)) {
+        try { localStorage.removeItem("cozy_med_study_hub_v2"); } catch (e) {}
+        location.reload();
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
+    }
+
+    loadState();
+    applyLangAndTheme();
+  </script>
+</body>
+</html>
