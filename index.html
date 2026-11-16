@@ -1659,7 +1659,7 @@
       sessionLogs: []
     };
 
-    const APP_VERSION = "2026-11-16.1";
+    const APP_VERSION = "2026-11-16.2";
     const STORE_KEY = "cozy_med_study_hub_v4";
     let lastMovedHighlight = null, lastSavedJson = "", resetting = false, timerEndAt = 0, bootTimer = null, saveTimer = null;
     const $ = id => document.getElementById(id);
@@ -2118,6 +2118,7 @@
     }
 
     function switchTab(tabName) {
+      state.tab = tabName;
       document.querySelectorAll(".nav-tab").forEach(b => b.classList.toggle("active", b.dataset.tab === tabName));
       document.querySelectorAll(".section").forEach(s => s.classList.toggle("active", s.id === "sec-" + tabName));
       if (tabName === "rhythm") {
@@ -2332,6 +2333,664 @@
     // Ticking a block as done without the stopwatch = logs it as a finished flight with the planned time
     function autoLogTask(tk, dayId) {
       if (!tk.uid || tk.mod === "Outing" || state.sessionLogs.some(l => l.taskUid === tk.uid)) return;
+      state.sessionLogs.unshift({
+        id: Date.now(), ts: Date.now(), dayId, title: tk.title, mod: tk.mod,
+        mode: tk.activityType || (tk.mod === "Test" ? "mcq" : "study"),
+        minutes: tk.durationMins || (tk.mod === "Test" ? 35 : 45), taskUid: tk.uid, auto: true
+      });
+    }
+
+    function deleteTask(dayId, idx) {
+      const day = state.plan.find(d => d.id === dayId);
+      if (day) {
+        day.tasks.splice(idx, 1);
+        saveState();
+        populateLessonDropdown();
+        renderStats();
+        renderSchedule();
+      }
+    }
+
+    function postponeTask(dayId, idx) {
+      const dIndex = state.plan.findIndex(d => d.id === dayId);
+      if (dIndex >= 0 && dIndex < state.plan.length - 1) {
+        const [moved] = state.plan[dIndex].tasks.splice(idx, 1);
+        moved.noteAr = (moved.noteAr ? moved.noteAr + " • " : "") + "مرحّل من اليوم السابق";
+        moved.noteEn = (moved.noteEn ? moved.noteEn + " • " : "") + "Carried over";
+        state.plan[dIndex + 1].tasks.unshift(moved);
+        saveState();
+        populateLessonDropdown();
+        renderStats();
+        renderSchedule();
+      }
+    }
+
+    /* ==========================================
+       ENHANCED ADD / EDIT TASK MODAL LOGIC
+       ========================================== */
+    let modalState = { activityType: "study", videoSpeed: 1.25, sel: [], subj: 0, part: "", editing: false };
+
+    function setModalMode(mode) {
+      modalState.activityType = mode;
+      document.getElementById("mModeVideo").className = "mode-btn" + (mode === "video" ? " active-video" : "");
+      document.getElementById("mModeStudy").className = "mode-btn" + (mode === "study" ? " active-study" : "");
+      document.getElementById("mModeMcq").className = "mode-btn" + (mode === "mcq" ? " active-mcq" : "");
+
+      const vidBox = document.getElementById("mVideoCalcBox");
+      if (mode === "video") {
+        vidBox.style.display = "flex";
+        recalcModalVideo();
+      } else {
+        vidBox.style.display = "none";
+      }
+    }
+
+    function setModalSpeed(spd) {
+      modalState.videoSpeed = spd;
+      document.querySelectorAll("[data-mspd]").forEach(b => {
+        b.classList.toggle("active", parseFloat(b.dataset.mspd) === spd);
+      });
+      recalcModalVideo();
+    }
+
+    function recalcModalVideo() {
+      const raw = Math.max(1, parseInt(document.getElementById("mRawVidMins").value || "40", 10));
+      const spd = modalState.videoSpeed || 1.25;
+      const addBuf = document.getElementById("mPauseBuf").checked;
+      const watchM = Math.ceil(raw / spd);
+      const checkpoints = Math.max(1, Math.floor(watchM / 12));
+      const pauseM = addBuf ? checkpoints * 3 : 0;
+      const totalM = watchM + pauseM;
+
+      document.getElementById("mDurationMins").value = totalM;
+      const res = document.getElementById("mVidResultText");
+      res.innerHTML = state.lang === "ar"
+        ? `⏱️ الوقت المحسوب: <strong>${totalM} دقيقة</strong> (${watchM} د مشاهدة على ${spd}x${addBuf ? ` + ${pauseM} د توقيف وتسميع` : ""})`
+        : `⏱️ Calculated: <strong>${totalM} min</strong> (${watchM}m @ ${spd}x${addBuf ? ` + ${pauseM}m recall pauses` : ""})`;
+    }
+
+    function setModalDuration(mins) {
+      document.getElementById("mDurationMins").value = mins;
+    }
+
+    const CURRICULUM = {
+      IHI: [
+        { ar: "فسيولوجي الدم", en: "Blood Physiology", items: ["Leucocytes 4–12", "Platelets + RBC 13–20", "Blood + Plasma proteins + RBC/Hb 39–43", "Erythropoiesis 44–49", "Anemia + Polycythemia 50–57", "Hemostasis + abnormalities 58–62", "Clotting + Anti-clotting 63–69", "Blood groups + Transfusion 70–77 ★"] },
+        { ar: "إميونولوجي", en: "Immunology", items: ["Overview + Innate immunity 1–14", "Antigens + MHC + APC 15–23", "T-cell mediated immunity 24–29", "Immunoglobulins 30–41", "Cytokines 42–46", "Immunization + therapy 47–52 ★", "Hypersensitivity 53–61", "Tolerance, Autoimmunity, Tumor 62–70 (Optional)"] },
+        { ar: "هستولوجي", en: "Histology", items: ["WBC table + slide images (3 ID points)", "RBC + Platelets slides", "Lymph nodes + Spleen p21–", "Thymus + Tonsils + Macrophages to p37", "3 ID points for each organ"] },
+        { ar: "عملي وكيسات", en: "Labs & Cases", items: ["Prac Physio (Bleeding & clotting) + Sectra", "Prac Physio (Hemoglobin) + Sectra", "Prac Physio (Hct & ESR) + Sectra", "Prac Immuno (Coombs...) + Prac Histo (RBC, platelets)", "Prac Immuno (Toxin, complement) + Prac Histo", "Prac Immuno (Neutralization) + Prac Histo (nodes, spleen)", "Prac Immuno (ELISA) + Prac Histo (thymus, tonsils)", "Cases: IHI (Anemia)", "Cases IHI (Thrombocytopenic purpura, Erythroblastosis)", "Skill lab EXAM + Cases revision"] }
+      ],
+      IBS: [
+        { ar: "إمبريولوجي", en: "Embryology", items: ["Gametogenesis 74–84", "Ovarian follicles + cycles 85–92 ★", "Fertilization 93–96 ★", "Implantation 97–103", "Embryoblast + Folding 104–110", "Trophoblast + placenta 111–115", "Cord, amnion, yolk sac, allantois 116–123"] },
+        { ar: "تشريح وهستولوجي (الروتيشن)", en: "Anatomy & Histology (Rotation)", items: ["Bones", "Joints", "Muscles", "Connective tissue", "Epithelium", "Cell organelles", "CVS + Lymphatic", "Resp + GIT", "Nervous + Urinary", "Male + Female"] }
+      ],
+      IBF: [
+        { ar: "بايوكيمستري", en: "Biochemistry", items: ["Hemoglobin + Myoglobin 79–93", "Lipid chemistry 1 ★", "Lipid chemistry 2 ★", "Lipid chemistry 3 ★", "Carbohydrate chemistry 1 ★", "Carbohydrate chemistry 2 ★", "Carbohydrate chemistry 3 ★", "Proteins + Extracell. proteins", "Amino acids 1–3", "Jaundice + Heme metabolism p94– (Optional)", "Minerals + Acidosis / Alkalosis"] },
+        { ar: "ANS (فسيولوجي وأدوية)", en: "ANS (Physiology & Drugs)", items: ["ANS + Parasympathetic 67–79 ★", "Transmitters + Sympathetic 80–83 ★", "Autonomic drugs + Adrenal gland 84–88"] }
+      ],
+      IMB: [
+        { ar: "الخلية والكروموسومات", en: "Cell & Chromosomes", items: ["Nucleus + Human chromosome 4–10", "Cell cycle + Meiosis 11–19", "Karyotype + Sex chromatin 20–21 ★", "Chromosomal aberrations p22–"] },
+        { ar: "جيناتكس جزيئي", en: "Molecular Genetics", items: ["Nucleotides + DNA/RNA structure 32–46 ★", "Replication + enzymes 47–55", "DNA repair 56–57 ★", "Transcription + Regulation 58–67", "Translation 68–79", "Proto-oncogenes & Oncogenes 80–88", "Gene mutations 89–92", "Recombinant DNA + screening 93–98+"] },
+        { ar: "عملي وكيسات", en: "Labs & Cases", items: ["Prac IMB (Nucleus, cell cycle, karyotype) + ECE", "Prac IMB (Transcription, translation)", "Prac IMB (gene regulation, mutations, rDNA)", "Prac IMB (Chromosomal abn. - Histology)", "Cases IMB (Down syndrome)", "Cases IMB (Polyposis)", "Skill lab revision / EXAM"] }
+      ],
+      Review: [{ ar: "مراجعة", en: "Review", items: ["Night Recall + IBS Rotation", "Recall: blank page + 5 MCQ", "Review from skeleton (-1/-3/-7 days)", "Weekly review", "MCQ — week's 2 weakest topics", "Error log review", "Buffer: catch up / extra MCQ", "Histology image drill"] }],
+      Test: [{ ar: "امتحانات", en: "Tests", items: ["TEST — 30 MCQ IHI Physio + Histo (35 min)", "TEST — 30 MCQ IMB + Embryology (35 min)", "TEST — 30 MCQ Immunology + Embryology (35 min)", "TEST — 30 MCQ IBF Biochem + IMB (35 min)", "Diagnostic Test: 30 MCQ per module"] }],
+      Outing: [{ ar: "خروجة", en: "Outing", items: ["5:30 PM outing — no guilt!"] }]
+    };
+    const BLOCKS = ["Block A", "Block B", "Block C", "Block D", "Block E", "Block F", "Block G", "Block H", "Block 1", "Block 2", "Block 3", "Block 4", "Block R", "Uni Lab", "Uni", "Uni Exam", "T1 Review", "T2 MCQ", "T3 Optional", "Buffer", "Evening", "5:30 PM"];
+    const normTitle = x => x.replace(/\s*\(\d\/\d\)/g, "").replace(/\s*★/g, "").trim().toLowerCase();
+
+    function suggestBlock(day) {
+      const used = day.tasks.map(x => x.block);
+      const list = used.some(b => /^Block \d/.test(b)) ? ["Block 1", "Block 2", "Block 3", "Block 4"] : ["Block B", "Block C", "Block D", "Block E", "Block F", "Block H"];
+      return list.find(b => !used.includes(b)) || "Block H";
+    }
+    function renderBlockSel(val) {
+      const known = BLOCKS.includes(val);
+      $("mBlockSel").innerHTML = BLOCKS.map(b => `<option value="${b}" ${b === val ? "selected" : ""}>${b}</option>`).join("") + `<option value="OTHER" ${known ? "" : "selected"}>${isAr() ? "✍️ تاني..." : "✍️ Other..."}</option>`;
+      $("mBlock").value = val; $("mBlock").style.display = known ? "none" : "block";
+    }
+    function onBlockSel() {
+      const v = $("mBlockSel").value;
+      if (v === "OTHER") { $("mBlock").style.display = "block"; $("mBlock").focus(); }
+      else { $("mBlock").value = v; $("mBlock").style.display = "none"; }
+    }
+    function composeTitle(it) {
+      const star = /★/.test(it);
+      let base = it.replace(/\s*★/g, "").trim();
+      if (modalState.part) base += " (" + modalState.part + ")";
+      return base + (star ? " ★" : "");
+    }
+    function syncTitle() {
+      const inp = $("mTitle"), n = modalState.sel.length;
+      inp.disabled = n > 1;
+      if (n === 1) inp.value = composeTitle(modalState.sel[0]);
+      else if (n > 1) { inp.value = ""; inp.placeholder = isAr() ? n + " دروس مختارة — كل درس هيتضاف لوحده" : n + " lessons selected — each is added separately"; }
+      else inp.placeholder = isAr() ? "أو اكتب اسم الدرس بنفسك..." : "Or type your own title...";
+    }
+    function modalPaint() {
+      const mod = $("mMod").value;
+      $("mLblSubj").textContent = t("mLblSubj"); $("mLblCont").textContent = t("mLblCont"); $("mContSearch").placeholder = t("searchPh");
+      $("mModChips").innerHTML = ["IHI", "IBS", "IBF", "IMB", "Review", "Test", "Outing"].map(m => `<button type="button" class="rot-chip mod-${m} ${m === mod ? "sel" : ""}" onclick="pickMod('${m}')">${m}</button>`).join("");
+      $("mSubj").innerHTML = (CURRICULUM[mod] || []).map((sb, i) => `<option value="${i}" ${i === modalState.subj ? "selected" : ""}>${isAr() ? sb.ar : sb.en}</option>`).join("");
+      renderContentChips();
+    }
+    function pickMod(m) {
+      $("mMod").value = m; modalState.subj = 0; modalState.sel = []; modalState.part = ""; $("mContSearch").value = "";
+      if (!modalState.editing) {
+        if (m === "Test") { setModalMode("mcq"); setModalDuration(35); }
+        else if (m === "Outing") setModalDuration(60);
+      }
+      modalPaint(); syncTitle();
+    }
+    function onSubjChange() { modalState.subj = parseInt($("mSubj").value, 10) || 0; modalState.sel = []; modalState.part = ""; renderContentChips(); syncTitle(); }
+    function renderContentChips() {
+      const mod = $("mMod").value, sub = (CURRICULUM[mod] || [])[modalState.subj];
+      const q = $("mContSearch").value.trim().toLowerCase();
+      const core = ["IHI", "IBS", "IBF", "IMB"].includes(mod);
+      const planned = new Set(); state.plan.forEach(d => d.tasks.forEach(x => planned.add(normTitle(x.title))));
+      const chips = (sub ? sub.items : []).map((it, i) => ({ it, i })).filter(o => !q || o.it.toLowerCase().includes(q)).map(o => {
+        const isP = core && planned.has(normTitle(o.it));
+        return `<button type="button" class="rot-chip ${modalState.sel.includes(o.it) ? "sel" : ""} ${isP ? "planned" : ""}" onclick="toggleCont(${o.i})">${isP ? "📌 " : ""}${escapeHtml(o.it)}</button>`;
+      }).join("");
+      $("mContChips").innerHTML = chips || `<span style="font-size:0.8rem;color:var(--text-muted)">${isAr() ? "مفيش نتايج — اكتب الاسم تحت" : "No match — type the title below"}</span>`;
+      $("mPartChips").innerHTML = modalState.sel.length === 1 ? ["", "1/2", "2/2", "1/3", "2/3", "3/3"].map(p => `<button type="button" class="rot-chip ${modalState.part === p ? "sel" : ""}" onclick="setPart('${p}')">${p || t("mFull")}</button>`).join("") : "";
+    }
+    function toggleCont(i) {
+      const it = ((CURRICULUM[$("mMod").value] || [])[modalState.subj] || { items: [] }).items[i];
+      if (it === undefined) return;
+      if (modalState.editing) modalState.sel = [it];
+      else modalState.sel = modalState.sel.includes(it) ? modalState.sel.filter(x => x !== it) : [...modalState.sel, it];
+      modalState.part = ""; renderContentChips(); syncTitle();
+    }
+    function setPart(p) { modalState.part = p; renderContentChips(); syncTitle(); }
+
+    function openEditModal(dayId, idx) {
+      const day = state.plan.find(d => d.id === dayId);
+      const tk = day.tasks[idx];
+      Object.assign(modalState, { editing: true, sel: [], part: "", subj: 0 });
+      $("modalHeading").textContent = t("modalEdit");
+      $("modalDayId").value = dayId; $("modalTaskIdx").value = idx;
+      $("mMod").value = tk.mod; $("mContSearch").value = "";
+      const nt = normTitle(tk.title);
+      (CURRICULUM[tk.mod] || []).forEach((sb, si) => sb.items.forEach(it => {
+        if (!modalState.sel.length && normTitle(it) === nt) { modalState.subj = si; modalState.sel = [it]; const pm = tk.title.match(/\((\d\/\d)\)/); modalState.part = pm ? pm[1] : ""; }
+      }));
+      modalPaint();
+      $("mTitle").value = tk.title; $("mTitle").disabled = false;
+      renderBlockSel(tk.block);
+      $("mNote").value = isAr() ? (tk.noteAr || "") : (tk.noteEn || "");
+
+      const act = tk.activityType || (tk.mod === "Test" ? "mcq" : "study");
+      const dur = tk.durationMins || (tk.mod === "Test" ? 35 : 45);
+      $("mRawVidMins").value = tk.rawVideoMins || 40;
+      $("mPauseBuf").checked = tk.pauseBuffer !== undefined ? tk.pauseBuffer : true;
+      setModalSpeed(tk.videoSpeed || 1.25);
+      setModalMode(act);
+      $("mDurationMins").value = dur;
+      $("taskModal").classList.add("open");
+    }
+
+    function openAddModal(dayId) {
+      const day = state.plan.find(d => d.id === dayId);
+      Object.assign(modalState, { editing: false, sel: [], part: "", subj: 0 });
+      $("modalHeading").textContent = t("modalAdd");
+      $("modalDayId").value = dayId; $("modalTaskIdx").value = "-1";
+      $("mMod").value = "IHI"; $("mContSearch").value = ""; $("mTitle").value = "";
+      modalPaint(); syncTitle();
+      renderBlockSel(day ? suggestBlock(day) : "Block H");
+      $("mNote").value = "";
+      $("mRawVidMins").value = 40;
+      $("mPauseBuf").checked = true;
+      setModalSpeed(1.25);
+      setModalMode("study");
+      $("mDurationMins").value = 45;
+      $("taskModal").classList.add("open");
+    }
+
+    function closeModal() {
+      $("taskModal").classList.remove("open");
+    }
+
+    function saveTaskModal() {
+      const dayId = $("modalDayId").value;
+      const idx = parseInt($("modalTaskIdx").value, 10);
+      const multi = idx < 0 && modalState.sel.length > 1;
+      const title = $("mTitle").value.trim();
+      if (!multi && !title) { $("mTitle").focus(); toast(isAr() ? "اختار درس من القايمة أو اكتب اسمه" : "Pick a lesson or type a title"); return; }
+      const mod = $("mMod").value;
+      const block = $("mBlock").value.trim() || "Block";
+      const note = $("mNote").value.trim();
+      const activityType = modalState.activityType;
+      const durationMins = Math.max(5, Math.min(240, parseInt($("mDurationMins").value || "45", 10)));
+      const rawVideoMins = Math.max(5, parseInt($("mRawVidMins").value || "40", 10));
+      const videoSpeed = modalState.videoSpeed || 1.25;
+      const pauseBuffer = $("mPauseBuf").checked;
+
+      const day = state.plan.find(d => d.id === dayId);
+      if (!day) return;
+
+      if (idx >= 0) {
+        const tk = day.tasks[idx];
+        Object.assign(tk, { title, mod, block, activityType, durationMins, rawVideoMins, videoSpeed, pauseBuffer });
+        if (isAr()) tk.noteAr = note; else tk.noteEn = note;
+      } else {
+        (multi ? modalState.sel.map(composeTitle) : [title]).forEach(ti => day.tasks.push({
+          uid: newUid(), mod, block, title: ti, activityType, durationMins, rawVideoMins, videoSpeed, pauseBuffer,
+          noteAr: note, noteEn: note, done: false
+        }));
+      }
+      saveState();
+      closeModal();
+      populateLessonDropdown();
+      renderStats();
+      renderSchedule();
+    }
+
+    /* ==========================================
+       AIRPLANE TICKET SESSION & TIMER ENGINE
+       ========================================== */
+    let currentSession = {
+      lessonKey: "2026-11-16|1",
+      lessonTitle: "Leucocytes 4–12 (1/2)",
+      lessonMod: "IHI",
+      mode: "video",
+      videoSpeed: 1.25,
+      targetMinutes: 41
+    };
+
+    let timerSeconds = 41 * 60;
+    let totalSessionSeconds = 41 * 60;
+    let timerInterval = null;
+
+    function populateLessonDropdown() {
+      const sel = document.getElementById("lessonSelect");
+      if (!sel) return;
+      const fu = findTaskByUid(currentSession.taskUid);
+      if (fu) currentSession.lessonKey = fu.day.id + "|" + fu.idx;
+      const prevVal = currentSession.lessonKey || "2026-11-16|1";
+
+      let html = `<option value="CUSTOM">${t("customLessonOpt")}</option>`;
+      state.plan.forEach(day => {
+        const dayLabel = state.lang === "ar" ? day.dateAr : day.dateEn;
+        html += `<optgroup label="W${day.week} • ${escapeHtml(dayLabel)}">`;
+        day.tasks.forEach((tk, idx) => {
+          const val = `${day.id}|${idx}`;
+          const doneMark = tk.done ? "✓ " : "";
+          const durTag = tk.durationMins ? ` (${tk.durationMins}m)` : "";
+          html += `<option value="${val}" ${val === prevVal ? "selected" : ""}>${doneMark}[${tk.mod}] ${escapeHtml(tk.title)}${durTag}</option>`;
+        });
+        html += `</optgroup>`;
+      });
+      sel.innerHTML = html;
+
+      if (prevVal === "CUSTOM") {
+        sel.value = "CUSTOM";
+        document.getElementById("customLessonInput").style.display = "block";
+      } else {
+        document.getElementById("customLessonInput").style.display = "none";
+      }
+    }
+
+    function handleLessonSelectChange() {
+      const sel = document.getElementById("lessonSelect");
+      const customInp = document.getElementById("customLessonInput");
+      if (sel.value === "CUSTOM") {
+        customInp.style.display = "block";
+        customInp.focus();
+        currentSession.lessonKey = "CUSTOM";
+        currentSession.lessonMod = "Study";
+        currentSession.taskUid = "";
+        currentSession.lessonTitle = customInp.value.trim() || (state.lang === "ar" ? "درس مخصص" : "Custom Lesson");
+      } else {
+        customInp.style.display = "none";
+        currentSession.lessonKey = sel.value;
+        const [dId, tIdxStr] = sel.value.split("|");
+        const day = state.plan.find(d => d.id === dId);
+        const tk = day ? day.tasks[parseInt(tIdxStr, 10)] : null;
+        if (tk) {
+          applyTaskToFlightTicket(tk);
+        }
+      }
+      updateSessionBanner();
+    }
+
+    function applyTaskToFlightTicket(tk) {
+      currentSession.lessonTitle = tk.title;
+      currentSession.lessonMod = tk.mod;
+      currentSession.taskUid = tk.uid || "";
+
+      const mode = tk.activityType || (tk.mod === "Test" ? "mcq" : "study");
+      if (mode === "video") {
+        if (tk.rawVideoMins) document.getElementById("rawVideoMins").value = tk.rawVideoMins;
+        if (tk.pauseBuffer !== undefined) document.getElementById("includePauseBuffer").checked = tk.pauseBuffer;
+        setVideoSpeed(tk.videoSpeed || 1.25);
+        setSessionMode("video");
+        if (tk.durationMins) applyTimerDuration(tk.durationMins);
+      } else {
+        setSessionMode(mode);
+        const dur = tk.durationMins || (mode === "mcq" ? 35 : 45);
+        selectTicketSlot(dur);
+      }
+    }
+
+    function updateActiveSessionFromInputs() {
+      const customInp = document.getElementById("customLessonInput");
+      if (document.getElementById("lessonSelect").value === "CUSTOM") {
+        currentSession.lessonTitle = customInp.value.trim() || (state.lang === "ar" ? "درس مخصص" : "Custom Lesson");
+        updateSessionBanner();
+      }
+    }
+
+    function launchLessonSession(dayId, idx) {
+      const day = state.plan.find(d => d.id === dayId);
+      if (!day || !day.tasks[idx]) return;
+      const tk = day.tasks[idx];
+      currentSession.lessonKey = `${dayId}|${idx}`;
+
+      populateLessonDropdown();
+      document.getElementById("lessonSelect").value = currentSession.lessonKey;
+      document.getElementById("customLessonInput").style.display = "none";
+
+      applyTaskToFlightTicket(tk);
+      switchTab("rhythm");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      triggerTicketBookingAnimation(false);
+    }
+
+    function setSessionMode(mode) {
+      currentSession.mode = mode;
+      const vBtn = document.getElementById("modeVideoBtn");
+      const sBtn = document.getElementById("modeStudyBtn");
+      const mBtn = document.getElementById("modeMcqBtn");
+
+      vBtn.className = "mode-btn" + (mode === "video" ? " active-video" : "");
+      sBtn.className = "mode-btn" + (mode === "study" ? " active-study" : "");
+      mBtn.className = "mode-btn" + (mode === "mcq" ? " active-mcq" : "");
+
+      const vidBox = document.getElementById("videoCalcBox");
+      const studyBox = document.getElementById("studyCalcBox");
+
+      if (mode === "video") {
+        vidBox.style.display = "flex";
+        studyBox.style.display = "none";
+        calculateVideoTime();
+      } else {
+        vidBox.style.display = "none";
+        studyBox.style.display = "flex";
+        document.getElementById("studyCalcHeading").textContent = mode === "mcq" ? t("mcqCalcHeading") : t("studyCalcHeading");
+        const defaultMins = mode === "mcq" ? 35 : 45;
+        selectTicketSlot(defaultMins);
+      }
+    }
+
+    function selectTicketSlot(mins) {
+      document.querySelectorAll(".ticket-slot").forEach(btn => {
+        btn.classList.toggle("selected", parseInt(btn.dataset.mins, 10) === mins);
+      });
+      setCustomDuration(mins);
+      triggerTicketBookingAnimation(false);
+    }
+
+    function setVideoSpeed(spd) {
+      currentSession.videoSpeed = spd;
+      document.querySelectorAll("[data-spd]").forEach(b => {
+        b.classList.toggle("active", parseFloat(b.dataset.spd) === spd);
+      });
+      calculateVideoTime();
+    }
+
+    function calculateVideoTime() {
+      const rawMins = Math.max(1, parseInt(document.getElementById("rawVideoMins").value || "40", 10));
+      const spd = currentSession.videoSpeed || 1.25;
+      const addBuffer = document.getElementById("includePauseBuffer").checked;
+
+      currentSession.rawMins = rawMins; currentSession.pauseBuf = addBuffer;
+      const watchMins = Math.ceil(rawMins / spd);
+      const checkpoints = Math.max(1, Math.floor(watchMins / 12));
+      const pauseMins = addBuffer ? checkpoints * 3 : 0;
+      const totalMins = watchMins + pauseMins;
+
+      const resEl = document.getElementById("videoCalcResult");
+      if (state.lang === "ar") {
+        resEl.innerHTML = `🎫 تذكرة الفيديو: <strong>${totalMins} دقيقة</strong> (${watchMins} د مشاهدة على ${spd}x${addBuffer ? ` + ${pauseMins} د توقيف وتسميع كل 12 د` : ""})`;
+      } else {
+        resEl.innerHTML = `🎫 Video Ticket: <strong>${totalMins} min</strong> (${watchMins}m watch @ ${spd}x${addBuffer ? ` + ${pauseMins}m recall pauses` : ""})`;
+      }
+
+      applyTimerDuration(totalMins);
+    }
+
+    function setCustomDuration(mins) {
+      const validMins = Math.max(1, Math.min(240, parseInt(mins || 45, 10)));
+      const inp = document.getElementById("manualDurationInput");
+      if (inp) inp.value = validMins;
+
+      document.querySelectorAll(".ticket-slot").forEach(btn => {
+        btn.classList.toggle("selected", parseInt(btn.dataset.mins, 10) === validMins);
+      });
+
+      const planEl = document.getElementById("studyPlanBreakdown");
+      if (currentSession.mode === "mcq") {
+        const estQs = Math.round(validMins * 0.85);
+        planEl.innerHTML = state.lang === "ar"
+          ? `✍️ خطة الرحلة: حل حوالي <strong>${estQs} سؤال MCQ</strong> بوقت (دقيقة للسؤال) + تسجيل أي غلطة في الـ Error Log.`
+          : `✍️ Flight Plan: Solve ~<strong>${estQs} MCQs</strong> timed (1 min/Q) + log mistakes in Error Log.`;
+      } else {
+        const readM = Math.max(5, Math.round(validMins * 0.67));
+        const recallM = Math.max(3, Math.round(validMins * 0.22));
+        const mcqM = Math.max(2, validMins - readM - recallM);
+        planEl.innerHTML = state.lang === "ar"
+          ? `📖 تقسيمة الـ ${validMins} دقيقة: <strong>${readM} د</strong> قراءة وتلخيص Skeleton + <strong>${recallM} د</strong> تسميع ورقة بيضا + <strong>${mcqM} د</strong> حل 5 MCQ.`
+          : `📖 ${validMins}-min split: <strong>${readM}m</strong> read & skeleton + <strong>${recallM}m</strong> blank-page recall + <strong>${mcqM}m</strong> 5 quick MCQs.`;
+      }
+
+      applyTimerDuration(validMins);
+    }
+
+    function applyTimerDuration(mins) {
+      pauseTimer();
+      currentSession.targetMinutes = mins;
+      timerSeconds = mins * 60;
+      totalSessionSeconds = timerSeconds;
+      state.timer = { running: false, remaining: timerSeconds, total: totalSessionSeconds };
+      document.getElementById("timerDisplay").textContent = formatTime(timerSeconds);
+      updateRunwayProgress(0);
+      updateSessionBanner();
+    }
+
+    function updateRunwayProgress(pct) {
+      const bar = document.getElementById("timerProgressBar");
+      const plane = document.getElementById("runwayPlaneMarker");
+      if (bar) bar.style.width = pct + "%";
+      if (plane) plane.style.insetInlineStart = pct + "%";
+    }
+
+    function updateBoardingPassTimes() {
+      const now = new Date();
+      const depH = String(now.getHours()).padStart(2, "0");
+      const depM = String(now.getMinutes()).padStart(2, "0");
+
+      const arrDate = new Date(now.getTime() + (currentSession.targetMinutes || 45) * 60000);
+      const arrH = String(arrDate.getHours()).padStart(2, "0");
+      const arrM = String(arrDate.getMinutes()).padStart(2, "0");
+
+      const depEl = document.getElementById("bpDepTime");
+      const arrEl = document.getElementById("bpArrTime");
+      const durEl = document.getElementById("bpDurVal");
+      const gateEl = document.getElementById("bpGateVal");
+      const fltEl = document.getElementById("bpFlightNo");
+
+      if (depEl) depEl.textContent = `${depH}:${depM}`;
+      if (arrEl) arrEl.textContent = `${arrH}:${arrM}`;
+      if (durEl) durEl.textContent = `${currentSession.targetMinutes}m`;
+      if (fltEl) fltEl.textContent = `FLT-${String(currentSession.lessonMod || "MED").toUpperCase()}`;
+
+      if (gateEl) {
+        if (currentSession.mode === "video") gateEl.textContent = `VID ${currentSession.videoSpeed}x`;
+        else if (currentSession.mode === "mcq") gateEl.textContent = `MCQ-GATE`;
+        else gateEl.textContent = `STUDY-A1`;
+      }
+    }
+
+    function updateSessionBanner() {
+      const badgeEl = document.getElementById("activeSessionBadge");
+      const titleEl = document.getElementById("activeLessonDisplay");
+      if (!badgeEl) return;
+
+      let modeTag = "";
+      if (currentSession.mode === "video") {
+        modeTag = `<span class="mod-tag mod-IBF">${t("modeVideo")} (${currentSession.videoSpeed}x)</span>`;
+      } else if (currentSession.mode === "mcq") {
+        modeTag = `<span class="mod-tag mod-IMB">${t("modeMcq")}</span>`;
+      } else {
+        modeTag = `<span class="mod-tag mod-IBS">${t("modeStudy")}</span>`;
+      }
+
+      badgeEl.innerHTML = `<span class="mod-tag mod-${currentSession.lessonMod}">${currentSession.lessonMod}</span> ${modeTag}`;
+      titleEl.textContent = currentSession.lessonTitle;
+      updateBoardingPassTimes();
+    }
+
+    function triggerTicketBookingAnimation(scrollAndStart) {
+      const card = document.getElementById("boardingPassCard");
+      const stamp = document.getElementById("bpStampText");
+      if (!card) return;
+
+      updateBoardingPassTimes();
+      if (stamp) {
+        stamp.textContent = state.lang === "ar" ? "تم حجز التذكرة ✈️" : "TICKET ISSUED ✈️";
+      }
+
+      card.classList.remove("ticket-booked-anim");
+      void card.offsetWidth; // trigger reflow for replay
+      card.classList.add("ticket-booked-anim");
+
+      if (scrollAndStart) {
+        card.scrollIntoView({ behavior: "smooth", block: "center" });
+        startTimer();
+      }
+    }
+
+    function bookAndStartFlight() {
+      triggerTicketBookingAnimation(false);
+      startTimer();
+    }
+
+    function formatTime(sec) {
+      const m = String(Math.floor(sec / 60)).padStart(2, "0");
+      const s = String(sec % 60).padStart(2, "0");
+      return `${m}:${s}`;
+    }
+
+    // Timer is based on the real clock (end time), not on counting ticks, so it stays correct when the screen locks.
+    function tickTimer() {
+      if (!timerEndAt) return;
+      timerSeconds = Math.max(0, Math.round((timerEndAt - Date.now()) / 1000));
+      $("timerDisplay").textContent = formatTime(timerSeconds);
+      updateRunwayProgress(totalSessionSeconds > 0 ? Math.min(100, Math.round(((totalSessionSeconds - timerSeconds) / totalSessionSeconds) * 100)) : 0);
+      if (timerSeconds <= 0) { pauseTimer(); playCozyChime(); completeCurrentSession(true); }
+    }
+    function startTimer() {
+      if (timerInterval) return;
+      if (timerSeconds <= 0) timerSeconds = totalSessionSeconds;
+      timerEndAt = Date.now() + timerSeconds * 1000;
+      state.timer = { running: true, endAt: timerEndAt, total: totalSessionSeconds };
+      const stamp = $("bpStampText");
+      if (stamp) stamp.textContent = isAr() ? "في الجو الآن 🛫" : "IN FLIGHT 🛫";
+      updateBoardingPassTimes();
+      timerInterval = setInterval(tickTimer, 500);
+      startKeepAudio();
+      saveState();
+    }
+    function pauseTimer() {
+      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+      if (timerEndAt) { timerSeconds = Math.max(0, Math.round((timerEndAt - Date.now()) / 1000)); timerEndAt = 0; }
+      state.timer = { running: false, remaining: timerSeconds, total: totalSessionSeconds };
+      stopKeepAudio();
+    }
+
+    // Silent looping audio keeps the page alive on most phones while the screen is locked (also lets the end chime ring)
+    let keepAudio = null, chimeSrc = "";
+    function wavUrl(secs, fn) {
+      const sr = 8000, n = Math.floor(sr * secs), buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf);
+      const w = (o, str) => { for (let i = 0; i < str.length; i++) v.setUint8(o + i, str.charCodeAt(i)); };
+      w(0, "RIFF"); v.setUint32(4, 36 + n * 2, true); w(8, "WAVEfmt "); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+      v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, "data"); v.setUint32(40, n * 2, true);
+      for (let i = 0; i < n; i++) v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, fn(i / sr))) * 32767, true);
+      return URL.createObjectURL(new Blob([buf], { type: "audio/wav" }));
+    }
+    function startKeepAudio() {
+      try {
+        if (!keepAudio) { keepAudio = new Audio(wavUrl(1, () => 0)); keepAudio.loop = true; }
+        const p = keepAudio.play(); if (p && p.catch) p.catch(() => {});
+        if ("mediaSession" in navigator) navigator.mediaSession.metadata = new MediaMetadata({ title: currentSession.lessonTitle || "Study", artist: "Cozy Med Study Hub" });
+      } catch (e) {}
+    }
+    function stopKeepAudio() { try { if (keepAudio) keepAudio.pause(); } catch (e) {} }
+    function chimeUrl() {
+      if (!chimeSrc) chimeSrc = wavUrl(2.4, x => [523.25, 659.25, 783.99].reduce((sum, f, i) => { const u = x - i * 0.25; return u < 0 ? sum : sum + Math.sin(2 * Math.PI * f * u) * 0.3 * Math.exp(-u * 3); }, 0));
+      return chimeSrc;
+    }
+    function playCozyChime() {
+      try { const a = new Audio(chimeUrl()); const p = a.play(); if (p && p.catch) p.catch(webChime); } catch (e) { webChime(); }
+      try { if (navigator.vibrate) navigator.vibrate([300, 150, 300]); } catch (e) {}
+    }
+
+    // Puts the saved flight ticket + running timer back after a reload / the phone killing the page
+    function restoreSession() {
+      if (state.session && typeof state.session === "object") Object.assign(currentSession, state.session);
+      state.session = currentSession;
+      const savedTarget = currentSession.targetMinutes;
+      const fu = findTaskByUid(currentSession.taskUid);
+      if (fu) currentSession.lessonKey = fu.day.id + "|" + fu.idx;
+      const m = currentSession.mode || "video";
+      $("modeVideoBtn").className = "mode-btn" + (m === "video" ? " active-video" : "");
+      $("modeStudyBtn").className = "mode-btn" + (m === "study" ? " active-study" : "");
+      $("modeMcqBtn").className = "mode-btn" + (m === "mcq" ? " active-mcq" : "");
+      $("videoCalcBox").style.display = m === "video" ? "flex" : "none";
+      $("studyCalcBox").style.display = m === "video" ? "none" : "flex";
+      $("studyCalcHeading").textContent = m === "mcq" ? t("mcqCalcHeading") : t("studyCalcHeading");
+      document.querySelectorAll("[data-spd]").forEach(b => b.classList.toggle("active", parseFloat(b.dataset.spd) === (currentSession.videoSpeed || 1.25)));
+      if (currentSession.rawMins) $("rawVideoMins").value = currentSession.rawMins;
+      $("includePauseBuffer").checked = currentSession.pauseBuf !== false;
+      populateLessonDropdown();
+      if (currentSession.lessonKey === "CUSTOM") { $("lessonSelect").value = "CUSTOM"; $("customLessonInput").value = currentSession.lessonTitle || ""; $("customLessonInput").style.display = "block"; }
+      if (m === "video") calculateVideoTime(); else setCustomDuration(savedTarget || 45);
+      if (savedTarget && savedTarget !== currentSession.targetMinutes) applyTimerDuration(savedTarget);
+      const tm = bootTimer;
+      if (tm && tm.total) totalSessionSeconds = tm.total;
+      if (tm && tm.running && tm.endAt) {
+        timerEndAt = tm.endAt; state.timer = { running: true, endAt: tm.endAt, total: totalSessionSeconds };
+        timerInterval = setInterval(tickTimer, 500);
+        const stamp = $("bpStampText"); if (stamp) stamp.textContent = isAr() ? "في الجو الآن 🛫" : "IN FLIGHT 🛫";
+        startKeepAudio(); tickTimer();
+      } else if (tm && tm.total && tm.remaining > 0 && tm.remaining < tm.total) {
+        timerSeconds = tm.remaining; state.timer = { running: false, remaining: tm.remaining, total: tm.total };
+        $("timerDisplay").textContent = formatTime(timerSeconds);
+        updateRunwayProgress(Math.round(((totalSessionSeconds - timerSeconds) / totalSessionSeconds) * 100));
+      }
+      updateSessionBanner();
+    }
+
+    function resetTimer() {
+      const stamp = document.getElementById("bpStampText");
+      if (stamp) {
+        stamp.textContent = state.lang === "ar" ? "جاهز للإقلاع ✈️" : "BOARDING ✈️";
+      }
+      applyTimerDuration(currentSession.targetMinutes || 45);
+    }
+
+    function completeCurrentSession(autoTriggered) {
+      pauseTimer();
+      const stamp = document.getElementById("bpStampText");
+      if (stamp) {
+        stamp.textContent = state.lang === "ar" ? "تم الهبوط بنجاح 🛬" : "LANDED SAFELY 🛬";
+      }
+
+      const elapsedSecs = totalSessionSeconds - timerSeconds;
+      const loggedMins = elapsedSecs >= 60 ? Math.round(elapsedSecs / 60) : currentSession.targetMinutes;
+
       const found = findTaskByUid(currentSession.taskUid);
       state.sessionLogs.unshift({
         id: Date.now(), ts: Date.now(),
@@ -2712,6 +3371,7 @@
     applyLangAndTheme();
     calculateVideoTime();
     restoreSession();
+    if (timerInterval) switchTab("rhythm"); else if (state.tab && state.tab !== "schedule") switchTab(state.tab);
 
     try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
     saveState(); showSaved();
