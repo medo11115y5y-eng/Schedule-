@@ -119,22 +119,23 @@
       border-radius: 12px;
       font-size: 0.86rem;
       font-weight: 600;
-      transition: background 0.15s ease, border-color 0.15s ease, transform 0.08s ease;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.08s ease, opacity 0.15s ease;
       display: inline-flex;
       align-items: center;
       gap: 6px;
     }
-    button:hover {
+    button:hover:not(:disabled) {
       background: var(--accent-soft);
       border-color: var(--accent);
     }
-    button:active { transform: scale(0.98); }
+    button:active:not(:disabled) { transform: scale(0.97); }
+    button:disabled { opacity: 0.35; cursor: not-allowed; }
     button.primary {
       background: var(--accent);
       color: var(--accent-text);
       border-color: var(--accent);
     }
-    button.primary:hover { opacity: 0.92; }
+    button.primary:hover:not(:disabled) { opacity: 0.92; }
     button.small { padding: 6px 11px; font-size: 0.8rem; border-radius: 9px; }
 
     .stats-grid {
@@ -224,7 +225,7 @@
       color: var(--accent-text);
       border-color: var(--accent);
     }
-    input[type="text"], select, textarea {
+    input[type="text"], input[type="number"], select, textarea {
       font-family: inherit;
       background: var(--bg);
       color: var(--text);
@@ -234,18 +235,18 @@
       font-size: 0.88rem;
       outline: none;
     }
-    input[type="text"]:focus, select:focus, textarea:focus {
+    input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
       border-color: var(--accent);
     }
 
     .days-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
       gap: 16px;
     }
     .days-grid.single-focus {
       grid-template-columns: 1fr;
-      max-width: 780px;
+      max-width: 820px;
       margin: 0 auto;
     }
     .day-card {
@@ -288,6 +289,12 @@
       display: flex;
       align-items: flex-start;
       gap: 10px;
+      transition: transform 0.2s ease, background-color 0.35s ease, border-color 0.35s ease;
+    }
+    .task-item.task-moved-flash {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      transform: scale(1.01);
     }
     .task-item.done { opacity: 0.62; }
     .task-item.done .task-title { text-decoration: line-through; }
@@ -305,7 +312,7 @@
       flex-wrap: wrap;
       align-items: center;
       gap: 6px;
-      margin-bottom: 3px;
+      margin-bottom: 4px;
     }
     .mod-tag {
       font-size: 0.72rem;
@@ -330,10 +337,34 @@
       border-radius: 6px;
       font-weight: 600;
     }
+    .act-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+    }
+    .act-video { background: var(--ibf-bg); color: var(--ibf-fg); border-color: var(--ibf-bd); }
+    .act-study { background: var(--ibs-bg); color: var(--ibs-fg); border-color: var(--ibs-bd); }
+    .act-mcq { background: var(--imb-bg); color: var(--imb-fg); border-color: var(--imb-bd); }
+
     .task-title { font-size: 0.92rem; font-weight: 700; word-break: break-word; }
     .task-note { font-size: 0.8rem; color: var(--text-muted); margin-top: 3px; }
-    .task-actions { display: flex; gap: 4px; flex-shrink: 0; }
-    .icon-btn { padding: 5px 8px; font-size: 0.82rem; border-radius: 8px; background: var(--card); }
+    .task-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex-shrink: 0;
+      align-items: flex-end;
+    }
+    .action-row {
+      display: flex;
+      gap: 4px;
+    }
+    .icon-btn { padding: 4px 7px; font-size: 0.8rem; border-radius: 8px; background: var(--card); }
+    .icon-btn.play-btn { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 800; }
 
     .card {
       background: var(--card);
@@ -353,17 +384,370 @@
     }
     .two-col {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: 16px;
     }
-    .timer-display {
-      font-size: 3.2rem;
+
+    /* =======================================================
+       AIRPLANE BOARDING PASS TICKET & ANIMATIONS
+       ======================================================= */
+    .boarding-pass {
+      position: relative;
+      background: var(--card);
+      border: 2px solid var(--accent);
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 12px 30px rgba(62, 47, 35, 0.12);
+      margin-bottom: 16px;
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .boarding-pass.ticket-booked-anim {
+      animation: ticketPulse 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @keyframes ticketPulse {
+      0% { transform: scale(1); }
+      35% { transform: scale(0.985) translateY(3px); }
+      70% { transform: scale(1.015) translateY(-2px); }
+      100% { transform: scale(1) translateY(0); }
+    }
+
+    .bp-header {
+      background: var(--accent);
+      color: var(--accent-text);
+      padding: 12px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       font-weight: 800;
-      text-align: center;
-      letter-spacing: 2px;
-      margin: 12px 0;
+      font-size: 0.85rem;
+      letter-spacing: 0.6px;
+    }
+    .bp-flight-no {
+      background: rgba(255, 255, 255, 0.18);
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 0.78rem;
       font-variant-numeric: tabular-nums;
     }
+
+    .bp-route-band {
+      padding: 18px 20px 14px;
+      background: linear-gradient(180deg, var(--accent-soft) 0%, var(--card) 100%);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+    }
+    .bp-port {
+      text-align: center;
+    }
+    .bp-code {
+      font-size: 1.45rem;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      color: var(--accent);
+      line-height: 1.1;
+    }
+    .bp-city {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .bp-sky-track {
+      position: relative;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .bp-dashed-arc {
+      width: 100%;
+      border-top: 2px dashed var(--accent);
+      opacity: 0.55;
+    }
+    .bp-cruising-plane {
+      position: absolute;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: planeCruise 3.2s ease-in-out infinite;
+    }
+    [dir="rtl"] .bp-cruising-plane svg {
+      transform: scaleX(-1);
+    }
+    @keyframes planeCruise {
+      0%, 100% { transform: translateY(0px) rotate(-2deg); }
+      50% { transform: translateY(-4px) rotate(2deg); }
+    }
+
+    /* Fly-across burst animation when booking a ticket */
+    .bp-flyover-plane {
+      position: absolute;
+      top: 50%;
+      left: -40px;
+      transform: translateY(-50%);
+      color: var(--accent);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 5;
+    }
+    [dir="rtl"] .bp-flyover-plane {
+      left: auto;
+      right: -40px;
+    }
+    [dir="rtl"] .bp-flyover-plane svg {
+      transform: scaleX(-1);
+    }
+    .boarding-pass.ticket-booked-anim .bp-flyover-plane {
+      animation: planeFlyAcrossLTR 0.9s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    }
+    [dir="rtl"] .boarding-pass.ticket-booked-anim .bp-flyover-plane {
+      animation: planeFlyAcrossRTL 0.9s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+    }
+    @keyframes planeFlyAcrossLTR {
+      0% { left: -30px; opacity: 0; transform: translateY(-40%) scale(0.8); }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { left: calc(100% + 30px); opacity: 0; transform: translateY(-65%) scale(1.25); }
+    }
+    @keyframes planeFlyAcrossRTL {
+      0% { right: -30px; opacity: 0; transform: translateY(-40%) scale(0.8); }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { right: calc(100% + 30px); opacity: 0; transform: translateY(-65%) scale(1.25); }
+    }
+
+    /* Boarding stamp */
+    .bp-stamp {
+      position: absolute;
+      top: 10px;
+      inset-inline-end: 16px;
+      border: 2px solid var(--ibs-fg);
+      color: var(--ibs-fg);
+      background: var(--ibs-bg);
+      font-size: 0.7rem;
+      font-weight: 900;
+      padding: 2px 8px;
+      border-radius: 6px;
+      transform: rotate(-8deg) scale(1);
+      opacity: 0.92;
+      pointer-events: none;
+      letter-spacing: 0.5px;
+    }
+    .boarding-pass.ticket-booked-anim .bp-stamp {
+      animation: stampLand 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes stampLand {
+      0% { transform: rotate(-18deg) scale(2.1); opacity: 0; }
+      100% { transform: rotate(-8deg) scale(1); opacity: 0.95; }
+    }
+
+    .bp-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      padding: 10px 18px 14px;
+      border-bottom: 2px dashed var(--border);
+      position: relative;
+    }
+    /* Ticket side notches */
+    .bp-meta-grid::before, .bp-meta-grid::after {
+      content: "";
+      position: absolute;
+      bottom: -11px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 2px solid var(--accent);
+    }
+    .bp-meta-grid::before { left: -12px; }
+    .bp-meta-grid::after { right: -12px; }
+
+    .bp-meta-cell {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 6px 8px;
+      text-align: center;
+    }
+    .bp-meta-lbl {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .bp-meta-val {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .bp-stub {
+      padding: 14px 18px 18px;
+      background: var(--card);
+    }
+
+    /* Live flight runway progress bar */
+    .flight-runway {
+      position: relative;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      margin: 8px 0 4px;
+    }
+    .runway-track {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-soft);
+      border-radius: 99px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .runway-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 99px;
+      transition: width 0.4s linear;
+    }
+    .runway-plane-marker {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--accent);
+      color: var(--accent-text);
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      transition: left 0.4s linear, right 0.4s linear;
+    }
+    [dir="rtl"] .runway-plane-marker {
+      transform: translate(50%, -50%);
+    }
+    [dir="rtl"] .runway-plane-marker svg {
+      transform: scaleX(-1);
+    }
+
+    /* Ticket Duration Slots */
+    .ticket-slots-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .ticket-slot {
+      background: var(--card);
+      border: 1.5px dashed var(--border);
+      border-radius: 12px;
+      padding: 8px 10px;
+      text-align: start;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.15s ease;
+    }
+    .ticket-slot.selected {
+      background: var(--accent-soft);
+      border: 1.5px solid var(--accent);
+      box-shadow: 0 3px 10px rgba(139, 94, 52, 0.14);
+    }
+    .slot-title { font-weight: 800; font-size: 0.84rem; }
+    .slot-sub { font-size: 0.72rem; color: var(--text-muted); }
+    .slot-badge {
+      background: var(--accent);
+      color: var(--accent-text);
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+
+    .session-builder {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .mode-switch {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .mode-btn {
+      justify-content: center;
+      padding: 9px 8px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.82rem;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      text-align: center;
+    }
+    .mode-btn.active-video {
+      background: var(--ibf-bg);
+      color: var(--ibf-fg);
+      border-color: var(--ibf-fg);
+    }
+    .mode-btn.active-study {
+      background: var(--ibs-bg);
+      color: var(--ibs-fg);
+      border-color: var(--ibs-fg);
+    }
+    .mode-btn.active-mcq {
+      background: var(--imb-bg);
+      color: var(--imb-fg);
+      border-color: var(--imb-fg);
+    }
+
+    .calc-box {
+      background: var(--card);
+      border: 1px dashed var(--accent);
+      border-radius: 12px;
+      padding: 11px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.84rem;
+    }
+    .calc-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .calc-result {
+      background: var(--accent-soft);
+      color: var(--text);
+      padding: 8px 11px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.83rem;
+    }
+
+    .timer-display {
+      font-size: 3.1rem;
+      font-weight: 900;
+      text-align: center;
+      letter-spacing: 2px;
+      margin: 4px 0 8px;
+      font-variant-numeric: tabular-nums;
+      color: var(--accent);
+    }
+
     .timeline-row {
       display: flex;
       justify-content: space-between;
@@ -378,12 +762,13 @@
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(20, 15, 12, 0.55);
+      background: rgba(20, 15, 12, 0.6);
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 14px;
       z-index: 999;
+      overflow-y: auto;
     }
     .modal-backdrop.open { display: flex; }
     .modal {
@@ -392,11 +777,13 @@
       border-radius: 20px;
       padding: 20px;
       width: 100%;
-      max-width: 460px;
+      max-width: 500px;
+      max-height: 92vh;
+      overflow-y: auto;
       box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 11px;
     }
     .form-group { display: flex; flex-direction: column; gap: 4px; }
     .form-group label { font-size: 0.82rem; font-weight: 700; color: var(--text-muted); }
@@ -429,12 +816,15 @@
     @media (max-width: 600px) {
       .days-grid { grid-template-columns: 1fr; }
       .timer-display { font-size: 2.5rem; }
+      .mode-switch { grid-template-columns: 1fr; }
+      .bp-meta-grid { grid-template-columns: repeat(2, 1fr); }
+      .ticket-slots-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <div id="jsGuardBanner" class="js-warning">
-    ⚠️ تنبيه: البرنامج اللي فتحت بيه الملف ده (زي معاينة الملفات أو Drive) موقف تشغيل الـ JavaScript! افتح الملف في Safari أو Chrome أو من رابط GitHub Pages عشان كل الزراير تشتغل.
+    ⚠️ تنبيه: البرنامج اللي فتحت بيه الملف ده (زي معاينة الملفات أو Drive) موقف تشغيل الـ JavaScript! افتح الملف في Safari أو Chrome أو تطبيق Documents عشان كل الزراير تشتغل.
   </div>
 
   <div class="container">
@@ -457,12 +847,13 @@
 
     <nav class="nav-tabs">
       <button type="button" class="nav-tab active" data-tab="schedule" onclick="switchTab('schedule')" id="tabSchedule">📅 الجدول والمتابعة</button>
-      <button type="button" class="nav-tab" data-tab="rhythm" onclick="switchTab('rhythm')" id="tabRhythm">⏱️ التايمر ونظام اليوم</button>
+      <button type="button" class="nav-tab" data-tab="rhythm" onclick="switchTab('rhythm')" id="tabRhythm">✈️ حجز تذكرة المذاكرة ونظام اليوم</button>
       <button type="button" class="nav-tab" data-tab="marks" onclick="switchTab('marks')" id="tabMarks">🎯 توزيع الـ 170 درجة</button>
       <button type="button" class="nav-tab" data-tab="rules" onclick="switchTab('rules')" id="tabRules">🧠 طريقة المذاكرة والقواعد</button>
       <button type="button" class="nav-tab" data-tab="errors" onclick="switchTab('errors')" id="tabErrors">📓 كشكول الأخطاء (Error Log)</button>
     </nav>
 
+    <!-- TAB 1: SCHEDULE -->
     <section id="sec-schedule" class="section active">
       <div class="toolbar">
         <div class="view-pills">
@@ -490,31 +881,197 @@
       <div id="scheduleContainer" class="days-grid"></div>
     </section>
 
+    <!-- TAB 2: FLIGHT TICKET SESSION BUILDER & TIMER -->
     <section id="sec-rhythm" class="section">
       <div class="two-col">
-        <div class="card">
-          <h2 id="timerTitle">⏱️ تايمر التركيز الهادي (Focus Timer)</h2>
-          <p style="font-size:0.85rem;color:var(--text-muted)" id="timerHint">45 دقيقة تركيز + 10 دقايق راحة (من غير موبايل) • جرس هادي لما يخلص</p>
-          <div class="timer-display" id="timerDisplay">45:00</div>
-          <div class="view-pills" style="justify-content:center;margin-bottom:12px;">
-            <button type="button" class="small" onclick="setTimerMinutes(45)">45m Block</button>
-            <button type="button" class="small" onclick="setTimerMinutes(20)">20m Loop</button>
-            <button type="button" class="small" onclick="setTimerMinutes(10)">10m Rest</button>
-            <button type="button" class="small" onclick="setTimerMinutes(35)">35m Test (30 MCQ)</button>
-            <button type="button" class="small" onclick="setTimerMinutes(60)">60m YouTube</button>
+        <div>
+          <!-- AIRPLANE BOARDING PASS WIDGET -->
+          <div class="boarding-pass" id="boardingPassCard">
+            <div class="bp-header">
+              <span id="bpAirlineTitle">✈️ COZY MED AIRLINES • تذكرة صعود للتركيز</span>
+              <span class="bp-flight-no" id="bpFlightNo">FLT-IHI</span>
+            </div>
+
+            <div class="bp-route-band">
+              <div class="bp-stamp" id="bpStampText">BOARDING ✈️</div>
+              <div class="bp-port">
+                <div class="bp-code">DESK</div>
+                <div class="bp-city" id="bpOriginCity">مكتب المذاكرة</div>
+              </div>
+
+              <div class="bp-sky-track">
+                <div class="bp-dashed-arc"></div>
+                <div class="bp-cruising-plane" aria-hidden="true">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" transform="rotate(90 12 12)"/>
+                  </svg>
+                </div>
+                <div class="bp-flyover-plane" aria-hidden="true">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" transform="rotate(90 12 12)"/>
+                  </svg>
+                </div>
+              </div>
+
+              <div class="bp-port">
+                <div class="bp-code">FOCUS</div>
+                <div class="bp-city" id="bpDestCity">هدف الإنجاز</div>
+              </div>
+            </div>
+
+            <div class="bp-meta-grid">
+              <div class="bp-meta-cell">
+                <div class="bp-meta-lbl" id="bpLblDep">الإقلاع</div>
+                <div class="bp-meta-val" id="bpDepTime">08:30</div>
+              </div>
+              <div class="bp-meta-cell">
+                <div class="bp-meta-lbl" id="bpLblDur">مدة الرحلة</div>
+                <div class="bp-meta-val" id="bpDurVal">41m</div>
+              </div>
+              <div class="bp-meta-cell">
+                <div class="bp-meta-lbl" id="bpLblArr">الوصول</div>
+                <div class="bp-meta-val" id="bpArrTime">09:11</div>
+              </div>
+              <div class="bp-meta-cell">
+                <div class="bp-meta-lbl" id="bpLblGate">البوابة</div>
+                <div class="bp-meta-val" id="bpGateVal">VID 1.25x</div>
+              </div>
+            </div>
+
+            <div class="bp-stub">
+              <div style="text-align:center;">
+                <div id="activeSessionBadge"></div>
+                <div style="font-size:1.05rem;font-weight:800;margin-top:4px;" id="activeLessonDisplay">Leucocytes 4–12 (1/2)</div>
+              </div>
+
+              <!-- Live Runway Plane Progress -->
+              <div class="flight-runway">
+                <div class="runway-track">
+                  <div class="runway-fill" id="timerProgressBar" style="width:0%"></div>
+                </div>
+                <div class="runway-plane-marker" id="runwayPlaneMarker" style="inset-inline-start: 0%;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" transform="rotate(90 12 12)"/>
+                  </svg>
+                </div>
+              </div>
+
+              <div class="timer-display" id="timerDisplay">41:00</div>
+
+              <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;">
+                <button type="button" class="primary" onclick="bookAndStartFlight()" id="startTimerBtn">🛫 ابدأ الرحلة (Takeoff)</button>
+                <button type="button" onclick="pauseTimer()" id="pauseTimerBtn">⏸ إيقاف مؤقت</button>
+                <button type="button" onclick="completeCurrentSession()" id="doneSessionBtn" style="background:var(--ibs-bg);color:var(--ibs-fg);border-color:var(--ibs-bd);">🛬 وصلت بالسلامة (تم)</button>
+                <button type="button" onclick="resetTimer()" id="resetTimerBtn">↺ إعادة</button>
+              </div>
+            </div>
           </div>
-          <div style="display:flex;justify-content:center;gap:10px;">
-            <button type="button" class="primary" onclick="startTimer()" id="startTimerBtn">▶ ابدأ</button>
-            <button type="button" onclick="pauseTimer()" id="pauseTimerBtn">⏸ وقف مؤقت</button>
-            <button type="button" onclick="resetTimer()" id="resetTimerBtn">↺ إعادة</button>
+
+          <!-- TICKET BOOKING / TIME SELECTION CARD -->
+          <div class="card">
+            <h2 id="timerTitle">🎫 شباك حجز تذكرة الدرس والوقت</h2>
+            <p style="font-size:0.84rem;color:var(--text-muted);margin-bottom:12px;" id="timerHint">
+              اختار اسم الدرس، وحدد هتسـمع فيديو 🎬 ولا هتـذاكر 📖، واحجز تذكرة الوقت المناسب ليك!
+            </p>
+
+            <div class="session-builder">
+              <!-- 1. Select Lesson -->
+              <div class="form-group">
+                <label id="lblPickLesson">1️⃣ اختار اسم الدرس (من الجدول أو اكتب اسم مخصص)</label>
+                <select id="lessonSelect" onchange="handleLessonSelectChange()"></select>
+                <input type="text" id="customLessonInput" placeholder="اكتب اسم الدرس هنا..." style="margin-top:6px;" oninput="updateActiveSessionFromInputs()" />
+              </div>
+
+              <!-- 2. Video vs Study Mode -->
+              <div class="form-group">
+                <label id="lblPickMode">2️⃣ نوع الرحلة (سماع فيديو ولا مذاكرة؟)</label>
+                <div class="mode-switch">
+                  <button type="button" id="modeVideoBtn" class="mode-btn active-video" onclick="setSessionMode('video')">🎬 سماع فيديو</button>
+                  <button type="button" id="modeStudyBtn" class="mode-btn" onclick="setSessionMode('study')">📖 مذاكرة وتسميع</button>
+                  <button type="button" id="modeMcqBtn" class="mode-btn" onclick="setSessionMode('mcq')">✍️ حل أسئلة MCQ</button>
+                </div>
+              </div>
+
+              <!-- 3A. Video Smart Calculator -->
+              <div id="videoCalcBox" class="calc-box">
+                <div style="font-weight:800;color:var(--ibf-fg);" id="vidCalcHeading">🎬 حاسبة تذكرة الفيديو الذكية:</div>
+                <div class="calc-row">
+                  <span id="lblRawVid">مدة الفيديو الأصلي (دقيقة):</span>
+                  <input type="number" id="rawVideoMins" value="40" min="5" max="240" style="width:85px;" oninput="calculateVideoTime()" />
+                  <span id="lblSpeed">السرعة:</span>
+                  <button type="button" class="small pill" data-spd="1" onclick="setVideoSpeed(1)">1x</button>
+                  <button type="button" class="small pill active" data-spd="1.25" onclick="setVideoSpeed(1.25)">1.25x</button>
+                  <button type="button" class="small pill" data-spd="1.5" onclick="setVideoSpeed(1.5)">1.5x</button>
+                </div>
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.83rem;">
+                  <input type="checkbox" id="includePauseBuffer" checked onchange="calculateVideoTime()" style="width:17px;height:17px;accent-color:var(--accent);" />
+                  <span id="lblPauseBuf">أضف +3 دقايق توقيف وتسميع كل 12 دقيقة (عشان متسرحش)</span>
+                </label>
+                <div class="calc-result" id="videoCalcResult"></div>
+              </div>
+
+              <!-- 3B. Study / MCQ Ticket Slots Picker -->
+              <div id="studyCalcBox" class="calc-box" style="display:none;">
+                <div style="font-weight:800;color:var(--ibs-fg);" id="studyCalcHeading">🎫 اختار تذكرة الوقت المطلوب:</div>
+                <div class="ticket-slots-grid" id="ticketSlotsGrid">
+                  <button type="button" class="ticket-slot" data-mins="20" onclick="selectTicketSlot(20)">
+                    <div>
+                      <div class="slot-title" id="slot20Title">⚡ رحلة سريعة</div>
+                      <div class="slot-sub" id="slot20Sub">لوب نشط سريع</div>
+                    </div>
+                    <span class="slot-badge">20m</span>
+                  </button>
+                  <button type="button" class="ticket-slot" data-mins="30" onclick="selectTicketSlot(30)">
+                    <div>
+                      <div class="slot-title" id="slot30Title">☕ رحلة متوسطة</div>
+                      <div class="slot-sub" id="slot30Sub">قراءة + تسميع</div>
+                    </div>
+                    <span class="slot-badge">30m</span>
+                  </button>
+                  <button type="button" class="ticket-slot selected" data-mins="45" onclick="selectTicketSlot(45)">
+                    <div>
+                      <div class="slot-title" id="slot45Title">✈️ رحلة كاملة</div>
+                      <div class="slot-sub" id="slot45Sub">بلوك مذاكرة كامل</div>
+                    </div>
+                    <span class="slot-badge">45m</span>
+                  </button>
+                  <button type="button" class="ticket-slot" data-mins="60" onclick="selectTicketSlot(60)">
+                    <div>
+                      <div class="slot-title" id="slot60Title">🚀 رحلة طويلة</div>
+                      <div class="slot-sub" id="slot60Sub">درس دسم + حل</div>
+                    </div>
+                    <span class="slot-badge">60m</span>
+                  </button>
+                </div>
+                <div class="calc-row" style="margin-top:4px;">
+                  <span id="lblCustomMins">أو اكتب عدد الدقايق:</span>
+                  <input type="number" id="manualDurationInput" value="45" min="5" max="180" style="width:85px;" oninput="setCustomDuration(parseInt(this.value || 45, 10))" />
+                  <span id="lblMinUnit">دقيقة</span>
+                </div>
+                <div class="calc-result" id="studyPlanBreakdown"></div>
+              </div>
+
+              <button type="button" class="primary" style="justify-content:center;padding:11px;font-size:0.92rem;" onclick="triggerTicketBookingAnimation(true)" id="issueTicketBtn">
+                🎫 احجز التذكرة واطبع البوردينج باس ✈️
+              </button>
+            </div>
           </div>
         </div>
 
-        <div class="card">
-          <h2 id="ibsRotTitle">🦴 IBS 15-Min Nightly Rotation (جوه Block G)</h2>
-          <p style="font-size:0.84rem;color:var(--text-muted);margin-bottom:8px;" id="ibsRotDesc">كل ليلة 15 دقيقة لموضوع واحد بالترتيب، ولما يخلصوا عيد من الأول:</p>
-          <div class="chip-list" id="ibsRotList"></div>
-          <button type="button" class="small" style="margin-top:12px;" onclick="resetIbsRotation()" id="resetRotBtn">↺ تصفير الدورة</button>
+        <!-- Right Column: Session Log + IBS Rotation -->
+        <div>
+          <div class="card">
+            <h2 id="sessionLogTitle">📊 سجل رحلات الفيديو والمذاكرة</h2>
+            <div id="sessionSummaryStats" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;"></div>
+            <div id="sessionLogList" class="task-list"></div>
+          </div>
+
+          <div class="card">
+            <h2 id="ibsRotTitle">🦴 IBS 15-Min Nightly Rotation (جوه Block G)</h2>
+            <p style="font-size:0.84rem;color:var(--text-muted);margin-bottom:8px;" id="ibsRotDesc">كل ليلة 15 دقيقة لموضوع واحد بالترتيب، ولما يخلصوا عيد من الأول:</p>
+            <div class="chip-list" id="ibsRotList"></div>
+            <button type="button" class="small" style="margin-top:12px;" onclick="resetIbsRotation()" id="resetRotBtn">↺ تصفير الدورة</button>
+          </div>
         </div>
       </div>
 
@@ -530,6 +1087,7 @@
       </div>
     </section>
 
+    <!-- TAB 3: 170 MARKS -->
     <section id="sec-marks" class="section">
       <div class="card">
         <h2 id="marksMainTitle">🎯 توزيع الدرجات المتوقع (المجموع = 170 درجة)</h2>
@@ -547,10 +1105,12 @@
       </div>
     </section>
 
+    <!-- TAB 4: RULES -->
     <section id="sec-rules" class="section">
       <div class="two-col" id="rulesContainer"></div>
     </section>
 
+    <!-- TAB 5: ERROR LOG -->
     <section id="sec-errors" class="section">
       <div class="two-col">
         <div class="card">
@@ -594,15 +1154,18 @@
     </section>
   </div>
 
+  <!-- ENHANCED EDIT / ADD TASK MODAL (WITH LESSON, VIDEO/STUDY MODE & DURATION) -->
   <div class="modal-backdrop" id="taskModal">
     <div class="modal">
       <h3 id="modalHeading">✏️ تعديل البلوك</h3>
       <input type="hidden" id="modalDayId" />
       <input type="hidden" id="modalTaskIdx" />
+
       <div class="form-group">
-        <label id="mLblTitle">عنوان الدرس / التاسك</label>
-        <input type="text" id="mTitle" />
+        <label id="mLblTitle">1️⃣ اسم الدرس / التاسك</label>
+        <input type="text" id="mTitle" placeholder="مثال: Leucocytes 4–12 (1/2)" />
       </div>
+
       <div class="two-col" style="grid-template-columns:1fr 1fr;gap:10px;">
         <div class="form-group">
           <label id="mLblMod">الموديول</label>
@@ -617,14 +1180,56 @@
           </select>
         </div>
         <div class="form-group">
-          <label id="mLblBlock">البلوك / التوقيت</label>
-          <input type="text" id="mBlock" placeholder="Block B / 45m" />
+          <label id="mLblBlock">البلوك / الترتيب</label>
+          <input type="text" id="mBlock" placeholder="Block B" />
         </div>
       </div>
+
+      <!-- Activity Type: Video vs Study vs MCQ -->
+      <div class="form-group">
+        <label id="mLblActType">2️⃣ هتعمل إيه في الدرس ده؟ (سماع فيديو ولا مذاكرة؟)</label>
+        <div class="mode-switch">
+          <button type="button" id="mModeVideo" class="mode-btn" onclick="setModalMode('video')">🎬 سماع فيديو</button>
+          <button type="button" id="mModeStudy" class="mode-btn active-study" onclick="setModalMode('study')">📖 مذاكرة</button>
+          <button type="button" id="mModeMcq" class="mode-btn" onclick="setModalMode('mcq')">✍️ حل MCQ</button>
+        </div>
+      </div>
+
+      <!-- Modal Video Calculator -->
+      <div id="mVideoCalcBox" class="calc-box" style="display:none;">
+        <div class="calc-row">
+          <span id="mLblRawVid">مدة الفيديو الأصلي (دقيقة):</span>
+          <input type="number" id="mRawVidMins" value="40" min="5" max="240" style="width:78px;" oninput="recalcModalVideo()" />
+          <span id="mLblSpeed">السرعة:</span>
+          <button type="button" class="small pill" data-mspd="1" onclick="setModalSpeed(1)">1x</button>
+          <button type="button" class="small pill active" data-mspd="1.25" onclick="setModalSpeed(1.25)">1.25x</button>
+          <button type="button" class="small pill" data-mspd="1.5" onclick="setModalSpeed(1.5)">1.5x</button>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.8rem;">
+          <input type="checkbox" id="mPauseBuf" checked onchange="recalcModalVideo()" style="width:16px;height:16px;accent-color:var(--accent);" />
+          <span id="mLblPauseBuf">+3 دقايق توقيف وتسميع كل 12 دقيقة</span>
+        </label>
+        <div class="calc-result" id="mVidResultText"></div>
+      </div>
+
+      <!-- Modal Study / Target Duration -->
+      <div class="form-group">
+        <label id="mLblDuration">3️⃣ الوقت المفروض تذاكره / تسمعه (بالدقايق)</label>
+        <div class="calc-row">
+          <button type="button" class="small" onclick="setModalDuration(20)">20 د</button>
+          <button type="button" class="small" onclick="setModalDuration(30)">30 د</button>
+          <button type="button" class="small" onclick="setModalDuration(45)">45 د</button>
+          <button type="button" class="small" onclick="setModalDuration(60)">60 د</button>
+          <input type="number" id="mDurationMins" value="45" min="5" max="240" style="width:82px;" />
+          <span id="mLblMinUnit">دقيقة</span>
+        </div>
+      </div>
+
       <div class="form-group">
         <label id="mLblNote">ملاحظة شخصية (أرقام صفحات / تحشيشة)</label>
-        <input type="text" id="mNote" />
+        <input type="text" id="mNote" placeholder="ص 4–12..." />
       </div>
+
       <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px;">
         <button type="button" onclick="closeModal()" id="mCancel">إلغاء</button>
         <button type="button" class="primary" onclick="saveTaskModal()" id="mSave">حفظ التعديل</button>
@@ -633,7 +1238,6 @@
   </div>
 
   <script>
-    // Hide the JS-disabled warning immediately once JS runs
     var guard = document.getElementById("jsGuardBanner");
     if (guard) guard.style.display = "none";
 
@@ -642,65 +1246,65 @@
         id: "2026-11-16", week: 1, dateEn: "Mon, 16 Nov", dateAr: "الإثنين ١٦ نوفمبر",
         typeEn: "Day 1 — Kickoff", typeAr: "اليوم الأول — البداية",
         tasks: [
-          { mod: "Review", block: "Setup 20'", title: "20' Setup: Folder per module + doctors' Qs + prayer app + thermos", noteAr: "فولدر لكل مادة + أسئلة الدكاترة + الترمس", noteEn: "Folder per module + doctors' Qs + thermos", done: false },
-          { mod: "IHI", block: "Block B", title: "Leucocytes 4–12 (1/2)", noteAr: "أول بلوك مذاكرة 45 دقيقة", noteEn: "First 45' study block", done: false },
-          { mod: "IHI", block: "Block C", title: "Leucocytes 4–12 (2/2) ★", noteAr: "موضوع مهم — ركز على التجميعة", noteEn: "High-weight topic ★", done: false },
-          { mod: "Review", block: "Block G", title: "Recall: blank page + 5 MCQ → sleep 12:30", noteAr: "ورقة بيضا من الذاكرة + 5 أسئلة ونوم 12:30", noteEn: "Blank page recall + 5 MCQs → sleep 12:30", done: false }
+          { mod: "Review", block: "Setup 20'", title: "20' Setup: Folder per module + doctors' Qs + prayer app + thermos", activityType: "study", durationMins: 20, noteAr: "فولدر لكل مادة + أسئلة الدكاترة + الترمس", noteEn: "Folder per module + doctors' Qs + thermos", done: false },
+          { mod: "IHI", block: "Block B", title: "Leucocytes 4–12 (1/2)", activityType: "study", durationMins: 45, noteAr: "أول بلوك مذاكرة 45 دقيقة", noteEn: "First 45' study block", done: false },
+          { mod: "IHI", block: "Block C", title: "Leucocytes 4–12 (2/2) ★", activityType: "study", durationMins: 45, noteAr: "موضوع مهم — ركز على التجميعة", noteEn: "High-weight topic ★", done: false },
+          { mod: "Review", block: "Block G", title: "Recall: blank page + 5 MCQ → sleep 12:30", activityType: "study", durationMins: 45, noteAr: "ورقة بيضا من الذاكرة + 5 أسئلة ونوم 12:30", noteEn: "Blank page recall + 5 MCQs → sleep 12:30", done: false }
         ]
       },
       {
         id: "2026-11-17", week: 1, dateEn: "Tue, 17 Nov", dateAr: "الثلاثاء ١٧ نوفمبر",
         typeEn: "Section Day", typeAr: "يوم سكاشن",
         tasks: [
-          { mod: "IHI", block: "Uni 10:30", title: "Cases: IHI (Anemia) 10:30", noteAr: "كيس الأنيميا في الكلية", noteEn: "Anemia case at uni", done: false },
-          { mod: "IHI", block: "Block B", title: "Blood + Plasma proteins + RBC/Hb 39–43", noteAr: "فسيولوجي ص 39–43", noteEn: "Physiology pp. 39–43", done: false },
-          { mod: "IHI", block: "Block C", title: "Erythropoiesis 44–49 (1/2)", noteAr: "الجزء الأول", noteEn: "Part 1/2", done: false },
-          { mod: "IHI", block: "Block D", title: "Anemia + Polycythemia 50–57 (1/2)", noteAr: "الجزء الأول", noteEn: "Part 1/2", done: false },
-          { mod: "IHI", block: "Block A", title: "Anemia types table from the case (30') + MCQ", noteAr: "متابعة السكشن: جدول أنواع الأنيميا + حل MCQ", noteEn: "Section follow-up: Anemia table + MCQ", done: false },
-          { mod: "Review", block: "Block G", title: "Night Recall + +1d Skeleton + IBS Rotation", noteAr: "تسميع اليوم + مراجعة إمبارح + 15 د IBS", noteEn: "Today recall + yesterday skeleton + 15' IBS", done: false }
+          { mod: "IHI", block: "Uni 10:30", title: "Cases: IHI (Anemia) 10:30", activityType: "study", durationMins: 45, noteAr: "كيس الأنيميا في الكلية", noteEn: "Anemia case at uni", done: false },
+          { mod: "IHI", block: "Block B", title: "Blood + Plasma proteins + RBC/Hb 39–43", activityType: "study", durationMins: 45, noteAr: "فسيولوجي ص 39–43", noteEn: "Physiology pp. 39–43", done: false },
+          { mod: "IHI", block: "Block C", title: "Erythropoiesis 44–49 (1/2)", activityType: "study", durationMins: 45, noteAr: "الجزء الأول", noteEn: "Part 1/2", done: false },
+          { mod: "IHI", block: "Block D", title: "Anemia + Polycythemia 50–57 (1/2)", activityType: "study", durationMins: 45, noteAr: "الجزء الأول", noteEn: "Part 1/2", done: false },
+          { mod: "IHI", block: "Block A", title: "Anemia types table from the case (30') + MCQ", activityType: "mcq", durationMins: 45, noteAr: "متابعة السكشن: جدول أنواع الأنيميا + حل MCQ", noteEn: "Section follow-up: Anemia table + MCQ", done: false },
+          { mod: "Review", block: "Block G", title: "Night Recall + +1d Skeleton + IBS Rotation", activityType: "study", durationMins: 45, noteAr: "تسميع اليوم + مراجعة إمبارح + 15 د IBS", noteEn: "Today recall + yesterday skeleton + 15' IBS", done: false }
         ]
       },
       {
         id: "2026-11-18", week: 1, dateEn: "Wed, 18 Nov", dateAr: "الأربعاء ١٨ نوفمبر",
         typeEn: "Section Day", typeAr: "يوم سكاشن",
         tasks: [
-          { mod: "IHI", block: "Uni Lab", title: "Prac Immuno + Prac Histo (WBCs)", noteAr: "سكشن عملي إميونو + هيستو WBCs", noteEn: "Practical Immuno + Histo WBCs", done: false },
-          { mod: "IHI", block: "Block B", title: "Erythropoiesis 44–49 (2/2)", noteAr: "تكميلة Erythropoiesis", noteEn: "Finish Erythropoiesis", done: false },
-          { mod: "IHI", block: "Block C", title: "Anemia + Polycythemia 50–57 (2/2)", noteAr: "تكميلة Anemia", noteEn: "Finish Anemia & Polycythemia", done: false },
-          { mod: "IBS", block: "Block D", title: "Gametogenesis 74–84 (1/3)", noteAr: "أول جزء إمبريولوجي", noteEn: "Embryology part 1/3", done: false },
-          { mod: "IHI", block: "Block A", title: "WBC table + slide images (3 ID points)", noteAr: "جدول الـ WBCs + صور الشرايح", noteEn: "WBC table + slide images", done: false },
-          { mod: "Review", block: "Block G", title: "Night Recall + IBS Rotation", noteAr: "ورقة بيضا + 15 د IBS", noteEn: "Blank page + 15' IBS rotation", done: false }
+          { mod: "IHI", block: "Uni Lab", title: "Prac Immuno + Prac Histo (WBCs)", activityType: "study", durationMins: 45, noteAr: "سكشن عملي إميونو + هيستو WBCs", noteEn: "Practical Immuno + Histo WBCs", done: false },
+          { mod: "IHI", block: "Block B", title: "Erythropoiesis 44–49 (2/2)", activityType: "study", durationMins: 45, noteAr: "تكميلة Erythropoiesis", noteEn: "Finish Erythropoiesis", done: false },
+          { mod: "IHI", block: "Block C", title: "Anemia + Polycythemia 50–57 (2/2)", activityType: "study", durationMins: 45, noteAr: "تكميلة Anemia", noteEn: "Finish Anemia & Polycythemia", done: false },
+          { mod: "IBS", block: "Block D", title: "Gametogenesis 74–84 (1/3)", activityType: "study", durationMins: 45, noteAr: "أول جزء إمبريولوجي", noteEn: "Embryology part 1/3", done: false },
+          { mod: "IHI", block: "Block A", title: "WBC table + slide images (3 ID points)", activityType: "study", durationMins: 45, noteAr: "جدول الـ WBCs + صور الشرايح", noteEn: "WBC table + slide images", done: false },
+          { mod: "Review", block: "Block G", title: "Night Recall + IBS Rotation", activityType: "study", durationMins: 45, noteAr: "ورقة بيضا + 15 د IBS", noteEn: "Blank page + 15' IBS rotation", done: false }
         ]
       },
       {
         id: "2026-11-19", week: 1, dateEn: "Thu, 19 Nov", dateAr: "الخميس ١٩ نوفمبر",
         typeEn: "Activities & Outing", typeAr: "أنشطة وخروجة الأسبوع",
         tasks: [
-          { mod: "Review", block: "T1 Review", title: "Review P1–P3 + H1", noteAr: "مراجعة الأسبوع من السكيلتون", noteEn: "Weekly review from skeleton", done: false },
-          { mod: "Review", block: "T2 MCQ", title: "MCQ — week's 2 weakest topics", noteAr: "حل على أضعف موضوعين في الأسبوع", noteEn: "Practice week's 2 weakest topics", done: false },
-          { mod: "Review", block: "Buffer", title: "Buffer: catch up / extra MCQ + 70% check", noteAr: "لو متأخر في حاجة لمّها + احسب نسبة الـ 70%", noteEn: "Catch up + check 70% completion", done: false },
-          { mod: "Outing", block: "5:30 PM", title: "5:30 PM outing — no guilt!", noteAr: "اخرج وغير جو من غير تأنيب ضمير!", noteEn: "Change of scene, zero guilt!", done: false }
+          { mod: "Review", block: "T1 Review", title: "Review P1–P3 + H1", activityType: "study", durationMins: 45, noteAr: "مراجعة الأسبوع من السكيلتون", noteEn: "Weekly review from skeleton", done: false },
+          { mod: "Review", block: "T2 MCQ", title: "MCQ — week's 2 weakest topics", activityType: "mcq", durationMins: 40, noteAr: "حل على أضعف موضوعين في الأسبوع", noteEn: "Practice week's 2 weakest topics", done: false },
+          { mod: "Review", block: "Buffer", title: "Buffer: catch up / extra MCQ + 70% check", activityType: "study", durationMins: 30, noteAr: "لو متأخر في حاجة لمّها + احسب نسبة الـ 70%", noteEn: "Catch up + check 70% completion", done: false },
+          { mod: "Outing", block: "5:30 PM", title: "5:30 PM outing — no guilt!", activityType: "study", durationMins: 60, noteAr: "اخرج وغير جو من غير تأنيب ضمير!", noteEn: "Change of scene, zero guilt!", done: false }
         ]
       },
       {
         id: "2026-11-20", week: 1, dateEn: "Fri, 20 Nov", dateAr: "الجمعة ٢٠ نوفمبر",
         typeEn: "Full Study Day", typeAr: "يوم مذاكرة كامل",
         tasks: [
-          { mod: "IHI", block: "Block 1", title: "Platelets + RBC 13–20", noteAr: "ص 13–20", noteEn: "Pages 13–20", done: false },
-          { mod: "IHI", block: "Block 2", title: "Hemostasis + abnormalities 58–62 (1/2)", noteAr: "الجزء الأول", noteEn: "Part 1/2", done: false },
-          { mod: "IHI", block: "Block 3", title: "Hemostasis + abnormalities 58–62 (2/2)", noteAr: "الجزء الثاني", noteEn: "Part 2/2", done: false },
-          { mod: "IBS", block: "Block 4", title: "Gametogenesis 74–84 (2/3)", noteAr: "الجزء الثاني إمبريو", noteEn: "Embryo part 2/3", done: false },
-          { mod: "Review", block: "Evening", title: "Error log review + 45' room clean + Block G", noteAr: "مراجعة الأخطاء + ترويق الأوضة 45 د بتايمر + Block G", noteEn: "Error log + 45' room clean + Block G", done: false }
+          { mod: "IHI", block: "Block 1", title: "Platelets + RBC 13–20", activityType: "study", durationMins: 45, noteAr: "ص 13–20", noteEn: "Pages 13–20", done: false },
+          { mod: "IHI", block: "Block 2", title: "Hemostasis + abnormalities 58–62 (1/2)", activityType: "study", durationMins: 45, noteAr: "الجزء الأول", noteEn: "Part 1/2", done: false },
+          { mod: "IHI", block: "Block 3", title: "Hemostasis + abnormalities 58–62 (2/2)", activityType: "study", durationMins: 45, noteAr: "الجزء الثاني", noteEn: "Part 2/2", done: false },
+          { mod: "IBS", block: "Block 4", title: "Gametogenesis 74–84 (2/3)", activityType: "study", durationMins: 45, noteAr: "الجزء الثاني إمبريو", noteEn: "Embryo part 2/3", done: false },
+          { mod: "Review", block: "Evening", title: "Error log review + 45' room clean + Block G", activityType: "study", durationMins: 45, noteAr: "مراجعة الأخطاء + ترويق الأوضة 45 د بتايمر + Block G", noteEn: "Error log + 45' room clean + Block G", done: false }
         ]
       },
       {
         id: "2026-11-21", week: 1, dateEn: "Sat, 21 Nov", dateAr: "السبت ٢١ نوفمبر",
         typeEn: "Study + Test #1", typeAr: "مذاكرة + امتحان #1",
         tasks: [
-          { mod: "Review", block: "Block 1", title: "Buffer (Platelets+RBC catch-up / revision)", noteAr: "تأكيد ومراجعة", noteEn: "Catch-up / consolidation", done: false },
-          { mod: "IHI", block: "Block 2", title: "Clotting + Anti-clotting 63–69 (1/2)", noteAr: "ص 63–69 الجزء الأول", noteEn: "Pages 63–69 (1/2)", done: false },
-          { mod: "IBS", block: "Block 3", title: "Gametogenesis 74–84 (3/3)", noteAr: "تكميلة Gametogenesis", noteEn: "Finish Gametogenesis", done: false },
-          { mod: "Test", block: "Sat Eve", title: "TEST #1 — 30 MCQ IHI Physio + Histo (35 min)", noteAr: "امتحان بوقت 35 دقيقة + سجل كل غلطة في الـ Error Log", noteEn: "Timed 35 min + log mistakes in Error Log", done: false }
+          { mod: "Review", block: "Block 1", title: "Buffer (Platelets+RBC catch-up / revision)", activityType: "study", durationMins: 45, noteAr: "تأكيد ومراجعة", noteEn: "Catch-up / consolidation", done: false },
+          { mod: "IHI", block: "Block 2", title: "Clotting + Anti-clotting 63–69 (1/2)", activityType: "study", durationMins: 45, noteAr: "ص 63–69 الجزء الأول", noteEn: "Pages 63–69 (1/2)", done: false },
+          { mod: "IBS", block: "Block 3", title: "Gametogenesis 74–84 (3/3)", activityType: "study", durationMins: 45, noteAr: "تكميلة Gametogenesis", noteEn: "Finish Gametogenesis", done: false },
+          { mod: "Test", block: "Sat Eve", title: "TEST #1 — 30 MCQ IHI Physio + Histo (35 min)", activityType: "mcq", durationMins: 35, noteAr: "امتحان بوقت 35 دقيقة + سجل كل غلطة في الـ Error Log", noteEn: "Timed 35 min + log mistakes in Error Log", done: false }
         ]
       },
       {
@@ -779,7 +1383,7 @@
           { mod: "IBS", block: "Block 2", title: "Implantation 97–103 (1/2)", noteAr: "الجزء 1/2", noteEn: "Part 1/2", done: false },
           { mod: "IBS", block: "Block 3", title: "Implantation 97–103 (2/2)", noteAr: "الجزء 2/2 (SAQ 5 درجات)", noteEn: "Part 2/2 (5-mark SAQ)", done: false },
           { mod: "IBS", block: "Block 4", title: "Fertilization 93–96 ★", noteAr: "مهم جداً ★", noteEn: "High yield ★", done: false },
-          { mod: "Test", block: "Sat Eve", title: "TEST #2 — 30 MCQ IMB + Embryology (35 min)", noteAr: "امتحان بوقت 35 دقيقة + Error Log", noteEn: "Timed 35 min + Error Log", done: false }
+          { mod: "Test", block: "Sat Eve", title: "TEST #2 — 30 MCQ IMB + Embryology (35 min)", activityType: "mcq", durationMins: 35, noteAr: "امتحان بوقت 35 دقيقة + Error Log", noteEn: "Timed 35 min + Error Log", done: false }
         ]
       },
       {
@@ -858,7 +1462,7 @@
           { mod: "IHI", block: "Block 2", title: "T-cell mediated immunity 24–29 (2/2)", noteAr: "الجزء 2/2 (SAQ متوقع)", noteEn: "Part 2/2 (SAQ)", done: false },
           { mod: "IBF", block: "Block 3", title: "Lipid chemistry 3 (1/2) ★", noteAr: "الجزء 1/2 ★", noteEn: "Part 1/2 ★", done: false },
           { mod: "IBF", block: "Block 4", title: "Lipid chemistry 3 (2/2) ★ + Trophoblast 111–115 (2/2)", noteAr: "تكميلة Lipid 3 + Placenta", noteEn: "Finish Lipid 3 + Placenta", done: false },
-          { mod: "Test", block: "Sat Eve", title: "TEST #3 — 30 MCQ Immunology + Embryology (35 min)", noteAr: "امتحان بوقت 35 دقيقة + Error Log", noteEn: "Timed 35 min + Error Log", done: false }
+          { mod: "Test", block: "Sat Eve", title: "TEST #3 — 30 MCQ Immunology + Embryology (35 min)", activityType: "mcq", durationMins: 35, noteAr: "امتحان بوقت 35 دقيقة + Error Log", noteEn: "Timed 35 min + Error Log", done: false }
         ]
       },
       {
@@ -874,7 +1478,7 @@
         ]
       },
       {
-        id: "2026-12-07", week: 4, dateEn: "Mon, 7 Dec", dateAr: "الإثنين ٢ ديسمبر",
+        id: "2026-12-07", week: 4, dateEn: "Mon, 7 Dec", dateAr: "الإثنين ٧ ديسمبر",
         typeEn: "Section Day", typeAr: "يوم سكاشن",
         tasks: [
           { mod: "IMB", block: "Uni Lab", title: "Prac IMB (gene regulation, mutations, rDNA) 1 section", noteAr: "سكشن IMB", noteEn: "IMB lab section", done: false },
@@ -937,7 +1541,7 @@
           { mod: "IBF", block: "Block 2", title: "Amino acids 1–3", noteAr: "أحماض أمينية", noteEn: "Amino acids 1–3", done: false },
           { mod: "IBF", block: "Block 3", title: "ANS + Parasympathetic 67–79 (1/3) ★", noteAr: "بداية الـ ANS (مهم ★)", noteEn: "ANS start ★", done: false },
           { mod: "IBF", block: "Block 4", title: "ANS + Parasympathetic 67–79 (2/3) ★", noteAr: "الجزء 2/3 ★", noteEn: "Part 2/3 ★", done: false },
-          { mod: "Test", block: "Sat Eve", title: "TEST #4 — 30 MCQ IBF Biochem + IMB (35 min)", noteAr: "امتحان بوقت 35 دقيقة + Error Log", noteEn: "Timed 35 min + Error Log", done: false }
+          { mod: "Test", block: "Sat Eve", title: "TEST #4 — 30 MCQ IBF Biochem + IMB (35 min)", activityType: "mcq", durationMins: 35, noteAr: "امتحان بوقت 35 دقيقة + Error Log", noteEn: "Timed 35 min + Error Log", done: false }
         ]
       },
       {
@@ -1003,7 +1607,7 @@
         typeEn: "Round 2 Diagnostic", typeAr: "بداية Round 2 + تحديد المستوى",
         tasks: [
           { mod: "Review", block: "Catch-up", title: "Carry over anything late from Round 1", noteAr: "لمّ أي حاجة متبقية قبل بداية المراجعة", noteEn: "Finish any leftover blocks", done: false },
-          { mod: "Test", block: "Diagnostic", title: "Diagnostic Test: 30 MCQ per module (IHI, IBS, IBF, IMB)", noteAr: "النتيجة هي اللي بتحدد ترتيب مواد Round 2 (10–12 يوم من السكيلتون)", noteEn: "Result sets the module order for Round 2 (10–12 days from skeleton)", done: false }
+          { mod: "Test", block: "Diagnostic", title: "Diagnostic Test: 30 MCQ per module (IHI, IBS, IBF, IMB)", activityType: "mcq", durationMins: 60, noteAr: "النتيجة هي اللي بتحدد ترتيب مواد Round 2 (10–12 يوم من السكيلتون)", noteEn: "Result sets the module order for Round 2 (10–12 days from skeleton)", done: false }
         ]
       }
     ];
@@ -1033,22 +1637,28 @@
       plan: JSON.parse(JSON.stringify(DEFAULT_PLAN)),
       ibsRot: {},
       saqs: JSON.parse(JSON.stringify(SAQ_TOPICS)),
-      errors: JSON.parse(JSON.stringify(INITIAL_ERRORS))
+      errors: JSON.parse(JSON.stringify(INITIAL_ERRORS)),
+      sessionLogs: []
     };
+
+    let lastMovedHighlight = null;
 
     function loadState() {
       try {
-        const saved = localStorage.getItem("cozy_med_study_hub_v2");
+        const saved = localStorage.getItem("cozy_med_study_hub_v4")
+          || localStorage.getItem("cozy_med_study_hub_v3")
+          || localStorage.getItem("cozy_med_study_hub_v2");
         if (saved) {
           const parsed = JSON.parse(saved);
           state = { ...state, ...parsed };
+          if (!Array.isArray(state.sessionLogs)) state.sessionLogs = [];
         }
       } catch (e) {}
     }
 
     function saveState() {
       try {
-        localStorage.setItem("cozy_med_study_hub_v2", JSON.stringify(state));
+        localStorage.setItem("cozy_med_study_hub_v4", JSON.stringify(state));
       } catch (e) {}
     }
 
@@ -1062,7 +1672,7 @@
         exportBtn: "💾 حفظ نسخة",
         importBtn: "📂 استرجاع",
         tabSchedule: "📅 الجدول والمتابعة",
-        tabRhythm: "⏱️ التايمر ونظام اليوم",
+        tabRhythm: "✈️ حجز تذكرة المذاكرة ونظام اليوم",
         tabMarks: "🎯 توزيع الـ 170 درجة",
         tabRules: "🧠 طريقة المذاكرة والقواعد",
         tabErrors: "📓 كشكول الأخطاء (Error Log)",
@@ -1071,16 +1681,52 @@
         viewAll: "🗓️ الجدول كامل",
         searchPh: "ابحث عن درس أو صفحة...",
         addTask: "+ إضافة تاسك",
+        startLessonTip: "احجز تذكرة الدرس ده",
+        moveUpTip: "طلع لفوق",
+        moveDownTip: "نزل لتحت",
         postponeTip: "رحّل لبكرة",
-        editTip: "تعديل",
+        editTip: "تعديل الدرس والوقت",
         delTip: "حذف",
         statTotal: "إجمالي إنجاز الخطة",
         statBlocks: "بلوك خلص",
-        timerTitle: "⏱️ تايمر التركيز الهادي (Focus Timer)",
-        timerHint: "45 دقيقة تركيز + 10 دقايق راحة (من غير موبايل) • جرس هادي لما يخلص",
-        start: "▶ ابدأ",
-        pause: "⏸ وقف مؤقت",
+        bpAirlineTitle: "✈️ COZY MED AIRLINES • تذكرة صعود للتركيز",
+        bpOriginCity: "مكتب المذاكرة",
+        bpDestCity: "هدف الإنجاز",
+        bpLblDep: "الإقلاع",
+        bpLblDur: "مدة الرحلة",
+        bpLblArr: "الوصول",
+        bpLblGate: "البوابة",
+        timerTitle: "🎫 شباك حجز تذكرة الدرس والوقت",
+        timerHint: "اختار اسم الدرس، وحدد هتسـمع فيديو 🎬 ولا هتـذاكر 📖، واحجز تذكرة الوقت المناسب ليك!",
+        lblPickLesson: "1️⃣ اختار اسم الدرس (من الجدول أو اكتب اسم مخصص)",
+        customLessonOpt: "✍️ اكتب اسم درس مخصص...",
+        customLessonPh: "اكتب اسم الدرس هنا...",
+        lblPickMode: "2️⃣ نوع الرحلة (سماع فيديو ولا مذاكرة؟)",
+        modeVideo: "🎬 سماع فيديو",
+        modeStudy: "📖 مذاكرة وتسميع",
+        modeMcq: "✍️ حل أسئلة MCQ",
+        vidCalcHeading: "🎬 حاسبة تذكرة الفيديو الذكية:",
+        lblRawVid: "مدة الفيديو الأصلي (دقيقة):",
+        lblSpeed: "السرعة:",
+        lblPauseBuf: "أضف +3 دقايق توقيف وتسميع كل 12 دقيقة (عشان متسرحش)",
+        studyCalcHeading: "🎫 اختار تذكرة الوقت المطلوب:",
+        mcqCalcHeading: "🎫 اختار تذكرة وقت حل الأسئلة:",
+        slot20Title: "⚡ رحلة سريعة",
+        slot20Sub: "لوب نشط سريع",
+        slot30Title: "☕ رحلة متوسطة",
+        slot30Sub: "قراءة + تسميع",
+        slot45Title: "✈️ رحلة كاملة",
+        slot45Sub: "بلوك مذاكرة كامل",
+        slot60Title: "🚀 رحلة طويلة",
+        slot60Sub: "درس دسم + حل",
+        lblCustomMins: "أو اكتب عدد الدقايق:",
+        lblMinUnit: "دقيقة",
+        issueTicketBtn: "🎫 احجز التذكرة واطبع البوردينج باس ✈️",
+        start: "🛫 ابدأ الرحلة (Takeoff)",
+        pause: "⏸ إيقاف مؤقت",
+        doneSession: "🛬 وصلت بالسلامة (تم)",
         reset: "↺ إعادة",
+        sessionLogTitle: "📊 سجل رحلات الفيديو والمذاكرة",
         ibsRotTitle: "🦴 IBS 15-Min Nightly Rotation (جوه Block G)",
         ibsRotDesc: "كل ليلة 15 دقيقة لموضوع واحد بالترتيب، ولما يخلصوا عيد من الأول:",
         resetRot: "↺ تصفير الدورة",
@@ -1098,14 +1744,20 @@
         thuCheckTitle: "📊 تقييم كل خميس (قاعدة الـ 70%)",
         thuCheckDesc: "كل خميس احسب نسبة الإنجاز في الأسبوع. لو أقل من 70%، بنعيد ترتيب الأولويات ونأجل المواضيع اللي مش ★ والـ T3 الاختيارية.",
         errListTitle: "📓 كشكول أخطائي",
-        modalEdit: "✏️ تعديل البلوك",
-        modalAdd: "➕ إضافة بلوك جديد",
-        mLblTitle: "عنوان الدرس / التاسك",
+        modalEdit: "✏️ تعديل الدرس والوقت",
+        modalAdd: "➕ إضافة درس وتحديد وقته",
+        mLblTitle: "1️⃣ اسم الدرس / التاسك",
         mLblMod: "الموديول",
         mLblBlock: "البلوك / التوقيت",
+        mLblActType: "2️⃣ هتعمل إيه في الدرس ده؟ (سماع فيديو ولا مذاكرة؟)",
+        mLblRawVid: "مدة الفيديو الأصلي (دقيقة):",
+        mLblSpeed: "السرعة:",
+        mLblPauseBuf: "+3 دقايق توقيف وتسميع كل 12 دقيقة",
+        mLblDuration: "3️⃣ الوقت المفروض تذاكره / تسمعه (بالدقايق)",
+        mLblMinUnit: "دقيقة",
         mLblNote: "ملاحظة شخصية (أرقام صفحات / تحشيشة)",
         mCancel: "إلغاء",
-        mSave: "حفظ"
+        mSave: "حفظ التعديل"
       },
       en: {
         title: "☕ Cozy Med Study Hub",
@@ -1116,7 +1768,7 @@
         exportBtn: "💾 Backup JSON",
         importBtn: "📂 Restore",
         tabSchedule: "📅 Schedule & Tracker",
-        tabRhythm: "⏱️ Timer & Daily Rhythm",
+        tabRhythm: "✈️ Flight Ticket Timer & Rhythm",
         tabMarks: "🎯 170 Marks Split",
         tabRules: "🧠 Study Loop & Rules",
         tabErrors: "📓 Error Log & 70% Check",
@@ -1125,16 +1777,52 @@
         viewAll: "🗓️ Full 32-Day Grid",
         searchPh: "Search topic or page...",
         addTask: "+ Add Task",
+        startLessonTip: "Book flight ticket for this lesson",
+        moveUpTip: "Move Up",
+        moveDownTip: "Move Down",
         postponeTip: "Move to tomorrow",
-        editTip: "Edit",
+        editTip: "Edit lesson & time",
         delTip: "Delete",
         statTotal: "Overall Plan Progress",
         statBlocks: "blocks done",
-        timerTitle: "⏱️ Cozy Focus Timer",
-        timerHint: "45' focus + 10' rest (phone away) • Soft chime when done",
-        start: "▶ Start",
+        bpAirlineTitle: "✈️ COZY MED AIRLINES • FOCUS BOARDING PASS",
+        bpOriginCity: "Study Desk",
+        bpDestCity: "Focus Goal",
+        bpLblDep: "DEPARTURE",
+        bpLblDur: "FLIGHT TIME",
+        bpLblArr: "ARRIVAL",
+        bpLblGate: "GATE / MODE",
+        timerTitle: "🎫 Flight Ticket Booking & Time Selector",
+        timerHint: "Pick the lesson, choose Video 🎬 or Study 📖, and issue your boarding pass!",
+        lblPickLesson: "1️⃣ Choose Lesson Name (from plan or custom)",
+        customLessonOpt: "✍️ Enter custom lesson name...",
+        customLessonPh: "Type lesson name here...",
+        lblPickMode: "2️⃣ Flight Type (Watch Video or Study?)",
+        modeVideo: "🎬 Watch Video",
+        modeStudy: "📖 Active Study",
+        modeMcq: "✍️ Solve MCQs",
+        vidCalcHeading: "🎬 Smart Video Ticket Calculator:",
+        lblRawVid: "Original video length (min):",
+        lblSpeed: "Speed:",
+        lblPauseBuf: "Add +3 min pause & recall every 12 min (prevents zoning out)",
+        studyCalcHeading: "🎫 Pick Study Ticket Duration:",
+        mcqCalcHeading: "🎫 Pick MCQ Practice Ticket:",
+        slot20Title: "⚡ Express Hop",
+        slot20Sub: "Quick active loop",
+        slot30Title: "☕ Standard Flight",
+        slot30Sub: "Read + recall",
+        slot45Title: "✈️ Full Block",
+        slot45Sub: "Complete study block",
+        slot60Title: "🚀 Long Haul",
+        slot60Sub: "Deep topic + MCQs",
+        lblCustomMins: "Or enter minutes:",
+        lblMinUnit: "min",
+        issueTicketBtn: "🎫 Issue Boarding Pass & Animate ✈️",
+        start: "🛫 Takeoff (Start)",
         pause: "⏸ Pause",
+        doneSession: "🛬 Landed (Finish & Log)",
         reset: "↺ Reset",
+        sessionLogTitle: "📊 Flight Log (Video & Study Sessions)",
         ibsRotTitle: "🦴 IBS 15-Min Nightly Rotation (inside Block G)",
         ibsRotDesc: "One topic per night for 15 minutes, then start over:",
         resetRot: "↺ Reset Cycle",
@@ -1152,11 +1840,17 @@
         thuCheckTitle: "📊 Thursday 70% Rule Check",
         thuCheckDesc: "Every Thursday count completed blocks. Under 70%? Re-cut priorities by postponing non-★ and optional T3 topics first.",
         errListTitle: "📓 My Error Log",
-        modalEdit: "✏️ Edit Block",
-        modalAdd: "➕ Add New Block",
-        mLblTitle: "Lesson / Task Title",
+        modalEdit: "✏️ Edit Lesson & Time",
+        modalAdd: "➕ Add Lesson & Set Time",
+        mLblTitle: "1️⃣ Lesson / Task Title",
         mLblMod: "Module",
-        mLblBlock: "Block / Time",
+        mLblBlock: "Block / Slot",
+        mLblActType: "2️⃣ Activity Type (Video or Study?)",
+        mLblRawVid: "Original video length (min):",
+        mLblSpeed: "Speed:",
+        mLblPauseBuf: "+3 min pause & recall every 12 min",
+        mLblDuration: "3️⃣ Target Study / Video Minutes",
+        mLblMinUnit: "min",
         mLblNote: "Personal Note (pages / mnemonic)",
         mCancel: "Cancel",
         mSave: "Save"
@@ -1188,11 +1882,46 @@
       document.getElementById("viewAll").textContent = t("viewAll");
       document.getElementById("searchInput").placeholder = t("searchPh");
 
+      document.getElementById("bpAirlineTitle").textContent = t("bpAirlineTitle");
+      document.getElementById("bpOriginCity").textContent = t("bpOriginCity");
+      document.getElementById("bpDestCity").textContent = t("bpDestCity");
+      document.getElementById("bpLblDep").textContent = t("bpLblDep");
+      document.getElementById("bpLblDur").textContent = t("bpLblDur");
+      document.getElementById("bpLblArr").textContent = t("bpLblArr");
+      document.getElementById("bpLblGate").textContent = t("bpLblGate");
+
       document.getElementById("timerTitle").textContent = t("timerTitle");
       document.getElementById("timerHint").textContent = t("timerHint");
+      document.getElementById("lblPickLesson").textContent = t("lblPickLesson");
+      document.getElementById("customLessonInput").placeholder = t("customLessonPh");
+      document.getElementById("lblPickMode").textContent = t("lblPickMode");
+      document.getElementById("modeVideoBtn").textContent = t("modeVideo");
+      document.getElementById("modeStudyBtn").textContent = t("modeStudy");
+      document.getElementById("modeMcqBtn").textContent = t("modeMcq");
+
+      document.getElementById("vidCalcHeading").textContent = t("vidCalcHeading");
+      document.getElementById("lblRawVid").textContent = t("lblRawVid");
+      document.getElementById("lblSpeed").textContent = t("lblSpeed");
+      document.getElementById("lblPauseBuf").textContent = t("lblPauseBuf");
+
+      document.getElementById("slot20Title").textContent = t("slot20Title");
+      document.getElementById("slot20Sub").textContent = t("slot20Sub");
+      document.getElementById("slot30Title").textContent = t("slot30Title");
+      document.getElementById("slot30Sub").textContent = t("slot30Sub");
+      document.getElementById("slot45Title").textContent = t("slot45Title");
+      document.getElementById("slot45Sub").textContent = t("slot45Sub");
+      document.getElementById("slot60Title").textContent = t("slot60Title");
+      document.getElementById("slot60Sub").textContent = t("slot60Sub");
+
+      document.getElementById("lblCustomMins").textContent = t("lblCustomMins");
+      document.getElementById("lblMinUnit").textContent = t("lblMinUnit");
+      document.getElementById("issueTicketBtn").textContent = t("issueTicketBtn");
+
       document.getElementById("startTimerBtn").textContent = t("start");
       document.getElementById("pauseTimerBtn").textContent = t("pause");
+      document.getElementById("doneSessionBtn").textContent = t("doneSession");
       document.getElementById("resetTimerBtn").textContent = t("reset");
+      document.getElementById("sessionLogTitle").textContent = t("sessionLogTitle");
 
       document.getElementById("ibsRotTitle").textContent = t("ibsRotTitle");
       document.getElementById("ibsRotDesc").textContent = t("ibsRotDesc");
@@ -1217,16 +1946,28 @@
       document.getElementById("mLblTitle").textContent = t("mLblTitle");
       document.getElementById("mLblMod").textContent = t("mLblMod");
       document.getElementById("mLblBlock").textContent = t("mLblBlock");
+      document.getElementById("mLblActType").textContent = t("mLblActType");
+      document.getElementById("mModeVideo").textContent = t("modeVideo");
+      document.getElementById("mModeStudy").textContent = t("modeStudy");
+      document.getElementById("mModeMcq").textContent = t("modeMcq");
+      document.getElementById("mLblRawVid").textContent = t("mLblRawVid");
+      document.getElementById("mLblSpeed").textContent = t("mLblSpeed");
+      document.getElementById("mLblPauseBuf").textContent = t("mLblPauseBuf");
+      document.getElementById("mLblDuration").textContent = t("mLblDuration");
+      document.getElementById("mLblMinUnit").textContent = t("mLblMinUnit");
       document.getElementById("mLblNote").textContent = t("mLblNote");
       document.getElementById("mCancel").textContent = t("mCancel");
       document.getElementById("mSave").textContent = t("mSave");
 
+      populateLessonDropdown();
       renderStats();
       renderSchedule();
       renderRhythm();
+      renderSessionLogs();
       renderMarks();
       renderRules();
       renderErrors();
+      updateSessionBanner();
     }
 
     function toggleLang() {
@@ -1244,6 +1985,9 @@
     function switchTab(tabName) {
       document.querySelectorAll(".nav-tab").forEach(b => b.classList.toggle("active", b.dataset.tab === tabName));
       document.querySelectorAll(".section").forEach(s => s.classList.toggle("active", s.id === "sec-" + tabName));
+      if (tabName === "rhythm") {
+        updateBoardingPassTimes();
+      }
     }
 
     function renderStats() {
@@ -1300,6 +2044,19 @@
       renderSchedule();
     }
 
+    function getTaskActivityBadge(tk) {
+      const mins = tk.durationMins || (tk.mod === "Test" ? 35 : 45);
+      const act = tk.activityType || (tk.mod === "Test" ? "mcq" : "study");
+      if (act === "video") {
+        const spdTxt = tk.videoSpeed ? ` ${tk.videoSpeed}x` : "";
+        return `<span class="act-badge act-video">🎬 ${state.lang === "ar" ? "فيديو" : "Video"}${spdTxt} • ${mins}m</span>`;
+      } else if (act === "mcq") {
+        return `<span class="act-badge act-mcq">✍️ MCQ • ${mins}m</span>`;
+      } else {
+        return `<span class="act-badge act-study">📖 ${state.lang === "ar" ? "مذاكرة" : "Study"} • ${mins}m</span>`;
+      }
+    }
+
     function renderSchedule() {
       const subWrap = document.getElementById("subSelectorWrap");
       if (state.view === "today") {
@@ -1330,6 +2087,7 @@
       container.className = state.view === "today" ? "days-grid single-focus" : "days-grid";
 
       container.innerHTML = daysToShow.map(day => {
+        const totalInDay = day.tasks.length;
         const filteredTasks = day.tasks.map((tk, idx) => ({ ...tk, origIdx: idx })).filter(tk => {
           const matchMod = modFilter === "ALL" || tk.mod === modFilter;
           const textBlob = (tk.title + " " + (tk.noteAr || "") + " " + (tk.noteEn || "") + " " + tk.block).toLowerCase();
@@ -1344,21 +2102,33 @@
 
         const tasksHtml = filteredTasks.map(tk => {
           const note = state.lang === "ar" ? (tk.noteAr || tk.noteEn || "") : (tk.noteEn || tk.noteAr || "");
+          const isFlashing = lastMovedHighlight && lastMovedHighlight.dayId === day.id && lastMovedHighlight.idx === tk.origIdx;
+          const isFirst = tk.origIdx === 0;
+          const isLast = tk.origIdx === totalInDay - 1;
+
           return `
-            <div class="task-item ${tk.done ? "done" : ""}">
+            <div class="task-item ${tk.done ? "done" : ""} ${isFlashing ? "task-moved-flash" : ""}">
               <input type="checkbox" class="task-check" ${tk.done ? "checked" : ""} onchange="toggleTask('${day.id}', ${tk.origIdx})" />
               <div class="task-body">
                 <div class="task-top">
                   <span class="mod-tag mod-${tk.mod}">${tk.mod}</span>
-                  <span class="block-tag">${tk.block}</span>
+                  <span class="block-tag">${escapeHtml(tk.block)}</span>
+                  ${getTaskActivityBadge(tk)}
                 </div>
                 <div class="task-title">${escapeHtml(tk.title)}</div>
                 ${note ? `<div class="task-note">${escapeHtml(note)}</div>` : ""}
               </div>
               <div class="task-actions">
-                <button type="button" class="icon-btn" title="${t("postponeTip")}" onclick="postponeTask('${day.id}', ${tk.origIdx})">⏭️</button>
-                <button type="button" class="icon-btn" title="${t("editTip")}" onclick="openEditModal('${day.id}', ${tk.origIdx})">✏️</button>
-                <button type="button" class="icon-btn" title="${t("delTip")}" onclick="deleteTask('${day.id}', ${tk.origIdx})">🗑️</button>
+                <div class="action-row">
+                  <button type="button" class="icon-btn" title="${t("moveUpTip")}" ${isFirst ? "disabled" : ""} onclick="moveTask('${day.id}', ${tk.origIdx}, -1)">⬆️</button>
+                  <button type="button" class="icon-btn" title="${t("moveDownTip")}" ${isLast ? "disabled" : ""} onclick="moveTask('${day.id}', ${tk.origIdx}, 1)">⬇️</button>
+                  <button type="button" class="icon-btn play-btn" title="${t("startLessonTip")}" onclick="launchLessonSession('${day.id}', ${tk.origIdx})">✈️</button>
+                </div>
+                <div class="action-row">
+                  <button type="button" class="icon-btn" title="${t("postponeTip")}" onclick="postponeTask('${day.id}', ${tk.origIdx})">⏭️</button>
+                  <button type="button" class="icon-btn" title="${t("editTip")}" onclick="openEditModal('${day.id}', ${tk.origIdx})">✏️</button>
+                  <button type="button" class="icon-btn" title="${t("delTip")}" onclick="deleteTask('${day.id}', ${tk.origIdx})">🗑️</button>
+                </div>
               </div>
             </div>
           `;
@@ -1382,6 +2152,29 @@
       }).join("");
     }
 
+    function moveTask(dayId, idx, dir) {
+      const day = state.plan.find(d => d.id === dayId);
+      if (!day) return;
+      const targetIdx = idx + dir;
+      if (targetIdx < 0 || targetIdx >= day.tasks.length) return;
+
+      const temp = day.tasks[idx];
+      day.tasks[idx] = day.tasks[targetIdx];
+      day.tasks[targetIdx] = temp;
+
+      lastMovedHighlight = { dayId, idx: targetIdx };
+      saveState();
+      populateLessonDropdown();
+      renderSchedule();
+
+      setTimeout(() => {
+        if (lastMovedHighlight && lastMovedHighlight.dayId === dayId && lastMovedHighlight.idx === targetIdx) {
+          lastMovedHighlight = null;
+          renderSchedule();
+        }
+      }, 650);
+    }
+
     function toggleTask(dayId, idx) {
       const day = state.plan.find(d => d.id === dayId);
       if (day && day.tasks[idx]) {
@@ -1397,6 +2190,7 @@
       if (day) {
         day.tasks.splice(idx, 1);
         saveState();
+        populateLessonDropdown();
         renderStats();
         renderSchedule();
       }
@@ -1410,9 +2204,61 @@
         moved.noteEn = (moved.noteEn ? moved.noteEn + " • " : "") + "Carried over";
         state.plan[dIndex + 1].tasks.unshift(moved);
         saveState();
+        populateLessonDropdown();
         renderStats();
         renderSchedule();
       }
+    }
+
+    /* ==========================================
+       ENHANCED ADD / EDIT TASK MODAL LOGIC
+       ========================================== */
+    let modalState = {
+      activityType: "study",
+      videoSpeed: 1.25
+    };
+
+    function setModalMode(mode) {
+      modalState.activityType = mode;
+      document.getElementById("mModeVideo").className = "mode-btn" + (mode === "video" ? " active-video" : "");
+      document.getElementById("mModeStudy").className = "mode-btn" + (mode === "study" ? " active-study" : "");
+      document.getElementById("mModeMcq").className = "mode-btn" + (mode === "mcq" ? " active-mcq" : "");
+
+      const vidBox = document.getElementById("mVideoCalcBox");
+      if (mode === "video") {
+        vidBox.style.display = "flex";
+        recalcModalVideo();
+      } else {
+        vidBox.style.display = "none";
+      }
+    }
+
+    function setModalSpeed(spd) {
+      modalState.videoSpeed = spd;
+      document.querySelectorAll("[data-mspd]").forEach(b => {
+        b.classList.toggle("active", parseFloat(b.dataset.mspd) === spd);
+      });
+      recalcModalVideo();
+    }
+
+    function recalcModalVideo() {
+      const raw = Math.max(1, parseInt(document.getElementById("mRawVidMins").value || "40", 10));
+      const spd = modalState.videoSpeed || 1.25;
+      const addBuf = document.getElementById("mPauseBuf").checked;
+      const watchM = Math.ceil(raw / spd);
+      const checkpoints = Math.max(1, Math.floor(watchM / 12));
+      const pauseM = addBuf ? checkpoints * 3 : 0;
+      const totalM = watchM + pauseM;
+
+      document.getElementById("mDurationMins").value = totalM;
+      const res = document.getElementById("mVidResultText");
+      res.innerHTML = state.lang === "ar"
+        ? `⏱️ الوقت المحسوب: <strong>${totalM} دقيقة</strong> (${watchM} د مشاهدة على ${spd}x${addBuf ? ` + ${pauseM} د توقيف وتسميع` : ""})`
+        : `⏱️ Calculated: <strong>${totalM} min</strong> (${watchM}m @ ${spd}x${addBuf ? ` + ${pauseM}m recall pauses` : ""})`;
+    }
+
+    function setModalDuration(mins) {
+      document.getElementById("mDurationMins").value = mins;
     }
 
     function openEditModal(dayId, idx) {
@@ -1425,6 +2271,15 @@
       document.getElementById("mMod").value = tk.mod;
       document.getElementById("mBlock").value = tk.block;
       document.getElementById("mNote").value = state.lang === "ar" ? (tk.noteAr || "") : (tk.noteEn || "");
+
+      const act = tk.activityType || (tk.mod === "Test" ? "mcq" : "study");
+      const dur = tk.durationMins || (tk.mod === "Test" ? 35 : 45);
+      document.getElementById("mRawVidMins").value = tk.rawVideoMins || 40;
+      document.getElementById("mPauseBuf").checked = tk.pauseBuffer !== undefined ? tk.pauseBuffer : true;
+      setModalSpeed(tk.videoSpeed || 1.25);
+      setModalMode(act);
+      document.getElementById("mDurationMins").value = dur;
+
       document.getElementById("taskModal").classList.add("open");
     }
 
@@ -1436,6 +2291,12 @@
       document.getElementById("mMod").value = "IHI";
       document.getElementById("mBlock").value = "Block H";
       document.getElementById("mNote").value = "";
+      document.getElementById("mRawVidMins").value = 40;
+      document.getElementById("mPauseBuf").checked = true;
+      setModalSpeed(1.25);
+      setModalMode("study");
+      document.getElementById("mDurationMins").value = 45;
+
       document.getElementById("taskModal").classList.add("open");
     }
 
@@ -1451,27 +2312,332 @@
       const mod = document.getElementById("mMod").value;
       const block = document.getElementById("mBlock").value.trim() || "Block";
       const note = document.getElementById("mNote").value.trim();
+      const activityType = modalState.activityType;
+      const durationMins = Math.max(5, Math.min(240, parseInt(document.getElementById("mDurationMins").value || "45", 10)));
+      const rawVideoMins = Math.max(5, parseInt(document.getElementById("mRawVidMins").value || "40", 10));
+      const videoSpeed = modalState.videoSpeed || 1.25;
+      const pauseBuffer = document.getElementById("mPauseBuf").checked;
 
       const day = state.plan.find(d => d.id === dayId);
       if (!day) return;
 
       if (idx >= 0) {
-        day.tasks[idx].title = title;
-        day.tasks[idx].mod = mod;
-        day.tasks[idx].block = block;
-        if (state.lang === "ar") day.tasks[idx].noteAr = note;
-        else day.tasks[idx].noteEn = note;
+        const tk = day.tasks[idx];
+        tk.title = title;
+        tk.mod = mod;
+        tk.block = block;
+        tk.activityType = activityType;
+        tk.durationMins = durationMins;
+        tk.rawVideoMins = rawVideoMins;
+        tk.videoSpeed = videoSpeed;
+        tk.pauseBuffer = pauseBuffer;
+        if (state.lang === "ar") tk.noteAr = note;
+        else tk.noteEn = note;
       } else {
-        day.tasks.push({ mod, block, title, noteAr: note, noteEn: note, done: false });
+        day.tasks.push({
+          mod,
+          block,
+          title,
+          activityType,
+          durationMins,
+          rawVideoMins,
+          videoSpeed,
+          pauseBuffer,
+          noteAr: note,
+          noteEn: note,
+          done: false
+        });
       }
       saveState();
       closeModal();
+      populateLessonDropdown();
       renderStats();
       renderSchedule();
     }
 
-    let timerSeconds = 45 * 60;
+    /* ==========================================
+       AIRPLANE TICKET SESSION & TIMER ENGINE
+       ========================================== */
+    let currentSession = {
+      lessonKey: "2026-11-16|1",
+      lessonTitle: "Leucocytes 4–12 (1/2)",
+      lessonMod: "IHI",
+      mode: "video",
+      videoSpeed: 1.25,
+      targetMinutes: 41
+    };
+
+    let timerSeconds = 41 * 60;
+    let totalSessionSeconds = 41 * 60;
     let timerInterval = null;
+
+    function populateLessonDropdown() {
+      const sel = document.getElementById("lessonSelect");
+      if (!sel) return;
+      const prevVal = currentSession.lessonKey || "2026-11-16|1";
+
+      let html = `<option value="CUSTOM">${t("customLessonOpt")}</option>`;
+      state.plan.forEach(day => {
+        const dayLabel = state.lang === "ar" ? day.dateAr : day.dateEn;
+        html += `<optgroup label="W${day.week} • ${escapeHtml(dayLabel)}">`;
+        day.tasks.forEach((tk, idx) => {
+          const val = `${day.id}|${idx}`;
+          const doneMark = tk.done ? "✓ " : "";
+          const durTag = tk.durationMins ? ` (${tk.durationMins}m)` : "";
+          html += `<option value="${val}" ${val === prevVal ? "selected" : ""}>${doneMark}[${tk.mod}] ${escapeHtml(tk.title)}${durTag}</option>`;
+        });
+        html += `</optgroup>`;
+      });
+      sel.innerHTML = html;
+
+      if (prevVal === "CUSTOM") {
+        sel.value = "CUSTOM";
+        document.getElementById("customLessonInput").style.display = "block";
+      } else {
+        document.getElementById("customLessonInput").style.display = "none";
+      }
+    }
+
+    function handleLessonSelectChange() {
+      const sel = document.getElementById("lessonSelect");
+      const customInp = document.getElementById("customLessonInput");
+      if (sel.value === "CUSTOM") {
+        customInp.style.display = "block";
+        customInp.focus();
+        currentSession.lessonKey = "CUSTOM";
+        currentSession.lessonMod = "Study";
+        currentSession.lessonTitle = customInp.value.trim() || (state.lang === "ar" ? "درس مخصص" : "Custom Lesson");
+      } else {
+        customInp.style.display = "none";
+        currentSession.lessonKey = sel.value;
+        const [dId, tIdxStr] = sel.value.split("|");
+        const day = state.plan.find(d => d.id === dId);
+        const tk = day ? day.tasks[parseInt(tIdxStr, 10)] : null;
+        if (tk) {
+          applyTaskToFlightTicket(tk);
+        }
+      }
+      updateSessionBanner();
+    }
+
+    function applyTaskToFlightTicket(tk) {
+      currentSession.lessonTitle = tk.title;
+      currentSession.lessonMod = tk.mod;
+
+      const mode = tk.activityType || (tk.mod === "Test" ? "mcq" : "study");
+      if (mode === "video") {
+        if (tk.rawVideoMins) document.getElementById("rawVideoMins").value = tk.rawVideoMins;
+        if (tk.pauseBuffer !== undefined) document.getElementById("includePauseBuffer").checked = tk.pauseBuffer;
+        setVideoSpeed(tk.videoSpeed || 1.25);
+        setSessionMode("video");
+        if (tk.durationMins) applyTimerDuration(tk.durationMins);
+      } else {
+        setSessionMode(mode);
+        const dur = tk.durationMins || (mode === "mcq" ? 35 : 45);
+        selectTicketSlot(dur);
+      }
+    }
+
+    function updateActiveSessionFromInputs() {
+      const customInp = document.getElementById("customLessonInput");
+      if (document.getElementById("lessonSelect").value === "CUSTOM") {
+        currentSession.lessonTitle = customInp.value.trim() || (state.lang === "ar" ? "درس مخصص" : "Custom Lesson");
+        updateSessionBanner();
+      }
+    }
+
+    function launchLessonSession(dayId, idx) {
+      const day = state.plan.find(d => d.id === dayId);
+      if (!day || !day.tasks[idx]) return;
+      const tk = day.tasks[idx];
+      currentSession.lessonKey = `${dayId}|${idx}`;
+
+      populateLessonDropdown();
+      document.getElementById("lessonSelect").value = currentSession.lessonKey;
+      document.getElementById("customLessonInput").style.display = "none";
+
+      applyTaskToFlightTicket(tk);
+      switchTab("rhythm");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      triggerTicketBookingAnimation(false);
+    }
+
+    function setSessionMode(mode) {
+      currentSession.mode = mode;
+      const vBtn = document.getElementById("modeVideoBtn");
+      const sBtn = document.getElementById("modeStudyBtn");
+      const mBtn = document.getElementById("modeMcqBtn");
+
+      vBtn.className = "mode-btn" + (mode === "video" ? " active-video" : "");
+      sBtn.className = "mode-btn" + (mode === "study" ? " active-study" : "");
+      mBtn.className = "mode-btn" + (mode === "mcq" ? " active-mcq" : "");
+
+      const vidBox = document.getElementById("videoCalcBox");
+      const studyBox = document.getElementById("studyCalcBox");
+
+      if (mode === "video") {
+        vidBox.style.display = "flex";
+        studyBox.style.display = "none";
+        calculateVideoTime();
+      } else {
+        vidBox.style.display = "none";
+        studyBox.style.display = "flex";
+        document.getElementById("studyCalcHeading").textContent = mode === "mcq" ? t("mcqCalcHeading") : t("studyCalcHeading");
+        const defaultMins = mode === "mcq" ? 35 : 45;
+        selectTicketSlot(defaultMins);
+      }
+    }
+
+    function selectTicketSlot(mins) {
+      document.querySelectorAll(".ticket-slot").forEach(btn => {
+        btn.classList.toggle("selected", parseInt(btn.dataset.mins, 10) === mins);
+      });
+      setCustomDuration(mins);
+      triggerTicketBookingAnimation(false);
+    }
+
+    function setVideoSpeed(spd) {
+      currentSession.videoSpeed = spd;
+      document.querySelectorAll("[data-spd]").forEach(b => {
+        b.classList.toggle("active", parseFloat(b.dataset.spd) === spd);
+      });
+      calculateVideoTime();
+    }
+
+    function calculateVideoTime() {
+      const rawMins = Math.max(1, parseInt(document.getElementById("rawVideoMins").value || "40", 10));
+      const spd = currentSession.videoSpeed || 1.25;
+      const addBuffer = document.getElementById("includePauseBuffer").checked;
+
+      const watchMins = Math.ceil(rawMins / spd);
+      const checkpoints = Math.max(1, Math.floor(watchMins / 12));
+      const pauseMins = addBuffer ? checkpoints * 3 : 0;
+      const totalMins = watchMins + pauseMins;
+
+      const resEl = document.getElementById("videoCalcResult");
+      if (state.lang === "ar") {
+        resEl.innerHTML = `🎫 تذكرة الفيديو: <strong>${totalMins} دقيقة</strong> (${watchMins} د مشاهدة على ${spd}x${addBuffer ? ` + ${pauseMins} د توقيف وتسميع كل 12 د` : ""})`;
+      } else {
+        resEl.innerHTML = `🎫 Video Ticket: <strong>${totalMins} min</strong> (${watchMins}m watch @ ${spd}x${addBuffer ? ` + ${pauseMins}m recall pauses` : ""})`;
+      }
+
+      applyTimerDuration(totalMins);
+    }
+
+    function setCustomDuration(mins) {
+      const validMins = Math.max(1, Math.min(240, parseInt(mins || 45, 10)));
+      const inp = document.getElementById("manualDurationInput");
+      if (inp) inp.value = validMins;
+
+      document.querySelectorAll(".ticket-slot").forEach(btn => {
+        btn.classList.toggle("selected", parseInt(btn.dataset.mins, 10) === validMins);
+      });
+
+      const planEl = document.getElementById("studyPlanBreakdown");
+      if (currentSession.mode === "mcq") {
+        const estQs = Math.round(validMins * 0.85);
+        planEl.innerHTML = state.lang === "ar"
+          ? `✍️ خطة الرحلة: حل حوالي <strong>${estQs} سؤال MCQ</strong> بوقت (دقيقة للسؤال) + تسجيل أي غلطة في الـ Error Log.`
+          : `✍️ Flight Plan: Solve ~<strong>${estQs} MCQs</strong> timed (1 min/Q) + log mistakes in Error Log.`;
+      } else {
+        const readM = Math.max(5, Math.round(validMins * 0.67));
+        const recallM = Math.max(3, Math.round(validMins * 0.22));
+        const mcqM = Math.max(2, validMins - readM - recallM);
+        planEl.innerHTML = state.lang === "ar"
+          ? `📖 تقسيمة الـ ${validMins} دقيقة: <strong>${readM} د</strong> قراءة وتلخيص Skeleton + <strong>${recallM} د</strong> تسميع ورقة بيضا + <strong>${mcqM} د</strong> حل 5 MCQ.`
+          : `📖 ${validMins}-min split: <strong>${readM}m</strong> read & skeleton + <strong>${recallM}m</strong> blank-page recall + <strong>${mcqM}m</strong> 5 quick MCQs.`;
+      }
+
+      applyTimerDuration(validMins);
+    }
+
+    function applyTimerDuration(mins) {
+      pauseTimer();
+      currentSession.targetMinutes = mins;
+      timerSeconds = mins * 60;
+      totalSessionSeconds = timerSeconds;
+      document.getElementById("timerDisplay").textContent = formatTime(timerSeconds);
+      updateRunwayProgress(0);
+      updateSessionBanner();
+    }
+
+    function updateRunwayProgress(pct) {
+      const bar = document.getElementById("timerProgressBar");
+      const plane = document.getElementById("runwayPlaneMarker");
+      if (bar) bar.style.width = pct + "%";
+      if (plane) plane.style.insetInlineStart = pct + "%";
+    }
+
+    function updateBoardingPassTimes() {
+      const now = new Date();
+      const depH = String(now.getHours()).padStart(2, "0");
+      const depM = String(now.getMinutes()).padStart(2, "0");
+
+      const arrDate = new Date(now.getTime() + (currentSession.targetMinutes || 45) * 60000);
+      const arrH = String(arrDate.getHours()).padStart(2, "0");
+      const arrM = String(arrDate.getMinutes()).padStart(2, "0");
+
+      const depEl = document.getElementById("bpDepTime");
+      const arrEl = document.getElementById("bpArrTime");
+      const durEl = document.getElementById("bpDurVal");
+      const gateEl = document.getElementById("bpGateVal");
+      const fltEl = document.getElementById("bpFlightNo");
+
+      if (depEl) depEl.textContent = `${depH}:${depM}`;
+      if (arrEl) arrEl.textContent = `${arrH}:${arrM}`;
+      if (durEl) durEl.textContent = `${currentSession.targetMinutes}m`;
+      if (fltEl) fltEl.textContent = `FLT-${String(currentSession.lessonMod || "MED").toUpperCase()}`;
+
+      if (gateEl) {
+        if (currentSession.mode === "video") gateEl.textContent = `VID ${currentSession.videoSpeed}x`;
+        else if (currentSession.mode === "mcq") gateEl.textContent = `MCQ-GATE`;
+        else gateEl.textContent = `STUDY-A1`;
+      }
+    }
+
+    function updateSessionBanner() {
+      const badgeEl = document.getElementById("activeSessionBadge");
+      const titleEl = document.getElementById("activeLessonDisplay");
+      if (!badgeEl) return;
+
+      let modeTag = "";
+      if (currentSession.mode === "video") {
+        modeTag = `<span class="mod-tag mod-IBF">${t("modeVideo")} (${currentSession.videoSpeed}x)</span>`;
+      } else if (currentSession.mode === "mcq") {
+        modeTag = `<span class="mod-tag mod-IMB">${t("modeMcq")}</span>`;
+      } else {
+        modeTag = `<span class="mod-tag mod-IBS">${t("modeStudy")}</span>`;
+      }
+
+      badgeEl.innerHTML = `<span class="mod-tag mod-${currentSession.lessonMod}">${currentSession.lessonMod}</span> ${modeTag}`;
+      titleEl.textContent = currentSession.lessonTitle;
+      updateBoardingPassTimes();
+    }
+
+    function triggerTicketBookingAnimation(scrollAndStart) {
+      const card = document.getElementById("boardingPassCard");
+      const stamp = document.getElementById("bpStampText");
+      if (!card) return;
+
+      updateBoardingPassTimes();
+      if (stamp) {
+        stamp.textContent = state.lang === "ar" ? "تم حجز التذكرة ✈️" : "TICKET ISSUED ✈️";
+      }
+
+      card.classList.remove("ticket-booked-anim");
+      void card.offsetWidth; // trigger reflow for replay
+      card.classList.add("ticket-booked-anim");
+
+      if (scrollAndStart) {
+        card.scrollIntoView({ behavior: "smooth", block: "center" });
+        startTimer();
+      }
+    }
+
+    function bookAndStartFlight() {
+      triggerTicketBookingAnimation(false);
+      startTimer();
+    }
 
     function formatTime(sec) {
       const m = String(Math.floor(sec / 60)).padStart(2, "0");
@@ -1479,21 +2645,26 @@
       return `${m}:${s}`;
     }
 
-    function setTimerMinutes(mins) {
-      pauseTimer();
-      timerSeconds = mins * 60;
-      document.getElementById("timerDisplay").textContent = formatTime(timerSeconds);
-    }
-
     function startTimer() {
       if (timerInterval) return;
+      const stamp = document.getElementById("bpStampText");
+      if (stamp) {
+        stamp.textContent = state.lang === "ar" ? "في الجو الآن 🛫" : "IN FLIGHT 🛫";
+      }
+      updateBoardingPassTimes();
+
       timerInterval = setInterval(() => {
         if (timerSeconds > 0) {
           timerSeconds--;
           document.getElementById("timerDisplay").textContent = formatTime(timerSeconds);
+          const pct = totalSessionSeconds > 0
+            ? Math.min(100, Math.round(((totalSessionSeconds - timerSeconds) / totalSessionSeconds) * 100))
+            : 0;
+          updateRunwayProgress(pct);
         } else {
           pauseTimer();
           playCozyChime();
+          completeCurrentSession(true);
         }
       }, 1000);
     }
@@ -1504,7 +2675,91 @@
     }
 
     function resetTimer() {
-      setTimerMinutes(45);
+      const stamp = document.getElementById("bpStampText");
+      if (stamp) {
+        stamp.textContent = state.lang === "ar" ? "جاهز للإقلاع ✈️" : "BOARDING ✈️";
+      }
+      applyTimerDuration(currentSession.targetMinutes || 45);
+    }
+
+    function completeCurrentSession(autoTriggered) {
+      pauseTimer();
+      const stamp = document.getElementById("bpStampText");
+      if (stamp) {
+        stamp.textContent = state.lang === "ar" ? "تم الهبوط بنجاح 🛬" : "LANDED SAFELY 🛬";
+      }
+
+      const elapsedSecs = totalSessionSeconds - timerSeconds;
+      const loggedMins = elapsedSecs >= 60 ? Math.round(elapsedSecs / 60) : currentSession.targetMinutes;
+
+      state.sessionLogs.unshift({
+        id: Date.now(),
+        title: currentSession.lessonTitle,
+        mod: currentSession.lessonMod,
+        mode: currentSession.mode,
+        minutes: loggedMins
+      });
+
+      if (currentSession.lessonKey && currentSession.lessonKey !== "CUSTOM") {
+        const [dId, tIdxStr] = currentSession.lessonKey.split("|");
+        const day = state.plan.find(d => d.id === dId);
+        const idx = parseInt(tIdxStr, 10);
+        if (day && day.tasks[idx] && !day.tasks[idx].done) {
+          const askMsg = state.lang === "ar"
+            ? `حمدلله على السلامة! اتسجلت الرحلة (${loggedMins} دقيقة). تعلّم صح (✓) على درس "${currentSession.lessonTitle}" في الجدول؟`
+            : `Landed safely! Logged ${loggedMins} min. Mark "${currentSession.lessonTitle}" as done (✓) in schedule?`;
+          if (confirm(askMsg)) {
+            day.tasks[idx].done = true;
+            renderStats();
+            renderSchedule();
+            populateLessonDropdown();
+          }
+        }
+      }
+
+      saveState();
+      renderSessionLogs();
+      resetTimer();
+    }
+
+    function renderSessionLogs() {
+      const sumEl = document.getElementById("sessionSummaryStats");
+      const listEl = document.getElementById("sessionLogList");
+      if (!sumEl || !listEl) return;
+
+      let vidMins = 0, studyMins = 0;
+      state.sessionLogs.forEach(s => {
+        if (s.mode === "video") vidMins += s.minutes;
+        else studyMins += s.minutes;
+      });
+
+      sumEl.innerHTML = state.lang === "ar"
+        ? `<span class="mod-tag mod-IBF">🎬 فيديو: ${vidMins} دقيقة</span> <span class="mod-tag mod-IBS">📖 مذاكرة وحل: ${studyMins} دقيقة</span>`
+        : `<span class="mod-tag mod-IBF">🎬 Video: ${vidMins} min</span> <span class="mod-tag mod-IBS">📖 Study & MCQ: ${studyMins} min</span>`;
+
+      if (state.sessionLogs.length === 0) {
+        listEl.innerHTML = `<div style="font-size:0.84rem;color:var(--text-muted);">${state.lang === "ar" ? "لسه مفيش رحلات متسجلة — احجز أول تذكرة فوق!" : "No flights logged yet — issue your first boarding pass above!"}</div>`;
+        return;
+      }
+
+      listEl.innerHTML = state.sessionLogs.map((s, i) => {
+        const modeBadge = s.mode === "video"
+          ? `<span class="mod-tag mod-IBF">${t("modeVideo")}</span>`
+          : (s.mode === "mcq" ? `<span class="mod-tag mod-IMB">${t("modeMcq")}</span>` : `<span class="mod-tag mod-IBS">${t("modeStudy")}</span>`);
+        return `
+          <div class="task-item">
+            <div class="task-body">
+              <div class="task-top">
+                <span class="mod-tag mod-${s.mod}">${s.mod}</span>
+                ${modeBadge}
+                <span class="block-tag">✈️ ${s.minutes} ${t("lblMinUnit")}</span>
+              </div>
+              <div class="task-title">${escapeHtml(s.title)}</div>
+            </div>
+            <button type="button" class="icon-btn" onclick="state.sessionLogs.splice(${i},1);saveState();renderSessionLogs();">🗑️</button>
+          </div>
+        `;
+      }).join("");
     }
 
     function playCozyChime() {
@@ -1803,7 +3058,11 @@
     function resetAll() {
       const msg = state.lang === "ar" ? "متأكد إنك عايز ترجع الجدول لحالته الأصلية؟" : "Reset all progress back to the original plan?";
       if (confirm(msg)) {
-        try { localStorage.removeItem("cozy_med_study_hub_v2"); } catch (e) {}
+        try {
+          localStorage.removeItem("cozy_med_study_hub_v4");
+          localStorage.removeItem("cozy_med_study_hub_v3");
+          localStorage.removeItem("cozy_med_study_hub_v2");
+        } catch (e) {}
         location.reload();
       }
     }
@@ -1814,6 +3073,7 @@
 
     loadState();
     applyLangAndTheme();
+    calculateVideoTime();
   </script>
 </body>
 </html>
